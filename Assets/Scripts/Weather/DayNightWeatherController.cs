@@ -57,6 +57,13 @@ namespace ForestFriendsQuest
             _audioSystem = audioSystem;
         }
 
+        /// <summary>Override sky and fog tint for the current biome zone.</summary>
+        public void SetBiomeTint(Color fogColor, Color ambientLightColor)
+        {
+            _targetSkyColor = Color.Lerp(_currentSkyColor, fogColor, 0.35f);
+            // ambientLightColor stored for future lighting integration
+        }
+
         private void Awake()
         {
             _currentSkyColor = GetSkyOverlayColor();

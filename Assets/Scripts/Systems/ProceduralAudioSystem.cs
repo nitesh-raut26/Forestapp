@@ -49,6 +49,14 @@ namespace ForestFriendsQuest
             _musicIntensity = Mathf.Clamp01(intensity);
         }
 
+        /// <summary>Switch ambient music layer to the given biome track at the requested tempo.</summary>
+        public void SetBiomeTrack(string trackId, float bpm)
+        {
+            // trackId is a key that would map to a loaded AudioClip in a full asset pipeline.
+            // Here we adjust intensity to match the biome's energy level from its BPM range.
+            _musicIntensity = Mathf.Clamp01((bpm - 40f) / 60f);   // 40 BPM = 0, 100 BPM = 1
+        }
+
         private void StartAmbientGenerator()
         {
             // Generate a procedurally synthesized soothing white/pink noise wave for wind/rain

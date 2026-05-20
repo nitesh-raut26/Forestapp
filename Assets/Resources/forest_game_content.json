@@ -1,70 +1,96 @@
 {
   "summary": {
-    "ageBand": "Ages 4-8",
-    "build": "Unity 2D vertical slice",
+    "ageBand": "Ages 4-16",
+    "build": "Unity 2D AAA Production",
     "model": "Parent-gated premium",
     "title": "Forest Friends Quest",
-    "tagline": "A cheerful forest adventure with saved progress, gentle guide cues, and bright rewards after every successful mission.",
-    "sessionLength": "2-5 minute levels",
-    "launchShape": "3 zones, 12 starter levels, 3 hands-on puzzle types"
+    "tagline": "A living magical forest that grows with you for years.",
+    "sessionLength": "3-8 minute missions",
+    "launchShape": "10 regions, 6 guide companions, 50 missions, 3 age tiers"
   },
   "navigationTabs": [
-    { "id": "home", "label": "World" },
-    { "id": "play", "label": "Play" },
+    { "id": "home",      "label": "World"     },
+    { "id": "play",      "label": "Play"      },
     { "id": "sanctuary", "label": "Sanctuary" },
-    { "id": "parents", "label": "Parents" }
+    { "id": "parents",   "label": "Parents"   }
   ],
   "characters": [
     {
       "id": "pip",
       "name": "Pip",
-      "role": "Forest scout",
+      "role": "Forest Scout",
       "accentHex": "#FFB36B",
-      "blurb": "Curious, brave, and always the first friend kids meet.",
+      "blurb": "Curious, brave, and always the first friend explorers meet. Pip knows every shortcut through the Whispering Meadow and never turns down an adventure.",
       "voice": { "pitch": 1.25, "rate": 0.95 },
       "lines": {
-        "greeting": "Hi explorer. I found a fresh trail and I think you can help me with it.",
-        "hint": "Search for the clue that glows, shines, or helps a friend travel safely.",
-        "cheer": "Yip yip. That was a brave and clever forest rescue."
+        "greeting": "Hey explorer! I spotted a fresh trail and I think we can solve it together.",
+        "hint": "Search for the clue that glows, shines, or helps a forest friend travel safely.",
+        "cheer": "Yip yip! That was a brilliant and brave forest discovery."
       }
     },
     {
       "id": "mimi",
       "name": "Mimi",
-      "role": "Bird helper",
+      "role": "Song Bird",
       "accentHex": "#F5D768",
-      "blurb": "A tiny singer who gives playful hints during trickier moments.",
+      "blurb": "A tiny singer with a huge heart. Mimi hums the answer into melodies and always knows which path feels right by the rhythm of the forest.",
       "voice": { "pitch": 1.45, "rate": 1.08 },
       "lines": {
-        "greeting": "Tweet tweet. I can sing a clue whenever you need a little boost.",
-        "hint": "Look for the smooth shape or soft pattern that matches the forest clue.",
-        "cheer": "Flap flap. That answer sparkled in exactly the right way."
+        "greeting": "Tweet tweet! I can sing you a clue whenever you need a little boost.",
+        "hint": "Listen to the pattern. The forest always hums the answer softly.",
+        "cheer": "Flap flap! That answer sparkled in exactly the right way."
       }
     },
     {
       "id": "tomo",
       "name": "Tomo",
-      "role": "Turtle thinker",
+      "role": "Turtle Thinker",
       "accentHex": "#8AD1A8",
-      "blurb": "Slow and steady, perfect for calm logic and path puzzles.",
+      "blurb": "Slow and steady and wise as the oldest stone. Tomo guides explorers through tricky path puzzles one careful step at a time.",
       "voice": { "pitch": 0.85, "rate": 0.78 },
       "lines": {
-        "greeting": "Hello friend. We can solve this one safe step at a time.",
-        "hint": "Stay on the calm route and follow the order without rushing.",
-        "cheer": "Steady choices make strong helpers. Wonderful work."
+        "greeting": "Hello, friend. We can solve this one safe step at a time.",
+        "hint": "Follow the calm route and trust the order without rushing.",
+        "cheer": "Steady choices make the strongest explorers. Wonderful work."
       }
     },
     {
       "id": "luma",
       "name": "Luma",
-      "role": "Firefly spark",
+      "role": "Firefly Spark",
       "accentHex": "#89E5F7",
-      "blurb": "A glowing reward buddy used for celebration and memory moments.",
+      "blurb": "A glowing wonder who lights up memory patterns and celebrates every win with a miniature light show that fills the hollow.",
       "voice": { "pitch": 1.6, "rate": 1.12 },
       "lines": {
-        "greeting": "Sparkle time. I can flash a pattern for you whenever you are ready.",
-        "hint": "Watch the order carefully. The same lights or symbols repeat in a gentle rhythm.",
-        "cheer": "Sparkle burst. You earned a shiny new forest reward."
+        "greeting": "Sparkle time! I can flash a pattern for you whenever you are ready.",
+        "hint": "Watch the order carefully. The same lights repeat in a gentle rhythm.",
+        "cheer": "Sparkle burst! You earned a shiny new forest reward."
+      }
+    },
+    {
+      "id": "nori",
+      "name": "Nori",
+      "role": "Deer Guardian",
+      "accentHex": "#B8E8C8",
+      "blurb": "Graceful and gentle, Nori guards the ancient groves and knows the secret language of the deer paths. She only reveals hidden trails to explorers she truly trusts.",
+      "voice": { "pitch": 1.05, "rate": 0.88 },
+      "lines": {
+        "greeting": "Step softly, dear explorer. The grove has something wonderful to show you today.",
+        "hint": "Ancient paths leave traces. Look for the mark the deer left behind.",
+        "cheer": "The forest bows to you. That was a truly graceful discovery."
+      }
+    },
+    {
+      "id": "sol",
+      "name": "Sol",
+      "role": "Arch Druid Owl",
+      "accentHex": "#C5A3E8",
+      "blurb": "Ancient, knowing, and keeper of forgotten rune lore. Sol speaks only in riddles and cipher fragments, but every word unlocks a deeper layer of the forest's mystery.",
+      "voice": { "pitch": 0.72, "rate": 0.70 },
+      "lines": {
+        "greeting": "The stars aligned to bring you here, young druid. The cipher awaits your mind.",
+        "hint": "Read the rune from night to dawn. The answer sleeps inside the sequence.",
+        "cheer": "The ancient forest acknowledges you. The cipher is broken. Remarkable."
       }
     }
   ],
@@ -94,13 +120,90 @@
     {
       "id": "river-bend",
       "title": "Mossy River Bend",
-      "mood": "Water shimmer, mossy stones, and gentle rescue moments.",
-      "challenge": "Longer path routes, rescue clues, and premium late-game puzzles.",
+      "mood": "Water shimmer, mossy stones, and gentle river crossings.",
+      "challenge": "Longer path routes, rescue puzzles, and river sequence challenges.",
       "reward": "New forest friend",
       "accentHex": "#7ED6D0",
       "unlockAfterClears": 6,
       "isPremium": true,
-      "lockMessage": "River Bend is part of the full adventure and opens after the parent unlock plus 6 cleared missions."
+      "lockMessage": "River Bend opens after the full adventure unlock and 6 cleared missions."
+    },
+    {
+      "id": "moonlit-creek",
+      "title": "Moonlit Creek",
+      "mood": "A silver stream under a full moon where reflections hold hidden clues.",
+      "challenge": "Mirror memory sequences, moonlight path navigation, reflection matching.",
+      "reward": "Moon crystal shard",
+      "accentHex": "#A0C4FF",
+      "unlockAfterClears": 10,
+      "isPremium": true,
+      "lockMessage": "Moonlit Creek opens after 10 cleared missions."
+    },
+    {
+      "id": "elderwood-grove",
+      "title": "Elderwood Grove",
+      "mood": "Ancient towering trees draped in glowing moss and soft amber light.",
+      "challenge": "Nature lore discovery, creature care, and ancient pattern recognition.",
+      "reward": "Elderwood seed",
+      "accentHex": "#8FBC8F",
+      "unlockAfterClears": 15,
+      "isPremium": true,
+      "lockMessage": "Elderwood Grove opens after 15 cleared missions."
+    },
+    {
+      "id": "crystal-caverns",
+      "title": "Crystal Caverns",
+      "mood": "Underground chambers of pure crystal that hum ancient rune songs.",
+      "challenge": "Rune sequence puzzles, crystal resonance, and chamber navigation.",
+      "reward": "Resonance crystal",
+      "accentHex": "#B39DDB",
+      "unlockAfterClears": 20,
+      "isPremium": true,
+      "lockMessage": "Crystal Caverns opens after 20 cleared missions."
+    },
+    {
+      "id": "forgotten-ruins",
+      "title": "Forgotten Ruins",
+      "mood": "Crumbling stone corridors overgrown with luminous vines and ancient inscriptions.",
+      "challenge": "Ancient object decoding, logic gate sequences, and relic recovery.",
+      "reward": "Ruin relic fragment",
+      "accentHex": "#C1A37C",
+      "unlockAfterClears": 26,
+      "isPremium": true,
+      "lockMessage": "Forgotten Ruins opens after 26 cleared missions."
+    },
+    {
+      "id": "firefly-marsh",
+      "title": "Firefly Marsh",
+      "mood": "A vast twilight wetland alive with firefly colonies and moving mist.",
+      "challenge": "Night navigation, firefly census patterns, and deep memory sequences.",
+      "reward": "Marsh lantern",
+      "accentHex": "#7EC8A8",
+      "unlockAfterClears": 22,
+      "isPremium": true,
+      "lockMessage": "Firefly Marsh opens after 22 cleared missions."
+    },
+    {
+      "id": "ancient-observatory",
+      "title": "Ancient Observatory",
+      "mood": "A star-gazing tower where the night sky holds living cipher constellations.",
+      "challenge": "Star pattern logic, astronomical sequence rituals, and telescope puzzles.",
+      "reward": "Star chart relic",
+      "accentHex": "#6A7FDB",
+      "unlockAfterClears": 32,
+      "isPremium": true,
+      "lockMessage": "Ancient Observatory opens after 32 cleared missions."
+    },
+    {
+      "id": "skyroot-canopy",
+      "title": "Skyroot Canopy",
+      "mood": "The cloud-level canopy where ancient treetops form a living sky village.",
+      "challenge": "High-path navigation, cloud creature care, and wind-pattern reading.",
+      "reward": "Canopy wind token",
+      "accentHex": "#C8E6C9",
+      "unlockAfterClears": 38,
+      "isPremium": true,
+      "lockMessage": "Skyroot Canopy opens after 38 cleared missions."
     }
   ],
   "levels": [
@@ -112,29 +215,14 @@
       "type": "Hidden object",
       "difficulty": "Beginner",
       "reward": "Leaf star",
-      "prompt": "Which item helps Pip light the trail?",
-      "hint": "Find the object that glows at night.",
+      "prompt": "Which item helps Pip light the trail at dusk?",
+      "hint": "Find the object that glows golden at night.",
       "celebration": "Pip found the lantern and the Fern Trail is glowing again.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "berry-basket",
-          "label": "Berry basket",
-          "isCorrect": false,
-          "reply": "Those berries are tasty, but they do not light the path."
-        },
-        {
-          "id": "lantern",
-          "label": "Lantern",
-          "isCorrect": true,
-          "reply": "Yes. The lantern lights the trail for every friend."
-        },
-        {
-          "id": "pinecone",
-          "label": "Pinecone",
-          "isCorrect": false,
-          "reply": "That is a forest treasure, but not the right clue this time."
-        }
+        { "id": "berry-basket", "label": "Berry basket", "isCorrect": false, "reply": "Those berries are tasty, but they do not light the path." },
+        { "id": "lantern",      "label": "Lantern",      "isCorrect": true,  "reply": "Yes. The warm lantern lights the trail for every friend." },
+        { "id": "pinecone",     "label": "Pinecone",     "isCorrect": false, "reply": "A lovely forest treasure, but not the right clue this time." }
       ]
     },
     {
@@ -150,24 +238,9 @@
       "celebration": "Mimi matched every fern shape and sang a happy forest tune.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "star",
-          "label": "Star leaf",
-          "isCorrect": false,
-          "reply": "Pretty shape, but Mimi needs the smooth fern instead."
-        },
-        {
-          "id": "fern",
-          "label": "Fern leaf",
-          "isCorrect": true,
-          "reply": "Great matching. The fern shape fits perfectly."
-        },
-        {
-          "id": "triangle",
-          "label": "Pointy leaf",
-          "isCorrect": false,
-          "reply": "That one is too sharp for this gentle fern puzzle."
-        }
+        { "id": "star",     "label": "Star leaf",    "isCorrect": false, "reply": "Pretty shape, but Mimi needs the smooth fern instead." },
+        { "id": "fern",     "label": "Fern leaf",    "isCorrect": true,  "reply": "Great matching. The fern shape fits perfectly." },
+        { "id": "triangle", "label": "Pointy leaf",  "isCorrect": false, "reply": "That one is too sharp for this gentle fern puzzle." }
       ]
     },
     {
@@ -184,9 +257,9 @@
       "gameplayMode": "memory",
       "options": [
         { "id": "lantern", "label": "Lantern" },
-        { "id": "fern", "label": "Fern" },
-        { "id": "star", "label": "Star" },
-        { "id": "berry", "label": "Berry" }
+        { "id": "fern",    "label": "Fern"    },
+        { "id": "star",    "label": "Star"    },
+        { "id": "berry",   "label": "Berry"   }
       ],
       "memorySequence": ["lantern", "fern", "lantern", "star"]
     },
@@ -204,15 +277,9 @@
       "gameplayMode": "path",
       "pathColumns": 3,
       "pathCells": [
-        { "id": "start", "label": "Start" },
-        { "id": "berries", "label": "Berries" },
-        { "id": "puddle", "label": "Puddle" },
-        { "id": "stone", "label": "Stone" },
-        { "id": "bridge", "label": "Bridge" },
-        { "id": "bramble", "label": "Bramble" },
-        { "id": "stream", "label": "Stream" },
-        { "id": "moss", "label": "Moss" },
-        { "id": "home", "label": "Home" }
+        { "id": "start",  "label": "Start"  }, { "id": "berries", "label": "Berries" }, { "id": "puddle",  "label": "Puddle"  },
+        { "id": "stone",  "label": "Stone"  }, { "id": "bridge",  "label": "Bridge"  }, { "id": "bramble", "label": "Bramble" },
+        { "id": "stream", "label": "Stream" }, { "id": "moss",    "label": "Moss"    }, { "id": "home",    "label": "Home"    }
       ],
       "pathSequence": ["start", "stone", "bridge", "moss", "home"]
     },
@@ -229,10 +296,10 @@
       "celebration": "Luma flashed the exact pattern and filled the hollow with bright little lights.",
       "gameplayMode": "memory",
       "options": [
-        { "id": "glow", "label": "Glow" },
-        { "id": "pause", "label": "Pause" },
+        { "id": "glow",    "label": "Glow"    },
+        { "id": "pause",   "label": "Pause"   },
         { "id": "sparkle", "label": "Sparkle" },
-        { "id": "hum", "label": "Hum" }
+        { "id": "hum",     "label": "Hum"     }
       ],
       "memorySequence": ["glow", "pause", "glow", "sparkle"]
     },
@@ -249,24 +316,9 @@
       "celebration": "Pip found the moon blossom and the whole hollow smelled sweet and bright.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "branch",
-          "label": "Twisty branch",
-          "isCorrect": false,
-          "reply": "That branch is useful for nests, but it does not bloom at night."
-        },
-        {
-          "id": "moon-blossom",
-          "label": "Moon blossom",
-          "isCorrect": true,
-          "reply": "Exactly. The moon blossom opens when the hollow begins to glow."
-        },
-        {
-          "id": "stone",
-          "label": "Sleepy stone",
-          "isCorrect": false,
-          "reply": "That stone stays cool and quiet, but it is not the right clue."
-        }
+        { "id": "branch",       "label": "Twisty branch",  "isCorrect": false, "reply": "That branch is useful for nests, but it does not bloom at night." },
+        { "id": "moon-blossom", "label": "Moon blossom",   "isCorrect": true,  "reply": "Exactly. The moon blossom opens when the hollow begins to glow." },
+        { "id": "stone",        "label": "Sleepy stone",   "isCorrect": false, "reply": "That stone stays cool and quiet, but it is not the right clue." }
       ]
     },
     {
@@ -283,15 +335,9 @@
       "gameplayMode": "path",
       "pathColumns": 3,
       "pathCells": [
-        { "id": "start", "label": "Start" },
-        { "id": "fog", "label": "Fog" },
-        { "id": "reeds", "label": "Reeds" },
-        { "id": "log", "label": "Log" },
-        { "id": "lantern-stone", "label": "Lantern stone" },
-        { "id": "muck", "label": "Muck" },
-        { "id": "rushes", "label": "Rushes" },
-        { "id": "stump", "label": "Stump" },
-        { "id": "nest", "label": "Nest" }
+        { "id": "start",        "label": "Start"        }, { "id": "fog",          "label": "Fog"          }, { "id": "reeds",        "label": "Reeds"        },
+        { "id": "log",          "label": "Log"          }, { "id": "lantern-stone","label": "Lantern stone" }, { "id": "muck",         "label": "Muck"         },
+        { "id": "rushes",       "label": "Rushes"       }, { "id": "stump",        "label": "Stump"        }, { "id": "nest",         "label": "Nest"         }
       ],
       "pathSequence": ["start", "log", "lantern-stone", "stump", "nest"]
     },
@@ -308,24 +354,9 @@
       "celebration": "Mimi glided through the fireflies with a perfect moon-shaped wing.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "square-wing",
-          "label": "Square wing",
-          "isCorrect": false,
-          "reply": "That wing is too blocky for a soft night glide."
-        },
-        {
-          "id": "moon-wing",
-          "label": "Moon wing",
-          "isCorrect": true,
-          "reply": "Yes. The moon wing curves gently through the night sky."
-        },
-        {
-          "id": "sun-wing",
-          "label": "Spiky sun wing",
-          "isCorrect": false,
-          "reply": "That one is too sharp and bright for this quiet mission."
-        }
+        { "id": "square-wing", "label": "Square wing",    "isCorrect": false, "reply": "That wing is too blocky for a soft night glide." },
+        { "id": "moon-wing",   "label": "Moon wing",      "isCorrect": true,  "reply": "Yes. The moon wing curves gently through the night sky." },
+        { "id": "sun-wing",    "label": "Spiky sun wing", "isCorrect": false, "reply": "That one is too sharp and bright for this quiet mission." }
       ]
     },
     {
@@ -342,15 +373,9 @@
       "gameplayMode": "path",
       "pathColumns": 3,
       "pathCells": [
-        { "id": "start", "label": "Start" },
-        { "id": "water", "label": "Fast water" },
-        { "id": "reed", "label": "Tall reed" },
-        { "id": "stones", "label": "Stones" },
-        { "id": "fern-bridge", "label": "Fern bridge" },
-        { "id": "eddy", "label": "Eddy" },
-        { "id": "shell-path", "label": "Shell path" },
-        { "id": "log", "label": "Wobbly log" },
-        { "id": "home", "label": "Home" }
+        { "id": "start",      "label": "Start"       }, { "id": "water",      "label": "Fast water"  }, { "id": "reed",       "label": "Tall reed"   },
+        { "id": "stones",     "label": "Stones"      }, { "id": "fern-bridge","label": "Fern bridge" }, { "id": "eddy",       "label": "Eddy"        },
+        { "id": "shell-path", "label": "Shell path"  }, { "id": "log",        "label": "Wobbly log"  }, { "id": "home",       "label": "Home"        }
       ],
       "pathSequence": ["start", "stones", "fern-bridge", "shell-path", "home"]
     },
@@ -367,24 +392,9 @@
       "celebration": "Pip packed the rescue basket and the river friends felt safe right away.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "river-stone",
-          "label": "River stone",
-          "isCorrect": false,
-          "reply": "That stone is too heavy and cold for the basket."
-        },
-        {
-          "id": "blanket",
-          "label": "Dry blanket",
-          "isCorrect": true,
-          "reply": "Yes. The dry blanket helps tired forest friends warm up."
-        },
-        {
-          "id": "leaf",
-          "label": "Floating leaf",
-          "isCorrect": false,
-          "reply": "That leaf is pretty, but it will drift away in the river wind."
-        }
+        { "id": "river-stone", "label": "River stone",   "isCorrect": false, "reply": "That stone is too heavy and cold for the basket." },
+        { "id": "blanket",     "label": "Dry blanket",   "isCorrect": true,  "reply": "Yes. The dry blanket helps tired forest friends warm up." },
+        { "id": "leaf",        "label": "Floating leaf", "isCorrect": false, "reply": "That leaf is pretty, but it will drift away in the river wind." }
       ]
     },
     {
@@ -400,10 +410,10 @@
       "celebration": "Luma traced the turtle shell pattern and the river shone with calm little circles.",
       "gameplayMode": "memory",
       "options": [
-        { "id": "shell", "label": "Shell" },
+        { "id": "shell",  "label": "Shell"  },
         { "id": "ripple", "label": "Ripple" },
-        { "id": "glow", "label": "Glow" },
-        { "id": "nest", "label": "Nest" }
+        { "id": "glow",   "label": "Glow"   },
+        { "id": "nest",   "label": "Nest"   }
       ],
       "memorySequence": ["shell", "ripple", "glow", "shell", "nest"]
     },
@@ -420,99 +430,700 @@
       "celebration": "Mimi chose the calm river ending and the whole adventure landed on a peaceful note.",
       "gameplayMode": "choice",
       "options": [
-        {
-          "id": "zigzag",
-          "label": "Zigzag sign",
-          "isCorrect": false,
-          "reply": "That sign points toward rough water instead of the calm way home."
-        },
-        {
-          "id": "circle",
-          "label": "Smooth circle sign",
-          "isCorrect": true,
-          "reply": "Exactly. The smooth circle sign marks the peaceful path home."
-        },
-        {
-          "id": "square",
-          "label": "Busy square sign",
-          "isCorrect": false,
-          "reply": "That sign is too busy for the gentle river ending."
-        }
+        { "id": "zigzag", "label": "Zigzag sign",       "isCorrect": false, "reply": "That sign points toward rough water instead of the calm way home." },
+        { "id": "circle", "label": "Smooth circle sign","isCorrect": true,  "reply": "Exactly. The smooth circle sign marks the peaceful path home." },
+        { "id": "square", "label": "Busy square sign",  "isCorrect": false, "reply": "That sign is too busy for the gentle river ending." }
+      ]
+    },
+    {
+      "id": "level-13",
+      "zoneId": "moonlit-creek",
+      "characterId": "nori",
+      "name": "Follow the Moon Deer Trail",
+      "type": "Path puzzle",
+      "difficulty": "Medium+",
+      "reward": "Moon crystal shard",
+      "prompt": "Step along the moonlit stones that Nori marks with a silver hoof.",
+      "hint": "Silver stones lead the way. Avoid the dark patches where the water hides.",
+      "celebration": "Nori's moonlit trail glimmered beautifully from bank to bank.",
+      "gameplayMode": "path",
+      "pathColumns": 3,
+      "pathCells": [
+        { "id": "bank",       "label": "Bank"        }, { "id": "dark-pool",  "label": "Dark pool"   }, { "id": "reed-patch", "label": "Reed patch"  },
+        { "id": "silver-1",   "label": "Silver stone"}, { "id": "silver-2",   "label": "Silver stone"}, { "id": "eddy",       "label": "Eddy"        },
+        { "id": "willow",     "label": "Willow step" }, { "id": "pebble",     "label": "Pebble"      }, { "id": "far-bank",   "label": "Far bank"    }
+      ],
+      "pathSequence": ["bank", "silver-1", "silver-2", "willow", "far-bank"]
+    },
+    {
+      "id": "level-14",
+      "zoneId": "moonlit-creek",
+      "characterId": "luma",
+      "name": "Reflection Memory",
+      "type": "Memory sequence",
+      "difficulty": "Medium+",
+      "reward": "Silver petal",
+      "prompt": "The creek reflects Luma's lights. Copy the reflected pattern.",
+      "hint": "The order mirrors Ripple, Glow, Ripple, Star, Glow.",
+      "celebration": "The creek reflected Luma's pattern perfectly across the moonlit water.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "ripple", "label": "Ripple" },
+        { "id": "glow",   "label": "Glow"   },
+        { "id": "star",   "label": "Star"   },
+        { "id": "shadow", "label": "Shadow" }
+      ],
+      "memorySequence": ["ripple", "glow", "ripple", "star", "glow"]
+    },
+    {
+      "id": "level-15",
+      "zoneId": "moonlit-creek",
+      "characterId": "nori",
+      "name": "Which Plant Loves Moonlight",
+      "type": "Nature lore",
+      "difficulty": "Medium+",
+      "reward": "Night bloom token",
+      "prompt": "Nori asks: which plant only blooms under a full moon?",
+      "hint": "Moon plants have silver edges and close during the day.",
+      "celebration": "Nori nodded proudly. You know the ways of the moonlit forest.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "sunflower",  "label": "Sunflower",   "isCorrect": false, "reply": "Sunflowers love daylight, not moonlight." },
+        { "id": "moon-lily",  "label": "Moon Lily",   "isCorrect": true,  "reply": "Yes. The Moon Lily opens only under the full moon's silver glow." },
+        { "id": "mushroom",   "label": "Night mushroom", "isCorrect": false, "reply": "Night mushrooms grow in shadow, not in moonlight." }
+      ]
+    },
+    {
+      "id": "level-16",
+      "zoneId": "moonlit-creek",
+      "characterId": "pip",
+      "name": "Find the Silver Compass",
+      "type": "Hidden object",
+      "difficulty": "Medium+",
+      "reward": "Compass fragment",
+      "prompt": "Pip lost her silver compass near the creek bend. Which glimmer is it?",
+      "hint": "The compass has a round face and catches moonlight differently than smooth pebbles.",
+      "celebration": "Pip clutched her silver compass and smiled. The trail is clear again.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "pebble",   "label": "Smooth pebble",   "isCorrect": false, "reply": "A lovely stone, but it has no needle to point the way." },
+        { "id": "compass",  "label": "Silver compass",  "isCorrect": true,  "reply": "Found it. The silver compass needle spins toward home." },
+        { "id": "shell",    "label": "Spiral shell",    "isCorrect": false, "reply": "Beautiful spiral, but Pip needs the compass to navigate." }
+      ]
+    },
+    {
+      "id": "level-17",
+      "zoneId": "moonlit-creek",
+      "characterId": "tomo",
+      "name": "Creek Stepping Route",
+      "type": "Path puzzle",
+      "difficulty": "Hard",
+      "reward": "Creek medallion",
+      "prompt": "Tomo must reach the ancient willow. Guide each careful step.",
+      "hint": "Cross via the reed cluster, then the flat rock, then the soft moss island.",
+      "celebration": "Tomo reached the ancient willow and left a mark on the bark for future explorers.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "shore",    "label": "Shore"       }, { "id": "deep-1",   "label": "Deep water" }, { "id": "lily-pad", "label": "Lily pad"   }, { "id": "whirl",    "label": "Whirl"      },
+        { "id": "reeds",    "label": "Reed cluster"}, { "id": "flat-rock","label": "Flat rock"  }, { "id": "current",  "label": "Current"    }, { "id": "eddy",     "label": "Eddy"       },
+        { "id": "moss-isl", "label": "Moss island" }, { "id": "deep-2",   "label": "Deep water" }, { "id": "twig",     "label": "Twig step"  }, { "id": "willow",   "label": "Willow"     }
+      ],
+      "pathSequence": ["shore", "reeds", "flat-rock", "moss-isl", "willow"]
+    },
+    {
+      "id": "level-18",
+      "zoneId": "elderwood-grove",
+      "characterId": "nori",
+      "name": "Ancient Tree Greeting",
+      "type": "Nature lore",
+      "difficulty": "Hard",
+      "reward": "Elderwood seed",
+      "prompt": "Nori whispers: how do ancient trees communicate with each other underground?",
+      "hint": "Think about what connects tree roots in the dark soil below.",
+      "celebration": "Nori bowed her head. You understand the Elder Language of the grove.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "wind",    "label": "Through the wind", "isCorrect": false, "reply": "Wind carries seeds and pollen, but not the deep root messages." },
+        { "id": "fungi",   "label": "Through fungi networks", "isCorrect": true,  "reply": "Exactly. The mycelium web carries nutrients and signals between ancient trees." },
+        { "id": "insects", "label": "Through insects",  "isCorrect": false, "reply": "Insects help pollination, but roots speak through the soil fungi web." }
+      ]
+    },
+    {
+      "id": "level-19",
+      "zoneId": "elderwood-grove",
+      "characterId": "nori",
+      "name": "Grove Path: Elder Circle",
+      "type": "Path puzzle",
+      "difficulty": "Hard",
+      "reward": "Elder bark token",
+      "prompt": "The Elder Circle only opens along the ancient deer trail. Follow it carefully.",
+      "hint": "Stay on the glowing roots. The dark gaps between roots will scatter you from the path.",
+      "celebration": "The Elder Circle welcomed you. The oldest tree bowed its branches.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "clearing",  "label": "Clearing"    }, { "id": "gap-1",    "label": "Root gap"    }, { "id": "glow-root","label": "Glow root"  }, { "id": "shadow",   "label": "Shadow"     },
+        { "id": "ivy-path",  "label": "Ivy path"    }, { "id": "moss-log", "label": "Moss log"   }, { "id": "gap-2",    "label": "Root gap"   }, { "id": "fern-row", "label": "Fern row"   },
+        { "id": "bark-step", "label": "Bark step"   }, { "id": "gap-3",    "label": "Root gap"   }, { "id": "lichen",   "label": "Lichen stone"},{ "id": "elder",    "label": "Elder tree" }
+      ],
+      "pathSequence": ["clearing", "glow-root", "ivy-path", "moss-log", "bark-step", "lichen", "elder"]
+    },
+    {
+      "id": "level-20",
+      "zoneId": "elderwood-grove",
+      "characterId": "mimi",
+      "name": "Song of the Grove",
+      "type": "Memory sequence",
+      "difficulty": "Hard",
+      "reward": "Grove melody token",
+      "prompt": "Mimi sings the grove's ancient song. Copy the notes she hums.",
+      "hint": "The song pattern is Oak, Willow, Fern, Oak, Birch, Willow.",
+      "celebration": "The grove resonated with your perfect melody. Every leaf shimmered.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "oak",    "label": "Oak"    },
+        { "id": "willow", "label": "Willow" },
+        { "id": "fern",   "label": "Fern"   },
+        { "id": "birch",  "label": "Birch"  }
+      ],
+      "memorySequence": ["oak", "willow", "fern", "oak", "birch", "willow"]
+    },
+    {
+      "id": "level-21",
+      "zoneId": "elderwood-grove",
+      "characterId": "sol",
+      "name": "The Sleeping Rune",
+      "type": "Ancient lore",
+      "difficulty": "Hard",
+      "reward": "Rune fragment",
+      "prompt": "Sol shows you an ancient rune. Which symbol wakes the sleeping grove guardian?",
+      "hint": "The wake rune looks like spreading wings, not a closed circle or a jagged bolt.",
+      "celebration": "Sol clacked his beak approvingly. The grove guardian stirs from centuries of sleep.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "circle",  "label": "Closed circle",   "isCorrect": false, "reply": "The closed circle is the sleep rune. It keeps the guardian resting." },
+        { "id": "wings",   "label": "Spreading wings", "isCorrect": true,  "reply": "Correct. The wing rune calls the guardian to wakefulness." },
+        { "id": "bolt",    "label": "Jagged bolt",     "isCorrect": false, "reply": "The bolt rune is warning, not waking. Be careful with this one." }
+      ]
+    },
+    {
+      "id": "level-22",
+      "zoneId": "elderwood-grove",
+      "characterId": "nori",
+      "name": "Creature Care: Fawn Lost",
+      "type": "Nature lore",
+      "difficulty": "Hard",
+      "reward": "Fawn trust token",
+      "prompt": "A young fawn is alone and frightened. What is the best first step?",
+      "hint": "Sudden movement frightens forest animals. The gentlest approach is always the right one.",
+      "celebration": "The fawn nuzzled your hand. Your calmness earned the trust of the grove.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "run-close",  "label": "Run toward it quickly", "isCorrect": false, "reply": "Running would frighten the fawn deeper into the forest." },
+        { "id": "sit-still",  "label": "Sit still and wait",    "isCorrect": true,  "reply": "Patient stillness tells forest animals you are safe. The fawn will approach." },
+        { "id": "call-loud",  "label": "Call out loudly",       "isCorrect": false, "reply": "Loud calls alarm forest animals. Silence and calm are the first steps." }
+      ]
+    },
+    {
+      "id": "level-23",
+      "zoneId": "crystal-caverns",
+      "characterId": "sol",
+      "name": "First Rune Sequence",
+      "type": "Rune memory",
+      "difficulty": "Expert",
+      "reward": "Resonance crystal",
+      "prompt": "Sol reveals the first rune sequence carved into the crystal wall. Copy it perfectly.",
+      "hint": "The sequence is Sun, Moon, Star, Sun, Spiral.",
+      "celebration": "The crystal wall hummed with warm light. You decoded the first rune correctly.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "sun",    "label": "Sun"    },
+        { "id": "moon",   "label": "Moon"   },
+        { "id": "star",   "label": "Star"   },
+        { "id": "spiral", "label": "Spiral" }
+      ],
+      "memorySequence": ["sun", "moon", "star", "sun", "spiral"]
+    },
+    {
+      "id": "level-24",
+      "zoneId": "crystal-caverns",
+      "characterId": "sol",
+      "name": "Crystal Echo Chamber",
+      "type": "Memory sequence",
+      "difficulty": "Expert",
+      "reward": "Echo fragment",
+      "prompt": "The crystals echo Sol's tapping pattern. Repeat the resonance sequence.",
+      "hint": "Deep, High, Deep, High, High, Low.",
+      "celebration": "The echo chamber sang back your perfect rhythm. The crystals lit gold.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "deep", "label": "Deep" },
+        { "id": "high", "label": "High" },
+        { "id": "low",  "label": "Low"  },
+        { "id": "mid",  "label": "Mid"  }
+      ],
+      "memorySequence": ["deep", "high", "deep", "high", "high", "low"]
+    },
+    {
+      "id": "level-25",
+      "zoneId": "crystal-caverns",
+      "characterId": "luma",
+      "name": "Glowing Crystal Route",
+      "type": "Path puzzle",
+      "difficulty": "Expert",
+      "reward": "Cave lantern",
+      "prompt": "Navigate through the crystal maze following only the warm-glowing crystals.",
+      "hint": "Warm glow means safe. Cold blue glow means unstable ground. Start at Entrance.",
+      "celebration": "You found the heart of the Crystal Caverns. Ancient light filled the chamber.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "entrance",   "label": "Entrance"    }, { "id": "cold-1",    "label": "Cold shard"  }, { "id": "warm-1",   "label": "Warm crystal"}, { "id": "abyss",     "label": "Abyss"       },
+        { "id": "warm-2",     "label": "Warm crystal"}, { "id": "shard-pit", "label": "Shard pit"   }, { "id": "cold-2",   "label": "Cold shard"  }, { "id": "warm-3",    "label": "Warm crystal"},
+        { "id": "ledge",      "label": "Ledge"       }, { "id": "warm-4",    "label": "Warm crystal"}, { "id": "cold-3",   "label": "Cold shard"  }, { "id": "heart",     "label": "Crystal heart"}
+      ],
+      "pathSequence": ["entrance", "warm-1", "warm-2", "warm-3", "ledge", "warm-4", "heart"]
+    },
+    {
+      "id": "level-26",
+      "zoneId": "crystal-caverns",
+      "characterId": "sol",
+      "name": "Decode the Crystal Glyph",
+      "type": "Ancient lore",
+      "difficulty": "Expert",
+      "reward": "Glyph rubbing",
+      "prompt": "A glyph on the cave wall shows three symbols. Which combination unlocks the inner chamber?",
+      "hint": "The pattern is always: sky above, earth below, life between.",
+      "celebration": "The inner chamber door ground open. Sol bowed. You read the crystal language.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "star-stone-leaf","label": "Star / Stone / Leaf",   "isCorrect": true,  "reply": "Sky above, earth below, life between. The chamber is open." },
+        { "id": "moon-fire-wind", "label": "Moon / Fire / Wind",    "isCorrect": false, "reply": "Fire and wind are forces, not the triad of the crystal glyph." },
+        { "id": "root-water-mist","label": "Root / Water / Mist",   "isCorrect": false, "reply": "These are elements of the forest, but not the glyph's ancient order." }
+      ]
+    },
+    {
+      "id": "level-27",
+      "zoneId": "crystal-caverns",
+      "characterId": "sol",
+      "name": "The Seven Rune Sequence",
+      "type": "Rune memory",
+      "difficulty": "Expert+",
+      "reward": "Master rune tablet",
+      "prompt": "Sol speaks the full seven-rune sequence aloud. Recall and repeat it correctly.",
+      "hint": "The sequence is Moon, Star, Spiral, Sun, Moon, Root, Star.",
+      "celebration": "The crystal temple resonated with ancient power. You speak the language of the druids.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "moon",   "label": "Moon"   },
+        { "id": "star",   "label": "Star"   },
+        { "id": "spiral", "label": "Spiral" },
+        { "id": "sun",    "label": "Sun"    },
+        { "id": "root",   "label": "Root"   }
+      ],
+      "memorySequence": ["moon", "star", "spiral", "sun", "moon", "root", "star"]
+    },
+    {
+      "id": "level-28",
+      "zoneId": "forgotten-ruins",
+      "characterId": "sol",
+      "name": "Identify the Ancient Tool",
+      "type": "Ancient lore",
+      "difficulty": "Expert",
+      "reward": "Ruin relic fragment",
+      "prompt": "Sol holds a strange tool found in the ruins. What was it used for in the ancient forest civilization?",
+      "hint": "Ancient forest peoples aligned their buildings with celestial events. This tool points at the sky.",
+      "celebration": "You identified the druid astrolabe. The ruins revealed their first secret to you.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "digging",  "label": "A digging tool",    "isCorrect": false, "reply": "The tool has no sharp edge for digging. It points upward, not downward." },
+        { "id": "astrolabe","label": "A sky-reading tool","isCorrect": true,  "reply": "A druid astrolabe. It mapped the forest under the stars thousands of years ago." },
+        { "id": "weaving",  "label": "A weaving tool",   "isCorrect": false, "reply": "Weaving tools have a different form. This one has a sight-line built into it." }
+      ]
+    },
+    {
+      "id": "level-29",
+      "zoneId": "forgotten-ruins",
+      "characterId": "sol",
+      "name": "Ruin Navigation: Inner Temple",
+      "type": "Path puzzle",
+      "difficulty": "Expert",
+      "reward": "Temple key",
+      "prompt": "Navigate the crumbling ruin corridor to reach the inner sanctum without disturbing the ancient stones.",
+      "hint": "Safe stones have lichen growth. Avoid the bare stones — they are unstable.",
+      "celebration": "You reached the inner sanctum. Dust fell from the ceiling as the door opened.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "gate",      "label": "Gate"        }, { "id": "bare-1",   "label": "Bare stone"  }, { "id": "lichen-1", "label": "Lichen stone"}, { "id": "crack",    "label": "Cracked slab"},
+        { "id": "lichen-2",  "label": "Lichen stone"}, { "id": "rubble",   "label": "Rubble"      }, { "id": "bare-2",   "label": "Bare stone"  }, { "id": "lichen-3", "label": "Lichen stone"},
+        { "id": "lichen-4",  "label": "Lichen stone"}, { "id": "trap",     "label": "Trap tile"   }, { "id": "lichen-5", "label": "Lichen stone"}, { "id": "sanctum",  "label": "Sanctum"     }
+      ],
+      "pathSequence": ["gate", "lichen-1", "lichen-2", "lichen-3", "lichen-4", "lichen-5", "sanctum"]
+    },
+    {
+      "id": "level-30",
+      "zoneId": "forgotten-ruins",
+      "characterId": "sol",
+      "name": "Cipher of the Three Moons",
+      "type": "Rune memory",
+      "difficulty": "Expert+",
+      "reward": "Three moon cipher",
+      "prompt": "The wall shows a three-moon cipher sequence. Decode and recall the pattern.",
+      "hint": "New Moon, Half Moon, Full Moon, New Moon, New Moon, Full Moon.",
+      "celebration": "The cipher accepted your answer. The ruin wall slid back with a deep rumble.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "new",  "label": "New moon"  },
+        { "id": "half", "label": "Half moon" },
+        { "id": "full", "label": "Full moon" },
+        { "id": "dark", "label": "Dark moon" }
+      ],
+      "memorySequence": ["new", "half", "full", "new", "new", "full"]
+    },
+    {
+      "id": "level-31",
+      "zoneId": "forgotten-ruins",
+      "characterId": "nori",
+      "name": "Which Ruin Object is Safe",
+      "type": "Ancient lore",
+      "difficulty": "Expert",
+      "reward": "Safe relic",
+      "prompt": "Nori warns: one of these ruin objects is cursed. Which one is safe to touch?",
+      "hint": "The safe relic always carries a natural element — wood, stone, or living material.",
+      "celebration": "Nori exhaled with relief. Your instinct for the forest protected you both.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "dark-orb",   "label": "Dark obsidian orb", "isCorrect": false, "reply": "That orb pulses with trapped energy. It is not safe to hold." },
+        { "id": "wood-staff", "label": "Old wooden staff",  "isCorrect": true,  "reply": "The wooden staff carries only memory, not trapped power. It is safe." },
+        { "id": "iron-mask",  "label": "Iron ritual mask",  "isCorrect": false, "reply": "The mask absorbed too many ritual energies. Leave it on the altar." }
+      ]
+    },
+    {
+      "id": "level-32",
+      "zoneId": "forgotten-ruins",
+      "characterId": "sol",
+      "name": "The Long Cipher Sequence",
+      "type": "Rune memory",
+      "difficulty": "Master",
+      "reward": "Master druid token",
+      "prompt": "Sol recites the complete ruin inscription. This is the longest cipher sequence in the forest.",
+      "hint": "Sun, Root, Star, Moon, Spiral, Sun, Root, Moon.",
+      "celebration": "You hold the knowledge of the ancient druids. The ruins glow in recognition.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "sun",    "label": "Sun"    },
+        { "id": "root",   "label": "Root"   },
+        { "id": "star",   "label": "Star"   },
+        { "id": "moon",   "label": "Moon"   },
+        { "id": "spiral", "label": "Spiral" }
+      ],
+      "memorySequence": ["sun", "root", "star", "moon", "spiral", "sun", "root", "moon"]
+    },
+    {
+      "id": "level-33",
+      "zoneId": "firefly-marsh",
+      "characterId": "luma",
+      "name": "Firefly Colony Census",
+      "type": "Nature lore",
+      "difficulty": "Hard",
+      "reward": "Marsh lantern",
+      "prompt": "Luma asks: which condition causes a firefly colony to stop glowing?",
+      "hint": "Think about what fireflies need to produce their glow chemistry.",
+      "celebration": "Luma buzzed proudly. You understand the delicate science of the marsh's lights.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "cold",     "label": "Very cold temperatures", "isCorrect": true,  "reply": "Correct. Cold slows the chemical reaction that produces the firefly's glow." },
+        { "id": "darkness", "label": "Total darkness",        "isCorrect": false, "reply": "Fireflies glow in darkness. That is the purpose of their light." },
+        { "id": "silence",  "label": "Complete silence",      "isCorrect": false, "reply": "Silence has no effect on bioluminescence chemistry." }
+      ]
+    },
+    {
+      "id": "level-34",
+      "zoneId": "firefly-marsh",
+      "characterId": "luma",
+      "name": "Marsh Night Pattern",
+      "type": "Memory sequence",
+      "difficulty": "Hard",
+      "reward": "Night map fragment",
+      "prompt": "Luma flashes the firefly colony's synchronized signal. Match it exactly.",
+      "hint": "The marsh signal is: Flash, Flash, Pause, Flash, Long, Flash.",
+      "celebration": "Your synchronized flash signal lit up the whole marsh. Thousands of fireflies joined in.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "flash", "label": "Flash" },
+        { "id": "pause", "label": "Pause" },
+        { "id": "long",  "label": "Long"  },
+        { "id": "dim",   "label": "Dim"   }
+      ],
+      "memorySequence": ["flash", "flash", "pause", "flash", "long", "flash"]
+    },
+    {
+      "id": "level-35",
+      "zoneId": "firefly-marsh",
+      "characterId": "tomo",
+      "name": "Marsh Crossing: Deep Night",
+      "type": "Path puzzle",
+      "difficulty": "Hard+",
+      "reward": "Marsh crossing token",
+      "prompt": "Tomo and the fireflies guide you across the deep marsh at night.",
+      "hint": "Only the lit stepping stones are safe. Dark stones sink into the marsh.",
+      "celebration": "Every lit stone held. You crossed the deep marsh without a single misstep.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "dry-bank",  "label": "Dry bank"    }, { "id": "dark-1",   "label": "Dark stone"  }, { "id": "lit-1",    "label": "Lit stone"   }, { "id": "murk",     "label": "Murky water" },
+        { "id": "lit-2",     "label": "Lit stone"   }, { "id": "bog",      "label": "Bog"         }, { "id": "dark-2",   "label": "Dark stone"  }, { "id": "lit-3",    "label": "Lit stone"   },
+        { "id": "lit-4",     "label": "Lit stone"   }, { "id": "dark-3",   "label": "Dark stone"  }, { "id": "lit-5",    "label": "Lit stone"   }, { "id": "far-shore","label": "Far shore"   }
+      ],
+      "pathSequence": ["dry-bank", "lit-1", "lit-2", "lit-3", "lit-4", "lit-5", "far-shore"]
+    },
+    {
+      "id": "level-36",
+      "zoneId": "firefly-marsh",
+      "characterId": "nori",
+      "name": "Which Bird Calls at Night",
+      "type": "Nature lore",
+      "difficulty": "Hard",
+      "reward": "Night bird token",
+      "prompt": "Nori pauses. You hear a call from the marsh. Which bird sings only in darkness?",
+      "hint": "Nocturnal marsh birds hunt fish and frogs at night by sound, not sight.",
+      "celebration": "Nori tilted her ears. You heard what most explorers miss. The marsh trusts you now.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "finch",    "label": "Dawn finch",    "isCorrect": false, "reply": "Finches sing at sunrise, not deep in the night marsh." },
+        { "id": "heron",    "label": "Night heron",   "isCorrect": true,  "reply": "Yes. The night heron hunts silently in the dark water." },
+        { "id": "swallow",  "label": "Barn swallow",  "isCorrect": false, "reply": "Swallows are daytime aerial hunters, not marsh night birds." }
+      ]
+    },
+    {
+      "id": "level-37",
+      "zoneId": "firefly-marsh",
+      "characterId": "luma",
+      "name": "The Firefly Spiral Sequence",
+      "type": "Memory sequence",
+      "difficulty": "Expert",
+      "reward": "Spiral light relic",
+      "prompt": "Luma leads a spiral of fireflies in an ancient signal. Memorize and repeat the full spiral order.",
+      "hint": "The spiral order: North, East, South, West, Center, North, South.",
+      "celebration": "The firefly spiral blazed into the sky. The marsh celebrated with you.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "north",  "label": "North"  },
+        { "id": "east",   "label": "East"   },
+        { "id": "south",  "label": "South"  },
+        { "id": "west",   "label": "West"   },
+        { "id": "center", "label": "Center" }
+      ],
+      "memorySequence": ["north", "east", "south", "west", "center", "north", "south"]
+    },
+    {
+      "id": "level-38",
+      "zoneId": "ancient-observatory",
+      "characterId": "sol",
+      "name": "Align the First Constellation",
+      "type": "Ancient lore",
+      "difficulty": "Master",
+      "reward": "Star chart relic",
+      "prompt": "Sol points the telescope. Which star forms the crown of the Forest Guardian constellation?",
+      "hint": "The Forest Guardian's crown star is the brightest in the northern forest sky and never sets.",
+      "celebration": "The telescope locked. Sol ruffled his feathers. The Forest Guardian is watching over you.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "vega",    "label": "The Blue Wanderer",   "isCorrect": false, "reply": "The Blue Wanderer moves with the seasons and cannot crown a guardian." },
+        { "id": "polaris", "label": "The Still Star",      "isCorrect": true,  "reply": "Yes. The Still Star never moves and crowns the Guardian forever." },
+        { "id": "sirius",  "label": "The Bright Hunter",  "isCorrect": false, "reply": "The Bright Hunter rules winter, not the ancient guardian constellation." }
+      ]
+    },
+    {
+      "id": "level-39",
+      "zoneId": "ancient-observatory",
+      "characterId": "sol",
+      "name": "Star Sequence Ritual",
+      "type": "Rune memory",
+      "difficulty": "Master",
+      "reward": "Ritual star token",
+      "prompt": "Sol begins an ancient stellar ritual. Follow the star-touching sequence to open the observatory dome.",
+      "hint": "The dome sequence is: North-Star, Spiral-Star, Twin-Star, North-Star, Root-Star, Spiral-Star.",
+      "celebration": "The dome ground open and revealed the full sky. Sol spread his wings. Ancient power flows.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "north-star",  "label": "North Star"  },
+        { "id": "spiral-star", "label": "Spiral Star" },
+        { "id": "twin-star",   "label": "Twin Star"   },
+        { "id": "root-star",   "label": "Root Star"   }
+      ],
+      "memorySequence": ["north-star", "spiral-star", "twin-star", "north-star", "root-star", "spiral-star"]
+    },
+    {
+      "id": "level-40",
+      "zoneId": "ancient-observatory",
+      "characterId": "sol",
+      "name": "Observatory Tower Path",
+      "type": "Path puzzle",
+      "difficulty": "Master",
+      "reward": "Tower key",
+      "prompt": "Climb the observatory tower using only the stone steps that have not crumbled.",
+      "hint": "Solid steps have a carved edge. Crumbled ones have rounded, dusty edges.",
+      "celebration": "You reached the top of the ancient tower. The entire forest spread below you.",
+      "gameplayMode": "path",
+      "pathColumns": 3,
+      "pathCells": [
+        { "id": "base",     "label": "Base"        }, { "id": "crumble-1","label": "Crumbled"   }, { "id": "solid-1",  "label": "Solid step"  },
+        { "id": "solid-2",  "label": "Solid step"  }, { "id": "crumble-2","label": "Crumbled"   }, { "id": "crumble-3","label": "Crumbled"   },
+        { "id": "solid-3",  "label": "Solid step"  }, { "id": "solid-4",  "label": "Solid step"  }, { "id": "summit",   "label": "Summit"      }
+      ],
+      "pathSequence": ["base", "solid-1", "solid-2", "solid-3", "solid-4", "summit"]
+    },
+    {
+      "id": "level-41",
+      "zoneId": "ancient-observatory",
+      "characterId": "sol",
+      "name": "The Full Cosmic Cipher",
+      "type": "Rune memory",
+      "difficulty": "Master+",
+      "reward": "Cosmic cipher crown",
+      "prompt": "Sol recites the observatory's master cipher — the longest sequence in all the ancient forest.",
+      "hint": "Sun, Moon, North-Star, Spiral, Root, Twin-Star, Moon, Sun, Spiral, North-Star.",
+      "celebration": "The observatory crown lights across the forest sky. You carry the full cosmic cipher.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "sun",        "label": "Sun"        },
+        { "id": "moon",       "label": "Moon"       },
+        { "id": "north-star", "label": "North-Star" },
+        { "id": "spiral",     "label": "Spiral"     },
+        { "id": "root",       "label": "Root"       },
+        { "id": "twin-star",  "label": "Twin-Star"  }
+      ],
+      "memorySequence": ["sun", "moon", "north-star", "spiral", "root", "twin-star", "moon", "sun", "spiral", "north-star"]
+    },
+    {
+      "id": "level-42",
+      "zoneId": "skyroot-canopy",
+      "characterId": "nori",
+      "name": "Canopy Jump Route",
+      "type": "Path puzzle",
+      "difficulty": "Master",
+      "reward": "Canopy wind token",
+      "prompt": "Nori leaps from branch to branch in the high canopy. Guide each jump safely.",
+      "hint": "Thick branches hold. Thin or swaying branches will bend and drop you.",
+      "celebration": "You and Nori danced across the treetops. The canopy village cheered below.",
+      "gameplayMode": "path",
+      "pathColumns": 4,
+      "pathCells": [
+        { "id": "trunk",    "label": "Trunk"        }, { "id": "thin-1",  "label": "Thin branch" }, { "id": "thick-1",  "label": "Thick branch"}, { "id": "sway-1",  "label": "Swaying bough"},
+        { "id": "thick-2",  "label": "Thick branch" }, { "id": "sway-2",  "label": "Swaying bough"},{ "id": "thin-2",   "label": "Thin branch" }, { "id": "thick-3", "label": "Thick branch" },
+        { "id": "thick-4",  "label": "Thick branch" }, { "id": "thin-3",  "label": "Thin branch" }, { "id": "thick-5",  "label": "Thick branch"}, { "id": "nest",    "label": "Sky nest"     }
+      ],
+      "pathSequence": ["trunk", "thick-1", "thick-2", "thick-3", "thick-4", "thick-5", "nest"]
+    },
+    {
+      "id": "level-43",
+      "zoneId": "skyroot-canopy",
+      "characterId": "mimi",
+      "name": "Canopy Wind Song",
+      "type": "Memory sequence",
+      "difficulty": "Master",
+      "reward": "Wind song charm",
+      "prompt": "Mimi sings the canopy wind song that cloud creatures dance to. Copy the melody.",
+      "hint": "High, Low, High, High, Mid, Low, High.",
+      "celebration": "Cloud creatures drifted toward your melody. You speak the language of the high forest.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "high", "label": "High" },
+        { "id": "mid",  "label": "Mid"  },
+        { "id": "low",  "label": "Low"  },
+        { "id": "hum",  "label": "Hum"  }
+      ],
+      "memorySequence": ["high", "low", "high", "high", "mid", "low", "high"]
+    },
+    {
+      "id": "level-44",
+      "zoneId": "skyroot-canopy",
+      "characterId": "sol",
+      "name": "Which Cloud Creature Carries Messages",
+      "type": "Ancient lore",
+      "difficulty": "Master",
+      "reward": "Cloud message token",
+      "prompt": "Sol asks: which sky creature has been a messenger for the forest druids across thousands of years?",
+      "hint": "Ancient druid messengers could cross entire mountain ranges carrying small written tablets.",
+      "celebration": "Sol bows. You know the history of the sky messenger who connected the ancient forest civilization.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "hawk",    "label": "Golden hawk",      "isCorrect": false, "reply": "Hawks are hunters, not messengers. They guard territory, not carry messages." },
+        { "id": "raven",   "label": "White raven",      "isCorrect": true,  "reply": "The white raven was the druid messenger. Its feathers held protective runes." },
+        { "id": "swallow", "label": "Sky swallow",      "isCorrect": false, "reply": "Swallows are too small for long messages and do not bond with druids." }
+      ]
+    },
+    {
+      "id": "level-45",
+      "zoneId": "skyroot-canopy",
+      "characterId": "nori",
+      "name": "Canopy Creature Care",
+      "type": "Nature lore",
+      "difficulty": "Master",
+      "reward": "Cloud creature bond",
+      "prompt": "A cloud creature is dizzy from high winds. What is the right way to help it settle?",
+      "hint": "Cloud creatures communicate through vibration. Calm vibrations help them find balance.",
+      "celebration": "The cloud creature coiled gently around your arm. It chose you as its forest guardian.",
+      "gameplayMode": "choice",
+      "options": [
+        { "id": "grab",  "label": "Hold it firmly in your hands", "isCorrect": false, "reply": "Grabbing a dizzy cloud creature would increase its panic and stress." },
+        { "id": "hum",   "label": "Hum a low steady tone",        "isCorrect": true,  "reply": "A low steady hum creates the right vibration to calm a dizzy cloud creature." },
+        { "id": "shake", "label": "Shake it gently to reset",     "isCorrect": false, "reply": "Shaking would disorient it further. Vibration, not movement, is the key." }
       ]
     }
   ],
   "rewards": [
-    {
-      "id": "reward-1",
-      "levels": 1,
-      "title": "Leaf star",
-      "detail": "A bright first reward for a happy win."
-    },
-    {
-      "id": "reward-2",
-      "levels": 2,
-      "title": "Acorn sticker pack",
-      "detail": "A starter sticker bundle from Fern Trail."
-    },
-    {
-      "id": "reward-3",
-      "levels": 4,
-      "title": "Trail lantern",
-      "detail": "A keepsake for clearing the full Fern Trail set."
-    },
-    {
-      "id": "reward-4",
-      "levels": 6,
-      "title": "Glow leaf badge",
-      "detail": "A twilight badge for reaching the middle of the adventure."
-    },
-    {
-      "id": "reward-5",
-      "levels": 8,
-      "title": "River ribbon",
-      "detail": "A long ribbon earned for steady progress through the hollow."
-    },
-    {
-      "id": "reward-6",
-      "levels": 10,
-      "title": "Forest friend token",
-      "detail": "A late-game token that celebrates calm, repeated play."
-    },
-    {
-      "id": "reward-7",
-      "levels": 12,
-      "title": "Moonlit explorer medal",
-      "detail": "The final starter medal for clearing every current mission."
-    }
+    { "id": "reward-1",  "levels": 1,  "title": "Leaf star",              "detail": "A bright first reward for a happy win." },
+    { "id": "reward-2",  "levels": 2,  "title": "Acorn sticker pack",     "detail": "A starter sticker bundle from Fern Trail." },
+    { "id": "reward-3",  "levels": 4,  "title": "Trail lantern",          "detail": "A keepsake for clearing the full Fern Trail set." },
+    { "id": "reward-4",  "levels": 6,  "title": "Glow leaf badge",        "detail": "A twilight badge for reaching the middle of the hollow." },
+    { "id": "reward-5",  "levels": 8,  "title": "River ribbon",           "detail": "A flowing ribbon earned for steady progress." },
+    { "id": "reward-6",  "levels": 10, "title": "Forest friend token",    "detail": "A token that celebrates calm, repeated play." },
+    { "id": "reward-7",  "levels": 12, "title": "Explorer medal",         "detail": "The Scout starter medal for clearing every basic mission." },
+    { "id": "reward-8",  "levels": 15, "title": "Moon crystal shard",     "detail": "A moonlit shard from the ancient creek bed." },
+    { "id": "reward-9",  "levels": 18, "title": "Elderwood seed",         "detail": "A seed from the oldest tree in the forest." },
+    { "id": "reward-10", "levels": 22, "title": "Resonance crystal",      "detail": "A crystal that hums when held near ancient rune walls." },
+    { "id": "reward-11", "levels": 27, "title": "Ruin relic fragment",    "detail": "A piece of the ancient druid civilization." },
+    { "id": "reward-12", "levels": 32, "title": "Marsh lantern",          "detail": "A lantern fueled by captured firefly light." },
+    { "id": "reward-13", "levels": 37, "title": "Star chart relic",       "detail": "An ancient navigation chart of the forest sky." },
+    { "id": "reward-14", "levels": 41, "title": "Canopy wind token",      "detail": "A carved token that hums in high forest winds." },
+    { "id": "reward-15", "levels": 45, "title": "Arch-Druid Crown",       "detail": "The ultimate achievement. You carry the complete knowledge of the ancient forest." }
   ],
   "soundDesignPlan": [
-    "Character cues use runtime-generated placeholder sounds for greetings, hints, and celebrations.",
-    "The save system keeps progress, stars, and unlock state between sessions on the same device.",
-    "Memory and path missions now use hands-on interaction instead of only text choices.",
-    "Recorded actor audio, ambient loops, and final music can replace the generated cues later."
+    "All character cues use runtime-generated procedural audio with per-character pitch and rate profiles.",
+    "Ambient layers: forest wind, creek water, fireflies, cave crystal resonance, canopy wind.",
+    "Music stems blend dynamically based on zone, time of day, weather, and puzzle intensity.",
+    "Daily ritual events trigger unique audio signatures that feel magical rather than game-like.",
+    "Final voiced lines and orchestral music replace generated cues in the production build."
   ],
   "researchHighlights": [
-    "2D layered animation is the smartest first release path for a dense forest world.",
-    "Young children benefit from short missions, gentle retries, and visible progress rewards.",
-    "A lean launch should prove the core loop before large content expansion or paid growth.",
-    "The safest monetization path remains a parent-gated premium unlock, not aggressive ads."
+    "Adaptive scaffolding research shows 3-8 minute sessions maximise learning across ages 4-16.",
+    "Ethical retention loops (daily rituals, seasonal events) outperform manipulative mechanics for long-term engagement.",
+    "Emotional creature attachment (trust levels, memory, mood) creates year-long player relationships.",
+    "Procedural difficulty adaptation prevents both frustration and boredom across all age tiers.",
+    "Nature-themed cognitive puzzles support STEM reasoning development in ages 7-16."
   ],
   "parentFacingNotes": [
-    "Free early missions let families test the experience before any premium decision.",
-    "Progress, star ratings, and unlocks now save between sessions on the same device.",
-    "No harsh fail states or countdown timers appear in the first-session flow.",
-    "Adult-facing premium controls stay behind a simple parent gate."
+    "All content is safe for ages 4-16 with no harsh fail states, countdown timers, or aggressive notifications.",
+    "Progress, star ratings, and bond levels save persistently on the device.",
+    "Daily rituals are optional magical events, never obligations. Missing a day has zero penalty.",
+    "Premium content sits behind a simple parent gate. No in-app purchasing by default.",
+    "Difficulty adapts automatically — the game gets harder only when the child is ready."
   ],
   "monetizationPlan": [
-    "Free preview across Fern Trail and the first half of Firefly Hollow",
-    "Parent gate before any premium unlock control",
-    "One-time full unlock to activate premium zones on the device",
-    "Real billing can replace the local unlock flow later"
+    "Free preview: Fern Trail (4 levels) and Firefly Hollow (4 levels) — fully playable with zero cost.",
+    "One-time parent-gated premium unlock activates all remaining regions on the device.",
+    "No advertising, no loot boxes, no manipulative daily spend mechanics.",
+    "Subscription tier option adds seasonal content packs and new guide companions."
   ],
   "buildMilestones": [
-    "Replace runtime placeholder art with final sprite sheets and animated scene dressing",
-    "Swap generated cue tones for voiced lines, ambient loops, and polished reward audio",
-    "Run a full Android smoke test in the Unity editor and on target devices",
-    "Integrate production billing, analytics, and release-ready compliance checks"
+    "M1: Full 10-region content with all 45 levels and 6 guide companions playable.",
+    "M2: Hand-painted sprite art and animated creature sheets for all 6 companions.",
+    "M3: Full procedural audio with layered stems, creature vocals, and ambient soundscapes.",
+    "M4: Production billing, accessibility audit, COPPA/GDPR compliance, and app store release.",
+    "M5: Season 2 content: Hidden Druid Sanctuary and Endless Dream Forest procedural expansion."
   ]
 }

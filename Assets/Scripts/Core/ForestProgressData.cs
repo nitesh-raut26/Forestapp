@@ -41,6 +41,27 @@ namespace ForestFriendsQuest
 
         // New grid-based placement save (ForestSystemsContainer v2)
         public PlacedItem[] sanctuaryGridItems;
+
+        // ─── AAA Expansion Fields ──────────────────────────────────────────────
+
+        // Seasonal event tracking
+        public string[] attendedSeasonalEventIds;    // event ids the player has attended
+
+        // Lore discovery (flat list of discovered lore page ids across all regions)
+        public string[] discoveredLoreIds;
+
+        // Boss defeated flags
+        public string[] defeatedBossIds;
+
+        // World region unlock state (region ids that are unlocked beyond default)
+        public string[] unlockedRegionIds;
+
+        // Creature evolution: serialised as "creatureId:stageIndex" strings
+        public string[] creatureEvolutionState;
+
+        // Season/day tracking for offline progression
+        public int  totalInGameDays;     // incremented per real calendar day played
+        public int  currentSeasonIndex;  // 0=Spring, 1=Summer, 2=Autumn, 3=Winter
     }
 
     [Serializable]
