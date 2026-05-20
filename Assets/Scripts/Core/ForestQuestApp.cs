@@ -59,6 +59,7 @@ namespace ForestFriendsQuest
         private bool _riddle2Solved;
         private bool _riddle3Solved;
         private bool _logicSwitchActive;
+        private TimeMemoryChallenge _activeTimeMemory;
 
         private void Awake()
         {
@@ -866,6 +867,18 @@ namespace ForestFriendsQuest
                 case "path":
                     BuildPathPuzzle(card, level);
                     break;
+                case "lightreflection":
+                    BuildManagedLightReflection(card, level);
+                    break;
+                case "pressuregate":
+                    BuildManagedPressureGate(card, level);
+                    break;
+                case "rotatingpath":
+                    BuildManagedRotatingPath(card, level);
+                    break;
+                case "timememory":
+                    BuildManagedTimeMemory(card, level);
+                    break;
                 default:
                     BuildChoicePuzzle(card, level);
                     break;
@@ -894,6 +907,83 @@ namespace ForestFriendsQuest
                 CreateSmallActionButton(actionRowBottom, "Replay for more stars", ReplaySelectedLevel, true);
             }
         }
+
+        // ─── Managed Puzzle Builders (MonoBehaviour-based puzzle types) ──────────
+
+        private void BuildManagedLightReflection(Transform parent, LevelData level)
+        {
+            var tier     = _saveData.explorerTier ?? "scout";
+            var anchor   = ForestUiFactory.CreateUiObject("LRPuzzleAnchor", parent);
+            ForestUiFactory.AddLayout(anchor.gameObject, preferredHeight: 520f);
+            if (_systems?.PuzzleManager == null) { BuildChoicePuzzle(parent, level); return; }
+            var puzzle   = anchor.gameObject.AddComponent<LightReflectionPuzzle>();
+            puzzle.Initialize(_systems.PuzzleManager, _systems.Particles, anchor, tier);
+            puzzle.OnPuzzleEnd += solved =>
+            {
+                if (solved && !_currentLevelSolved)
+                    CompleteLevel(level, level.celebration, GetCharacter(level.characterId));
+            };
+        }
+
+        private void BuildManagedPressureGate(Transform parent, LevelData level)
+        {
+            var tier     = _saveData.explorerTier ?? "scout";
+            var anchor   = ForestUiFactory.CreateUiObject("PGPuzzleAnchor", parent);
+            ForestUiFactory.AddLayout(anchor.gameObject, preferredHeight: 520f);
+            if (_systems?.PuzzleManager == null) { BuildChoicePuzzle(parent, level); return; }
+            var puzzle   = anchor.gameObject.AddComponent<PressureGatePuzzle>();
+            puzzle.Initialize(_systems.PuzzleManager, _systems.Particles, anchor, tier);
+
+            var dpadRow  = ForestUiFactory.CreateUiObject("DPad", parent);
+            ForestUiFactory.AddHorizontalLayout(dpadRow.gameObject, 8f);
+            dpadRow.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>().horizontalFit =
+                UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+            CreateSmallActionButton(dpadRow, "Left",  () => puzzle.MoveLeft(),  true);
+            CreateSmallActionButton(dpadRow, "Up",    () => puzzle.MoveUp(),    true);
+            CreateSmallActionButton(dpadRow, "Down",  () => puzzle.MoveDown(),  true);
+            CreateSmallActionButton(dpadRow, "Right", () => puzzle.MoveRight(), true);
+
+            puzzle.OnPuzzleEnd += solved =>
+            {
+                if (solved && !_currentLevelSolved)
+                    CompleteLevel(level, level.celebration, GetCharacter(level.characterId));
+            };
+        }
+
+        private void BuildManagedRotatingPath(Transform parent, LevelData level)
+        {
+            var tier     = _saveData.explorerTier ?? "scout";
+            var anchor   = ForestUiFactory.CreateUiObject("RPPuzzleAnchor", parent);
+            ForestUiFactory.AddLayout(anchor.gameObject, preferredHeight: 520f);
+            if (_systems?.PuzzleManager == null) { BuildChoicePuzzle(parent, level); return; }
+            var puzzle   = anchor.gameObject.AddComponent<RotatingPathPuzzle>();
+            puzzle.Initialize(_systems.PuzzleManager, _systems.Particles, anchor, tier);
+            puzzle.OnPuzzleEnd += solved =>
+            {
+                if (solved && !_currentLevelSolved)
+                    CompleteLevel(level, level.celebration, GetCharacter(level.characterId));
+            };
+        }
+
+        private void BuildManagedTimeMemory(Transform parent, LevelData level)
+        {
+            var tier      = _saveData.explorerTier ?? "scout";
+            var nodeCount = tier == "druid" ? 6 : (tier == "scout" ? 5 : 4);
+            var anchor    = ForestUiFactory.CreateUiObject("TMPuzzleAnchor", parent);
+            ForestUiFactory.AddLayout(anchor.gameObject, preferredHeight: 520f);
+            if (_systems?.PuzzleManager == null) { BuildMemoryPuzzle(parent, level); return; }
+            _activeTimeMemory = anchor.gameObject.AddComponent<TimeMemoryChallenge>();
+            _activeTimeMemory.Initialize(_systems.PuzzleManager, _systems.Particles,
+                anchor, nodeCount, tier);
+            CreateBodyText(parent, "Tap 'Start mission' to begin the time memory challenge.", _mint, 20);
+            _activeTimeMemory.OnPuzzleEnd += solved =>
+            {
+                if (solved && !_currentLevelSolved)
+                    CompleteLevel(level, level.celebration, GetCharacter(level.characterId));
+            };
+        }
+
+        // ─── Classic Inline Puzzle Builders ───────────────────────────────────────
 
         private void BuildChoicePuzzle(Transform parent, LevelData level)
         {
@@ -1645,10 +1735,25 @@ namespace ForestFriendsQuest
             if (startLevel != null && _systems?.PuzzleManager != null)
             {
                 var gm = string.IsNullOrEmpty(startLevel.gameplayMode) ? "choice" : startLevel.gameplayMode.ToLower();
-                var pType = gm == "memory" ? PuzzleType.MemoryTrail
-                          : gm == "path"   ? PuzzleType.ForestRouting
+                var pType = gm == "memory"          ? PuzzleType.MemoryTrail
+                          : gm == "path"            ? PuzzleType.ForestRouting
+                          : gm == "pressuregate"    ? PuzzleType.PressureGate
+                          : gm == "lightreflection" ? PuzzleType.LightReflection
+                          : gm == "rotatingpath"    ? PuzzleType.RotatingPath
+                          : gm == "timememory"      ? PuzzleType.TimeMemory
                           : PuzzleType.LogicMirror;
                 _systems.PuzzleManager.StartPuzzle(pType, _saveData.explorerTier ?? "scout");
+
+                // Kick off the time-memory reveal phase
+                if (gm == "timememory") _activeTimeMemory?.StartChallenge();
+            }
+
+            // Notify world/biome systems
+            if (startLevel != null)
+            {
+                _systems?.World?.OnLevelCleared(_completedLevelIds.Count);
+                _systems?.Biome?.EnterBiome(startLevel.zoneId);
+                _systems?.Exploration?.RecordZoneVisit(startLevel.zoneId);
             }
         }
 
@@ -1722,11 +1827,30 @@ namespace ForestFriendsQuest
             if (_systems?.Quests != null)
             {
                 var gm = string.IsNullOrEmpty(level.gameplayMode) ? "choice" : level.gameplayMode.ToLower();
-                if (gm == "memory") _systems.Quests.ProgressObjective("memory_trail_complete");
-                else if (gm == "path") _systems.Quests.ProgressObjective("river_trail_complete");
-                else _systems.Quests.ProgressObjective("mirror_puzzle_solved");
+                switch (gm)
+                {
+                    case "memory":
+                    case "timememory":
+                        _systems.Quests.ProgressObjective("memory_trail_complete");
+                        break;
+                    case "path":
+                    case "rotatingpath":
+                        _systems.Quests.ProgressObjective("river_trail_complete");
+                        break;
+                    case "pressuregate":
+                        _systems.Quests.ProgressObjective("mirror_puzzle_solved");
+                        break;
+                    case "lightreflection":
+                        _systems.Quests.ProgressObjective("mirror_puzzle_solved");
+                        break;
+                    default:
+                        _systems.Quests.ProgressObjective("mirror_puzzle_solved");
+                        break;
+                }
                 if (wasNewClear) _systems.Quests.ProgressObjective("level_complete");
             }
+
+            _activeTimeMemory = null;
 
             if (_systems?.Achievements != null && wasNewClear)
             {
