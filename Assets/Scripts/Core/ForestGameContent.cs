@@ -11,6 +11,11 @@ namespace ForestFriendsQuest
         public ForestZoneData[] zones;
         public LevelData[] levels;
         public RewardMilestoneData[] rewards;
+        public BiomeData[] biomes;
+        public LoreEntry[] lore;
+        public SeasonalEventData[] seasonalEvents;
+        public CreatureEvolutionData[] creatureEvolution;
+        public BossData[] bosses;
         public string[] soundDesignPlan;
         public string[] researchHighlights;
         public string[] parentFacingNotes;

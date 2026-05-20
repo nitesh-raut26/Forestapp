@@ -32,6 +32,11 @@ namespace ForestFriendsQuest
     ///  17. Sanctuary (PlacementGrid, DecorationCatalog, CampfireSystem)
     ///  18. DynamicDialogueSystem
     ///  19. AdaptiveVisualDensityScaler
+    ///  20. WorldStateManager
+    ///  21. BiomeController
+    ///  22. SeasonalEventSystem
+    ///  23. CreatureEvolutionSystem
+    ///  24. BossEncounterSystem
     /// </summary>
     public class ForestSystemsContainer : MonoBehaviour
     {
@@ -60,6 +65,13 @@ namespace ForestFriendsQuest
         public SanctuaryCampfireSystem      Campfire            { get; private set; }
         public DynamicDialogueSystem        Dialogue            { get; private set; }
         public AdaptiveVisualDensityScaler  DensityScaler       { get; private set; }
+
+        // ─── AAA Expansion Systems ────────────────────────────────────────────────
+        public WorldStateManager            World               { get; private set; }
+        public BiomeController              Biome               { get; private set; }
+        public SeasonalEventSystem          Seasons             { get; private set; }
+        public CreatureEvolutionSystem      Evolution           { get; private set; }
+        public BossEncounterSystem          Bosses              { get; private set; }
 
         // ─── Canvases ─────────────────────────────────────────────────────────────
 
@@ -162,24 +174,76 @@ namespace ForestFriendsQuest
                 if (seq != null) Dialogue.StartSequence(seq);
             };
 
-            // 19. Density Scaler (last — depends on all VFX systems)
+            // 19. Density Scaler (last VFX dependent)
             DensityScaler = gameObject.AddComponent<AdaptiveVisualDensityScaler>();
             DensityScaler.Initialize(AmbientVFX, Particles, PuzzleManager);
 
-            // Subscribe ambient VFX to time/weather changes
+            // 20. World State Manager
+            World = gameObject.AddComponent<WorldStateManager>();
+            World.Initialize(SaveSystem, Quests);
+
+            // 21. Biome Controller
+            Biome = gameObject.AddComponent<BiomeController>();
+            Biome.Initialize(TimeController, Audio);
+
+            // 22. Seasonal Event System
+            Seasons = gameObject.AddComponent<SeasonalEventSystem>();
+            Seasons.Initialize(SaveSystem, Achievements);
+
+            // 23. Creature Evolution System
+            Evolution = gameObject.AddComponent<CreatureEvolutionSystem>();
+            Evolution.Initialize(BondingEngine, SaveSystem, Achievements);
+
+            // 24. Boss Encounter System (depends on World, Achievements, VFX, Quests, Save)
+            Bosses = gameObject.AddComponent<BossEncounterSystem>();
+            Bosses.Initialize(Achievements, World, VFX, Quests, SaveSystem);
+
+            // ─── Cross-System Event Wiring ────────────────────────────────────────
+
+            // Ambient VFX follows day/night and weather
             TimeController.OnTimeChanged    += t  => VFX.SetAmbientState(t, TimeController.CurrentWeather);
             TimeController.OnWeatherChanged += w  => VFX.SetAmbientState(TimeController.CurrentTime, w);
 
-            // Wire audio bridge into weather controller (plan requirement)
+            // Audio bridge
             TimeController.SetAudioBridge(Audio);
 
+            // Season changes update weather controller tint
+            Seasons.OnSeasonChanged += season =>
+            {
+                var weather = Seasons.GetSeasonWeather();
+                VFX.SetAmbientState(TimeController.CurrentTime, weather);
+            };
 
-            // Exploration events feed achievements
+            // Region unlocked → discovery burst
+            World.OnRegionUnlocked += region =>
+            {
+                VFX.OnDiscovery(CanvasRoot != null ? CanvasRoot.rect.center : Vector2.zero);
+            };
+
+            // Boss phase cleared → discovery burst; boss defeated → rare reward
+            Bosses.OnBossPhaseCleared += (boss, phases) =>
+            {
+                VFX.OnDiscovery(Vector2.zero);
+            };
+            Bosses.OnBossDefeated += boss =>
+            {
+                VFX.OnRareReward(Vector2.zero);
+            };
+
+            // Creature stage evolution → rare reward VFX
+            Evolution.OnStageEvolved += (creatureId, stage) =>
+            {
+                VFX.OnRareReward(Vector2.zero);
+                Debug.Log($"[ForestSystemsContainer] {creatureId} evolved to: {stage.stageName}");
+            };
+
+            // Exploration events feed achievements + biome
             Exploration.OnZoneFirstVisited += (zoneId) =>
             {
                 Achievements.TryUnlock("exp_first_steps");
                 if (Exploration.GetVisitedZoneCount() >= 5)  Achievements.TryUnlock("exp_5_zones");
                 if (Exploration.GetVisitedZoneCount() >= 10) Achievements.TryUnlock("exp_all_zones");
+                Biome.EnterBiome(zoneId);
             };
 
             Exploration.OnLoreCollected += (_) =>
@@ -187,7 +251,7 @@ namespace ForestFriendsQuest
                 if (Exploration.TotalLoreCollected >= 12) Achievements.TryUnlock("sec_lore_complete");
             };
 
-            Debug.Log("[ForestSystemsContainer] All systems initialized successfully.");
+            Debug.Log("[ForestSystemsContainer] All 24 systems initialized successfully.");
         }
 
         // ─── Canvas Hierarchy ─────────────────────────────────────────────────────
