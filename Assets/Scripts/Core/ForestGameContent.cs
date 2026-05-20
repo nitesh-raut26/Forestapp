@@ -123,4 +123,75 @@ namespace ForestFriendsQuest
         public string title;
         public string detail;
     }
+
+    // ─── AAA Expansion Data Models ────────────────────────────────────────────
+
+    [Serializable]
+    public class BiomeData
+    {
+        public string regionId;
+        public string displayName;
+        public string ambientTrackId;
+        public float  musicTempo;
+        public string fogColorHex;
+        public string ambientLightHex;
+        public string groundTintHex;
+        public string skyTintHex;
+        public float  pollenDensity;
+        public float  fireflydensity;
+        public float  mistDensity;
+        public float  leafDensity;
+        public string[] residentCreatureIds;
+    }
+
+    [Serializable]
+    public class LoreEntry
+    {
+        public string id;
+        public string regionId;
+        public string title;
+        public string body;            // the lore page text shown in-game
+        public string creatureNarrator; // which guide reads it aloud
+        public bool   isSecret;
+    }
+
+    [Serializable]
+    public class SeasonalEventData
+    {
+        public string id;
+        public string title;
+        public string description;
+        public string season;          // "Spring", "Summer", "Autumn", "Winter"
+        public int    triggerDay;      // day within the season when it starts (0-29)
+        public int    durationDays;
+        public int    rewardTreats;
+        public string rewardDescription;
+        public string achievementId;
+    }
+
+    [Serializable]
+    public class CreatureEvolutionData
+    {
+        public string  creatureId;
+        public string  stageName;
+        public int     requiredBondLevel;
+        public string  description;
+        public string  spriteVariantId;
+        public string[] unlockedGestures;
+        public int     treatBonus;
+    }
+
+    [Serializable]
+    public class BossData
+    {
+        public string   id;
+        public string   name;
+        public string   lore;
+        public string   regionId;
+        public int      healthPhases;
+        public string[] abilities;         // BossAbility enum names as strings
+        public string   rewardDescription;
+        public int      rewardTreats;
+        public string   victoryAchievementId;
+    }
 }

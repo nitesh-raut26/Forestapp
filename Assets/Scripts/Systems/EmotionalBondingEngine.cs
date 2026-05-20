@@ -114,6 +114,8 @@ namespace ForestFriendsQuest
             AddTrust(creatureId, points);
         }
 
+        public event Action<string, int> OnBondLevelUp;   // (creatureId, newBondLevel)
+
         public void AddTrust(string creatureId, int amount)
         {
             var state = GetBondState(creatureId);
@@ -126,9 +128,11 @@ namespace ForestFriendsQuest
             {
                 state.trustProgress -= required;
                 state.bondLevel++;
-                
+
                 // Unlock a new memory on level up!
                 UnlockNextMemory(state);
+
+                OnBondLevelUp?.Invoke(creatureId, state.bondLevel);
             }
         }
 
