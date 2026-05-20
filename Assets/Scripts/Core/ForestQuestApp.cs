@@ -48,6 +48,8 @@ namespace ForestFriendsQuest
         private string[] _parentAnswerChoices = new string[0];
         private string _parentCorrectAnswer;
         private string _activePuzzleLevelId;
+
+        private ForestSystemsContainer _systems;
         private int _currentLevelMistakes;
         private bool _currentLevelHintUsed;
         private bool _currentLevelStarted;
@@ -68,6 +70,8 @@ namespace ForestFriendsQuest
             InitializeState();
             BuildCanvas();
             Rebuild();
+
+            _systems = ForestSystemsContainer.Instance;
         }
 
         private void LoadProgress()
@@ -140,6 +144,7 @@ namespace ForestFriendsQuest
             PlayerPrefs.SetInt(SaveKey + ".Riddle3", _riddle3Solved ? 1 : 0);
 
             PlayerPrefs.Save();
+            _systems?.SaveSystem?.Save(_saveData);
         }
 
         private void InitializeState()
@@ -526,6 +531,38 @@ namespace ForestFriendsQuest
 
         private void BuildPlayTab()
         {
+            if (_systems?.DailyRitual != null)
+            {
+                var ritual = _systems.DailyRitual.GetTodaysRitual();
+                if (ritual != null)
+                {
+                    var ritualBody = CreateSection(_scrollContent, "Today's Forest Ritual", "Daily magical event", false);
+                    CreateCardTitle(ritualBody, ritual.title, _amber, 24);
+                    CreateBodyText(ritualBody, ritual.description, _cream, 20);
+                    CreateBodyText(ritualBody, $"Reward: {ritual.rewardDescription}", _mint, 18);
+
+                    if (_systems.DailyRitual.IsTodaysRitualComplete())
+                    {
+                        CreateBodyText(ritualBody, "Completed today! Come back tomorrow for a new ritual.", _mint, 20);
+                    }
+                    else
+                    {
+                        var ritualBtn = ForestUiFactory.CreateButton(ritualBody, "CompleteRitual", "Complete Ritual", _font, _amber, _ink, () =>
+                        {
+                            _systems.DailyRitual.CompleteRitual(_saveData);
+                            _systems?.Achievements?.TryUnlock("sea_daily_7", _saveData);
+                            _systems?.Achievements?.TryUnlock("sea_daily_30", _saveData);
+                            _systems?.VFX?.OnRareReward(Vector2.zero);
+                            _feedbackMessage = $"Daily ritual complete! Forest treats added!";
+                            _feedbackSuccess = true;
+                            SaveProgress();
+                            Rebuild();
+                        }, 20);
+                        ForestUiFactory.AddLayout(ritualBtn.gameObject, preferredHeight: 72f);
+                    }
+                }
+            }
+
             var tierBody = CreateSection(_scrollContent, "Explorer Tier Settings", "Tailor the adventure to your age", false);
             var tierButtonRow = ForestUiFactory.CreateUiObject("TierButtons", tierBody);
             ForestUiFactory.AddHorizontalLayout(tierButtonRow.gameObject, 10f);
@@ -1311,6 +1348,7 @@ namespace ForestFriendsQuest
             }
 
             _selectedZoneId = zone.id;
+            _systems?.Exploration?.RecordZoneVisit(zone.id);
             _searchQuery = "";
             _selectedTypeFilter = "All";
             var nextLevel = FindPreferredLevelForZone(zone.id) ?? GetFirstLevelForZone(zone.id);
@@ -1602,6 +1640,16 @@ namespace ForestFriendsQuest
             var progress = GetOrCreateLevelProgress(levelId);
             progress.timesPlayed++;
             SaveProgress();
+
+            var startLevel = GetLevel(levelId);
+            if (startLevel != null && _systems?.PuzzleManager != null)
+            {
+                var gm = string.IsNullOrEmpty(startLevel.gameplayMode) ? "choice" : startLevel.gameplayMode.ToLower();
+                var pType = gm == "memory" ? PuzzleType.MemoryTrail
+                          : gm == "path"   ? PuzzleType.ForestRouting
+                          : PuzzleType.LogicMirror;
+                _systems.PuzzleManager.StartPuzzle(pType, _saveData.explorerTier ?? "scout");
+            }
         }
 
         private void MarkHintUsed()
@@ -1634,7 +1682,7 @@ namespace ForestFriendsQuest
             {
                 var rand = UnityEngine.Random.Range(0, 4);
                 string rewardedResource = "";
-                if (rand == 0) { _saveData.elderwood++; rewardedResource = "Elderwood 🪵"; }
+                if (rand == 0) { _saveData.elderwood++; rewardedResource = "Elderwood"; }
                 else if (rand == 1) { _saveData.riverCrystals++; rewardedResource = "River Crystal"; }
                 else if (rand == 2) { _saveData.fireflyDust++; rewardedResource = "Firefly Dust"; }
                 else { _saveData.ancientSap++; rewardedResource = "Ancient Sap"; }
@@ -1667,6 +1715,26 @@ namespace ForestFriendsQuest
             }
 
             SaveProgress();
+
+            _systems?.VFX?.OnPuzzleSolved(Vector2.zero);
+            _systems?.PuzzleManager?.SolvePuzzle(Vector2.zero);
+
+            if (_systems?.Quests != null)
+            {
+                var gm = string.IsNullOrEmpty(level.gameplayMode) ? "choice" : level.gameplayMode.ToLower();
+                if (gm == "memory") _systems.Quests.ProgressObjective("memory_trail_complete");
+                else if (gm == "path") _systems.Quests.ProgressObjective("river_trail_complete");
+                else _systems.Quests.ProgressObjective("mirror_puzzle_solved");
+                if (wasNewClear) _systems.Quests.ProgressObjective("level_complete");
+            }
+
+            if (_systems?.Achievements != null && wasNewClear)
+            {
+                _systems.Achievements.TryUnlock("puz_first_solve", _saveData);
+                if (stars == 3 && !_currentLevelHintUsed)
+                    _systems.Achievements.TryUnlock("puz_no_hints_5", _saveData);
+            }
+
             _audioController.PlaySuccess(character, _soundEnabled);
             Rebuild();
         }
@@ -2498,7 +2566,7 @@ namespace ForestFriendsQuest
             ForestUiFactory.AddHorizontalLayout(resRow.gameObject, 10f);
             resRow.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            CreateResourceCounter(resRow, "🪵 Wood", _saveData.elderwood);
+            CreateResourceCounter(resRow, "Wood", _saveData.elderwood);
             CreateResourceCounter(resRow, "Crystal", _saveData.riverCrystals);
             CreateResourceCounter(resRow, "Dust", _saveData.fireflyDust);
             CreateResourceCounter(resRow, "Sap", _saveData.ancientSap);
@@ -2753,6 +2821,13 @@ namespace ForestFriendsQuest
                 IncreaseCharacterBond(character.id);
                 _feedbackSuccess = true;
                 _feedbackMessage = $"{character.name} loved the treat! Friendship Bond increased! Lvl is now {GetCharacterBond(character.id)}.";
+                _systems?.VFX?.OnDiscovery(Vector2.zero);
+                if (_systems?.Achievements != null)
+                {
+                    var bond = GetCharacterBond(character.id);
+                    if (bond >= 2) _systems.Achievements.TryUnlock($"bond_{character.id}_1", _saveData);
+                    if (character.id == "pip" && bond >= 5) _systems.Achievements.TryUnlock("bond_pip_5", _saveData);
+                }
                 _audioController.PlaySuccess(character, _soundEnabled);
                 SaveProgress();
                 Rebuild();
