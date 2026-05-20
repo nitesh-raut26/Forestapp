@@ -1,0 +1,518 @@
+{
+  "summary": {
+    "ageBand": "Ages 4-8",
+    "build": "Unity 2D vertical slice",
+    "model": "Parent-gated premium",
+    "title": "Forest Friends Quest",
+    "tagline": "A cheerful forest adventure with saved progress, gentle guide cues, and bright rewards after every successful mission.",
+    "sessionLength": "2-5 minute levels",
+    "launchShape": "3 zones, 12 starter levels, 3 hands-on puzzle types"
+  },
+  "navigationTabs": [
+    { "id": "home", "label": "World" },
+    { "id": "play", "label": "Play" },
+    { "id": "sanctuary", "label": "Sanctuary" },
+    { "id": "parents", "label": "Parents" }
+  ],
+  "characters": [
+    {
+      "id": "pip",
+      "name": "Pip",
+      "role": "Forest scout",
+      "accentHex": "#FFB36B",
+      "blurb": "Curious, brave, and always the first friend kids meet.",
+      "voice": { "pitch": 1.25, "rate": 0.95 },
+      "lines": {
+        "greeting": "Hi explorer. I found a fresh trail and I think you can help me with it.",
+        "hint": "Search for the clue that glows, shines, or helps a friend travel safely.",
+        "cheer": "Yip yip. That was a brave and clever forest rescue."
+      }
+    },
+    {
+      "id": "mimi",
+      "name": "Mimi",
+      "role": "Bird helper",
+      "accentHex": "#F5D768",
+      "blurb": "A tiny singer who gives playful hints during trickier moments.",
+      "voice": { "pitch": 1.45, "rate": 1.08 },
+      "lines": {
+        "greeting": "Tweet tweet. I can sing a clue whenever you need a little boost.",
+        "hint": "Look for the smooth shape or soft pattern that matches the forest clue.",
+        "cheer": "Flap flap. That answer sparkled in exactly the right way."
+      }
+    },
+    {
+      "id": "tomo",
+      "name": "Tomo",
+      "role": "Turtle thinker",
+      "accentHex": "#8AD1A8",
+      "blurb": "Slow and steady, perfect for calm logic and path puzzles.",
+      "voice": { "pitch": 0.85, "rate": 0.78 },
+      "lines": {
+        "greeting": "Hello friend. We can solve this one safe step at a time.",
+        "hint": "Stay on the calm route and follow the order without rushing.",
+        "cheer": "Steady choices make strong helpers. Wonderful work."
+      }
+    },
+    {
+      "id": "luma",
+      "name": "Luma",
+      "role": "Firefly spark",
+      "accentHex": "#89E5F7",
+      "blurb": "A glowing reward buddy used for celebration and memory moments.",
+      "voice": { "pitch": 1.6, "rate": 1.12 },
+      "lines": {
+        "greeting": "Sparkle time. I can flash a pattern for you whenever you are ready.",
+        "hint": "Watch the order carefully. The same lights or symbols repeat in a gentle rhythm.",
+        "cheer": "Sparkle burst. You earned a shiny new forest reward."
+      }
+    }
+  ],
+  "zones": [
+    {
+      "id": "fern-trail",
+      "title": "Fern Trail",
+      "mood": "Welcoming daylight with giant leaves and easy first wins.",
+      "challenge": "Shape matching, hidden clues, and the first safe path puzzles.",
+      "reward": "Acorn sticker pack",
+      "accentHex": "#A6D977",
+      "unlockAfterClears": 0,
+      "isPremium": false,
+      "lockMessage": "Fern Trail is the first free zone."
+    },
+    {
+      "id": "firefly-hollow",
+      "title": "Firefly Hollow",
+      "mood": "Twilight glow with moving lights and magical surprises.",
+      "challenge": "Memory patterns, hidden clues, and nighttime routes.",
+      "reward": "Glow leaf badge",
+      "accentHex": "#F4D56D",
+      "unlockAfterClears": 3,
+      "isPremium": false,
+      "lockMessage": "Clear 3 missions to unlock Firefly Hollow."
+    },
+    {
+      "id": "river-bend",
+      "title": "Mossy River Bend",
+      "mood": "Water shimmer, mossy stones, and gentle rescue moments.",
+      "challenge": "Longer path routes, rescue clues, and premium late-game puzzles.",
+      "reward": "New forest friend",
+      "accentHex": "#7ED6D0",
+      "unlockAfterClears": 6,
+      "isPremium": true,
+      "lockMessage": "River Bend is part of the full adventure and opens after the parent unlock plus 6 cleared missions."
+    }
+  ],
+  "levels": [
+    {
+      "id": "level-01",
+      "zoneId": "fern-trail",
+      "characterId": "pip",
+      "name": "Find Pip's Lantern",
+      "type": "Hidden object",
+      "difficulty": "Beginner",
+      "reward": "Leaf star",
+      "prompt": "Which item helps Pip light the trail?",
+      "hint": "Find the object that glows at night.",
+      "celebration": "Pip found the lantern and the Fern Trail is glowing again.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "berry-basket",
+          "label": "Berry basket",
+          "isCorrect": false,
+          "reply": "Those berries are tasty, but they do not light the path."
+        },
+        {
+          "id": "lantern",
+          "label": "Lantern",
+          "isCorrect": true,
+          "reply": "Yes. The lantern lights the trail for every friend."
+        },
+        {
+          "id": "pinecone",
+          "label": "Pinecone",
+          "isCorrect": false,
+          "reply": "That is a forest treasure, but not the right clue this time."
+        }
+      ]
+    },
+    {
+      "id": "level-02",
+      "zoneId": "fern-trail",
+      "characterId": "mimi",
+      "name": "Match the Fern Shapes",
+      "type": "Shape match",
+      "difficulty": "Beginner",
+      "reward": "Acorn sticker",
+      "prompt": "Which shape looks like Mimi's long fern leaf?",
+      "hint": "Look for a smooth leaf shape, not a star or a pointy triangle.",
+      "celebration": "Mimi matched every fern shape and sang a happy forest tune.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "star",
+          "label": "Star leaf",
+          "isCorrect": false,
+          "reply": "Pretty shape, but Mimi needs the smooth fern instead."
+        },
+        {
+          "id": "fern",
+          "label": "Fern leaf",
+          "isCorrect": true,
+          "reply": "Great matching. The fern shape fits perfectly."
+        },
+        {
+          "id": "triangle",
+          "label": "Pointy leaf",
+          "isCorrect": false,
+          "reply": "That one is too sharp for this gentle fern puzzle."
+        }
+      ]
+    },
+    {
+      "id": "level-03",
+      "zoneId": "fern-trail",
+      "characterId": "luma",
+      "name": "Lantern Light Pattern",
+      "type": "Memory sequence",
+      "difficulty": "Beginner+",
+      "reward": "Glow seed",
+      "prompt": "Copy Luma's lantern rhythm in the same order.",
+      "hint": "The order is Lantern, Fern, Lantern, Star.",
+      "celebration": "Luma's lantern rhythm twinkled perfectly across the trees.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "lantern", "label": "Lantern" },
+        { "id": "fern", "label": "Fern" },
+        { "id": "star", "label": "Star" },
+        { "id": "berry", "label": "Berry" }
+      ],
+      "memorySequence": ["lantern", "fern", "lantern", "star"]
+    },
+    {
+      "id": "level-04",
+      "zoneId": "fern-trail",
+      "characterId": "tomo",
+      "name": "Safe Trail Steps",
+      "type": "Path puzzle",
+      "difficulty": "Easy",
+      "reward": "Trail ribbon",
+      "prompt": "Tap the safe route from Start to Home without splashing into the puddles.",
+      "hint": "Begin at Start, then follow the stepping stone bridge through the soft moss.",
+      "celebration": "Tomo crossed the trail with calm, safe steps all the way home.",
+      "gameplayMode": "path",
+      "pathColumns": 3,
+      "pathCells": [
+        { "id": "start", "label": "Start" },
+        { "id": "berries", "label": "Berries" },
+        { "id": "puddle", "label": "Puddle" },
+        { "id": "stone", "label": "Stone" },
+        { "id": "bridge", "label": "Bridge" },
+        { "id": "bramble", "label": "Bramble" },
+        { "id": "stream", "label": "Stream" },
+        { "id": "moss", "label": "Moss" },
+        { "id": "home", "label": "Home" }
+      ],
+      "pathSequence": ["start", "stone", "bridge", "moss", "home"]
+    },
+    {
+      "id": "level-05",
+      "zoneId": "firefly-hollow",
+      "characterId": "luma",
+      "name": "Catch the Firefly Pattern",
+      "type": "Memory sequence",
+      "difficulty": "Easy+",
+      "reward": "Glow badge",
+      "prompt": "Tap the lights in the same order as Luma's sparkle dance.",
+      "hint": "The order is Glow, Pause, Glow, Sparkle.",
+      "celebration": "Luma flashed the exact pattern and filled the hollow with bright little lights.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "glow", "label": "Glow" },
+        { "id": "pause", "label": "Pause" },
+        { "id": "sparkle", "label": "Sparkle" },
+        { "id": "hum", "label": "Hum" }
+      ],
+      "memorySequence": ["glow", "pause", "glow", "sparkle"]
+    },
+    {
+      "id": "level-06",
+      "zoneId": "firefly-hollow",
+      "characterId": "pip",
+      "name": "Find the Moon Blossom",
+      "type": "Hidden object",
+      "difficulty": "Easy+",
+      "reward": "Moon petal",
+      "prompt": "Which forest item glows softly when night flowers bloom?",
+      "hint": "Look for the flower that opens at twilight, not the noisy branch or sleepy stone.",
+      "celebration": "Pip found the moon blossom and the whole hollow smelled sweet and bright.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "branch",
+          "label": "Twisty branch",
+          "isCorrect": false,
+          "reply": "That branch is useful for nests, but it does not bloom at night."
+        },
+        {
+          "id": "moon-blossom",
+          "label": "Moon blossom",
+          "isCorrect": true,
+          "reply": "Exactly. The moon blossom opens when the hollow begins to glow."
+        },
+        {
+          "id": "stone",
+          "label": "Sleepy stone",
+          "isCorrect": false,
+          "reply": "That stone stays cool and quiet, but it is not the right clue."
+        }
+      ]
+    },
+    {
+      "id": "level-07",
+      "zoneId": "firefly-hollow",
+      "characterId": "tomo",
+      "name": "Glow Trail Crossing",
+      "type": "Path puzzle",
+      "difficulty": "Easy+",
+      "reward": "Lantern token",
+      "prompt": "Tap the glowing route across Firefly Hollow from Start to Nest.",
+      "hint": "Use the log, then the lantern stones, then the safe stump before the nest.",
+      "celebration": "Tomo crossed the glowing trail without a single wrong splash.",
+      "gameplayMode": "path",
+      "pathColumns": 3,
+      "pathCells": [
+        { "id": "start", "label": "Start" },
+        { "id": "fog", "label": "Fog" },
+        { "id": "reeds", "label": "Reeds" },
+        { "id": "log", "label": "Log" },
+        { "id": "lantern-stone", "label": "Lantern stone" },
+        { "id": "muck", "label": "Muck" },
+        { "id": "rushes", "label": "Rushes" },
+        { "id": "stump", "label": "Stump" },
+        { "id": "nest", "label": "Nest" }
+      ],
+      "pathSequence": ["start", "log", "lantern-stone", "stump", "nest"]
+    },
+    {
+      "id": "level-08",
+      "zoneId": "firefly-hollow",
+      "characterId": "mimi",
+      "name": "Choose Mimi's Night Wing",
+      "type": "Shape match",
+      "difficulty": "Easy+",
+      "reward": "Feather charm",
+      "prompt": "Which wing shape helps Mimi glide through the quiet night air?",
+      "hint": "Choose the curved moon wing, not the square or the spiky sun shape.",
+      "celebration": "Mimi glided through the fireflies with a perfect moon-shaped wing.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "square-wing",
+          "label": "Square wing",
+          "isCorrect": false,
+          "reply": "That wing is too blocky for a soft night glide."
+        },
+        {
+          "id": "moon-wing",
+          "label": "Moon wing",
+          "isCorrect": true,
+          "reply": "Yes. The moon wing curves gently through the night sky."
+        },
+        {
+          "id": "sun-wing",
+          "label": "Spiky sun wing",
+          "isCorrect": false,
+          "reply": "That one is too sharp and bright for this quiet mission."
+        }
+      ]
+    },
+    {
+      "id": "level-09",
+      "zoneId": "river-bend",
+      "characterId": "tomo",
+      "name": "Guide Mimi Home",
+      "type": "Path puzzle",
+      "difficulty": "Medium",
+      "reward": "River ribbon",
+      "prompt": "Tap the safe river route from Start to Home and avoid the rushing water.",
+      "hint": "Move from Start to Stones, then Fern Bridge, then Shell Path, then Home.",
+      "celebration": "Tomo guided everyone across the river with calm, steady steps.",
+      "gameplayMode": "path",
+      "pathColumns": 3,
+      "pathCells": [
+        { "id": "start", "label": "Start" },
+        { "id": "water", "label": "Fast water" },
+        { "id": "reed", "label": "Tall reed" },
+        { "id": "stones", "label": "Stones" },
+        { "id": "fern-bridge", "label": "Fern bridge" },
+        { "id": "eddy", "label": "Eddy" },
+        { "id": "shell-path", "label": "Shell path" },
+        { "id": "log", "label": "Wobbly log" },
+        { "id": "home", "label": "Home" }
+      ],
+      "pathSequence": ["start", "stones", "fern-bridge", "shell-path", "home"]
+    },
+    {
+      "id": "level-10",
+      "zoneId": "river-bend",
+      "characterId": "pip",
+      "name": "Pack the Rescue Basket",
+      "type": "Hidden object",
+      "difficulty": "Medium",
+      "reward": "Rescue badge",
+      "prompt": "Which item belongs in Pip's river rescue basket?",
+      "hint": "Pick the dry blanket, not the splashy stone or the floating leaf.",
+      "celebration": "Pip packed the rescue basket and the river friends felt safe right away.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "river-stone",
+          "label": "River stone",
+          "isCorrect": false,
+          "reply": "That stone is too heavy and cold for the basket."
+        },
+        {
+          "id": "blanket",
+          "label": "Dry blanket",
+          "isCorrect": true,
+          "reply": "Yes. The dry blanket helps tired forest friends warm up."
+        },
+        {
+          "id": "leaf",
+          "label": "Floating leaf",
+          "isCorrect": false,
+          "reply": "That leaf is pretty, but it will drift away in the river wind."
+        }
+      ]
+    },
+    {
+      "id": "level-11",
+      "zoneId": "river-bend",
+      "characterId": "luma",
+      "name": "Turtle Shell Sequence",
+      "type": "Memory sequence",
+      "difficulty": "Medium",
+      "reward": "Shell sparkle",
+      "prompt": "Copy the glowing shell pattern in the same order.",
+      "hint": "The order is Shell, Ripple, Glow, Shell, Nest.",
+      "celebration": "Luma traced the turtle shell pattern and the river shone with calm little circles.",
+      "gameplayMode": "memory",
+      "options": [
+        { "id": "shell", "label": "Shell" },
+        { "id": "ripple", "label": "Ripple" },
+        { "id": "glow", "label": "Glow" },
+        { "id": "nest", "label": "Nest" }
+      ],
+      "memorySequence": ["shell", "ripple", "glow", "shell", "nest"]
+    },
+    {
+      "id": "level-12",
+      "zoneId": "river-bend",
+      "characterId": "mimi",
+      "name": "Choose the Calm River Ending",
+      "type": "Shape match",
+      "difficulty": "Medium",
+      "reward": "Explorer medal",
+      "prompt": "Which final river sign shows the calm, safe home route?",
+      "hint": "Pick the smooth circle sign, not the sharp zigzag or the busy square.",
+      "celebration": "Mimi chose the calm river ending and the whole adventure landed on a peaceful note.",
+      "gameplayMode": "choice",
+      "options": [
+        {
+          "id": "zigzag",
+          "label": "Zigzag sign",
+          "isCorrect": false,
+          "reply": "That sign points toward rough water instead of the calm way home."
+        },
+        {
+          "id": "circle",
+          "label": "Smooth circle sign",
+          "isCorrect": true,
+          "reply": "Exactly. The smooth circle sign marks the peaceful path home."
+        },
+        {
+          "id": "square",
+          "label": "Busy square sign",
+          "isCorrect": false,
+          "reply": "That sign is too busy for the gentle river ending."
+        }
+      ]
+    }
+  ],
+  "rewards": [
+    {
+      "id": "reward-1",
+      "levels": 1,
+      "title": "Leaf star",
+      "detail": "A bright first reward for a happy win."
+    },
+    {
+      "id": "reward-2",
+      "levels": 2,
+      "title": "Acorn sticker pack",
+      "detail": "A starter sticker bundle from Fern Trail."
+    },
+    {
+      "id": "reward-3",
+      "levels": 4,
+      "title": "Trail lantern",
+      "detail": "A keepsake for clearing the full Fern Trail set."
+    },
+    {
+      "id": "reward-4",
+      "levels": 6,
+      "title": "Glow leaf badge",
+      "detail": "A twilight badge for reaching the middle of the adventure."
+    },
+    {
+      "id": "reward-5",
+      "levels": 8,
+      "title": "River ribbon",
+      "detail": "A long ribbon earned for steady progress through the hollow."
+    },
+    {
+      "id": "reward-6",
+      "levels": 10,
+      "title": "Forest friend token",
+      "detail": "A late-game token that celebrates calm, repeated play."
+    },
+    {
+      "id": "reward-7",
+      "levels": 12,
+      "title": "Moonlit explorer medal",
+      "detail": "The final starter medal for clearing every current mission."
+    }
+  ],
+  "soundDesignPlan": [
+    "Character cues use runtime-generated placeholder sounds for greetings, hints, and celebrations.",
+    "The save system keeps progress, stars, and unlock state between sessions on the same device.",
+    "Memory and path missions now use hands-on interaction instead of only text choices.",
+    "Recorded actor audio, ambient loops, and final music can replace the generated cues later."
+  ],
+  "researchHighlights": [
+    "2D layered animation is the smartest first release path for a dense forest world.",
+    "Young children benefit from short missions, gentle retries, and visible progress rewards.",
+    "A lean launch should prove the core loop before large content expansion or paid growth.",
+    "The safest monetization path remains a parent-gated premium unlock, not aggressive ads."
+  ],
+  "parentFacingNotes": [
+    "Free early missions let families test the experience before any premium decision.",
+    "Progress, star ratings, and unlocks now save between sessions on the same device.",
+    "No harsh fail states or countdown timers appear in the first-session flow.",
+    "Adult-facing premium controls stay behind a simple parent gate."
+  ],
+  "monetizationPlan": [
+    "Free preview across Fern Trail and the first half of Firefly Hollow",
+    "Parent gate before any premium unlock control",
+    "One-time full unlock to activate premium zones on the device",
+    "Real billing can replace the local unlock flow later"
+  ],
+  "buildMilestones": [
+    "Replace runtime placeholder art with final sprite sheets and animated scene dressing",
+    "Swap generated cue tones for voiced lines, ambient loops, and polished reward audio",
+    "Run a full Android smoke test in the Unity editor and on target devices",
+    "Integrate production billing, analytics, and release-ready compliance checks"
+  ]
+}
