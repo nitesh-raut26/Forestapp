@@ -104,6 +104,31 @@ namespace ForestFriendsQuest
         public UIPoolManager                UIPool              { get; private set; }
         public AsyncContentLoader           ContentLoader       { get; private set; }
 
+        // ─── Phase 3: Production Completion Systems ───────────────────────────────
+        public AddressableContentManager    AddressableContent  { get; private set; }
+        public ContentVersionManager        VersionManager      { get; private set; }
+        public GuidedTutorialSystem         Tutorial            { get; private set; }
+        public AdaptiveTutorialBrain        TutorialBrain       { get; private set; }
+        public FirstBondSequence            FirstBond           { get; private set; }
+        public SanctuaryDecorationSystem    SanctuaryDecor      { get; private set; }
+        public InteractiveCampfireController CampfireCtrl       { get; private set; }
+        public CreatureHomeBehavior         CreatureHomes       { get; private set; }
+        public SanctuarySeasonalVisuals     SanctuarySeasonals  { get; private set; }
+        public UIAnimationSystem            UIAnim              { get; private set; }
+        public RetentionPacingSystem        Retention           { get; private set; }
+        public ProgressionPacingSystem      Progression         { get; private set; }
+        public EmotionalMilestoneSystem     Milestones          { get; private set; }
+        public WeeklyReportGenerator        WeeklyReport        { get; private set; }
+        public WellnessInsightEngine        WellnessInsights    { get; private set; }
+        public ScreenshotComposer           Screenshots         { get; private set; }
+        public MemoryScrapbookMode          Scrapbook           { get; private set; }
+        public NintendoFeelSystem           NintendoFeel        { get; private set; }
+        public DeviceCapabilityProfiler     DeviceProfiler      { get; private set; }
+        public LocalizationManager          Localization        { get; private set; }
+        public ProductionLogger             Logger              { get; private set; }
+        public ReleaseConfiguration         Config              { get; private set; }
+        public DebugToolkit                 DebugTools          { get; private set; }
+
         // ─── Canvases ─────────────────────────────────────────────────────────────
 
         public Canvas      MainCanvas     { get; private set; }
@@ -400,10 +425,116 @@ namespace ForestFriendsQuest
             UIPool = new UIPoolManager();
 
             ContentLoader = gameObject.AddComponent<AsyncContentLoader>();
-            // LevelDataRegistry must be assigned via ContentLoader.Initialize(registry)
-            // or through the Inspector before any LoadLevel call is issued.
 
-            Debug.Log("[ForestSystemsContainer] All 36 systems initialized successfully.");
+            // ─── Phase 3: Production Completion Systems ───────────────────────────
+
+            // 37. Device profiler (must be before performance)
+            DeviceProfiler = gameObject.AddComponent<DeviceCapabilityProfiler>();
+            DeviceProfiler.Initialize();
+
+            // 38. Release Configuration
+            Config = gameObject.AddComponent<ReleaseConfiguration>();
+            Config.Initialize();
+
+            // 39. Production Logger
+            Logger = gameObject.AddComponent<ProductionLogger>();
+            Logger.Initialize(SaveSystem, !Config.IsDebug);
+
+            // 40. Localization
+            Localization = gameObject.AddComponent<LocalizationManager>();
+            Localization.Initialize();
+
+            // 41. Addressable Content Manager
+            VersionManager = gameObject.AddComponent<ContentVersionManager>();
+            VersionManager.Initialize();
+            if (SaveSystem?.ActiveData != null)
+                VersionManager.MigrateSave(SaveSystem.ActiveData);
+
+            AddressableContent = gameObject.AddComponent<AddressableContentManager>();
+            AddressableContent.Initialize(VersionManager);
+
+            // 42. UI Animation System (Nintendo feel foundation)
+            UIAnim = gameObject.AddComponent<UIAnimationSystem>();
+            UIAnim.Initialize(ReducedMotion);
+
+            // 43. Nintendo Feel System
+            NintendoFeel = gameObject.AddComponent<NintendoFeelSystem>();
+            NintendoFeel.Initialize(UIAnim, CameraFeel, ReducedMotion);
+
+            // 44. Retention Pacing
+            Retention = gameObject.AddComponent<RetentionPacingSystem>();
+            Retention.Initialize(SaveSystem);
+            Retention.OnSessionCapReached += () => Dialogue.GetAdaptedSequence("pip", "break_reminder");
+
+            // 45. Progression Pacing
+            Progression = gameObject.AddComponent<ProgressionPacingSystem>();
+            Progression.Initialize(SaveSystem, Difficulty, World);
+
+            // 46. Emotional Milestone System
+            Milestones = gameObject.AddComponent<EmotionalMilestoneSystem>();
+            Milestones.Initialize(VFX, Audio, Dialogue, UIAnim, ReducedMotion);
+
+            // Wire milestone triggers
+            Evolution.OnStageEvolved     += (id, stage) => Milestones.TriggerEvolutionReveal(id, stage.stageName);
+            World.OnRegionUnlocked       += r           => Milestones.TriggerRegionUnlock(r.displayName);
+            Bosses.OnBossDefeated        += b           => Milestones.TriggerBossDefeat(b.name);
+            Exploration.OnLoreCollected  += loreId      => Milestones.TriggerLoreDiscovery(loreId);
+            Seasons.OnEventAttended      += ev          => Milestones.TriggerSeasonalEventReveal(ev.title);
+            Progression.OnMilestoneReached += count    => Milestones.TriggerPuzzleMilestone(count);
+
+            // 47. Sanctuary Decoration System (full 30-item catalogue)
+            SanctuaryDecor = gameObject.AddComponent<SanctuaryDecorationSystem>();
+            SanctuaryDecor.Initialize(BondingEngine, SaveSystem, VFX);
+
+            // 48. Interactive Campfire Controller
+            CampfireCtrl = gameObject.AddComponent<InteractiveCampfireController>();
+            CampfireCtrl.Initialize(TimeController, BondingEngine, Audio, VFX);
+            CampfireCtrl.OnStoryUnlocked  += storyId => Scrapbook?.RecordSeasonalEvent(storyId, SeasonManager?.CurrentSeason ?? "spring");
+
+            // 49. Creature Home Behavior
+            CreatureHomes = gameObject.AddComponent<CreatureHomeBehavior>();
+            CreatureHomes.Initialize(BondingEngine, TimeController, VFX, Audio);
+            CreatureHomes.OnHomeUpgraded  += (id, state) => Milestones.TriggerEvolutionReveal(id, state.ToString());
+
+            // 50. Sanctuary Seasonal Visuals
+            SanctuarySeasonals = gameObject.AddComponent<SanctuarySeasonalVisuals>();
+            SanctuarySeasonals.Initialize(SeasonManager, SanctuaryDecor, Particles, TimeController, ReducedMotion);
+
+            // 51. Onboarding systems
+            TutorialBrain = gameObject.AddComponent<AdaptiveTutorialBrain>();
+            TutorialBrain.Initialize(SaveSystem?.ActiveData);
+
+            Tutorial = gameObject.AddComponent<GuidedTutorialSystem>();
+            Tutorial.Initialize(TutorialBrain, SaveSystem, VFX, Dialogue);
+
+            FirstBond = gameObject.AddComponent<FirstBondSequence>();
+            FirstBond.Initialize(BondingEngine, VFX, Dialogue, Audio, ReducedMotion, MoodBrain);
+            FirstBond.OnBondSequenceComplete += id => Scrapbook?.RecordBondMoment(id, BondingEngine?.GetBondLevel(id) ?? 1);
+
+            // 52. Parent premium systems
+            WeeklyReport = gameObject.AddComponent<WeeklyReportGenerator>();
+            WeeklyReport.Initialize(Analytics, BondingEngine, Achievements, Retention);
+
+            WellnessInsights = gameObject.AddComponent<WellnessInsightEngine>();
+            WellnessInsights.Initialize(Analytics, Difficulty, BondingEngine, Retention);
+
+            // 53. Social systems
+            Scrapbook = gameObject.AddComponent<MemoryScrapbookMode>();
+            Scrapbook.Initialize(SaveSystem, UIAnim);
+
+            Screenshots = gameObject.AddComponent<ScreenshotComposer>();
+            Screenshots.Initialize(Evolution, BondingEngine, SanctuaryDecor, UIAnim);
+
+            // Wire scrapbook to progression events
+            Bosses.OnBossDefeated  += b => Scrapbook.RecordBossDefeat(b.name, "unknown");
+            Evolution.OnStageEvolved += (id, stage) => Scrapbook.RecordEvolution(id, stage.stageName);
+            Exploration.OnLoreCollected += loreId => Scrapbook.RecordLoreDiscovery(loreId, "unknown");
+
+            // 54. Debug Toolkit (Release-builds auto-disable)
+            DebugTools = gameObject.AddComponent<DebugToolkit>();
+            DebugTools.Initialize(this, Config);
+
+            Debug.Log("[ForestSystemsContainer] All 54 production systems initialized successfully.");
         }
 
         // ─── Canvas Hierarchy ─────────────────────────────────────────────────────
