@@ -5,7 +5,7 @@ namespace ForestFriendsQuest
     [Serializable]
     public class ForestSaveData
     {
-        public int version = 3;
+        public int version = 4;
         public bool premiumUnlocked;
         public bool soundEnabled = true;
         public int totalLevelAttempts;
@@ -62,6 +62,10 @@ namespace ForestFriendsQuest
         // Season/day tracking for offline progression
         public int  totalInGameDays;     // incremented per real calendar day played
         public int  currentSeasonIndex;  // 0=Spring, 1=Summer, 2=Autumn, 3=Winter
+
+        // Achievement state — stored in JSON so it survives app reinstall on Android
+        // (PlayerPrefs is wiped on reinstall; persistent data path is not)
+        public string[] unlockedAchievementIds;
     }
 
     [Serializable]

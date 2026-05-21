@@ -144,13 +144,23 @@ namespace ForestFriendsQuest
         public void SetAchievementUnlocked(string id, bool unlocked)
         {
             if (_activeData == null) return;
-            PlayerPrefs.SetInt($"FFQ.Achievement.{id}", unlocked ? 1 : 0);
-            PlayerPrefs.Save();
+
+            var ids  = _activeData.unlockedAchievementIds ?? System.Array.Empty<string>();
+            var list = new System.Collections.Generic.List<string>(ids);
+
+            if (unlocked && !list.Contains(id))
+                list.Add(id);
+            else if (!unlocked)
+                list.Remove(id);
+
+            _activeData.unlockedAchievementIds = list.ToArray();
+            Save(_activeData);
         }
 
         public bool IsAchievementUnlocked(string id)
         {
-            return PlayerPrefs.GetInt($"FFQ.Achievement.{id}", 0) == 1;
+            if (_activeData?.unlockedAchievementIds == null) return false;
+            return System.Array.IndexOf(_activeData.unlockedAchievementIds, id) >= 0;
         }
 
         /// <summary>Write a daily ritual completion flag (date-keyed).</summary>

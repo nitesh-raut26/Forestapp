@@ -195,5 +195,15 @@ namespace ForestFriendsQuest
         {
             return GetTodaysRitual().type;
         }
+
+        /// <summary>Inject a ritual from LiveContentPipeline — added to pool immediately.</summary>
+        public void RegisterLiveRitual(DailyRitual ritual)
+        {
+            if (ritual == null || string.IsNullOrEmpty(ritual.id)) return;
+            // Avoid duplicate injection
+            if (AllRituals.Exists(r => r.id == ritual.id)) return;
+            AllRituals.Add(ritual);
+            Debug.Log($"[DailyRitualSystem] Live ritual registered: {ritual.id}");
+        }
     }
 }

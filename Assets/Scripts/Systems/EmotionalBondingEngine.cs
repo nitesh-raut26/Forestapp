@@ -186,19 +186,23 @@ namespace ForestFriendsQuest
         public void HydrateFromSave(ForestSaveData saveData)
         {
             if (saveData == null) return;
-            GetBondState("pip").bondLevel = saveData.pipBond;
+            GetBondState("pip").bondLevel  = saveData.pipBond;
             GetBondState("mimi").bondLevel = saveData.mimiBond;
             GetBondState("tomo").bondLevel = saveData.tomoBond;
             GetBondState("luma").bondLevel = saveData.lumaBond;
+            GetBondState("nori").bondLevel = saveData.noriBond;
+            GetBondState("sol").bondLevel  = saveData.solBond;
         }
 
         public void SyncToSave(ForestSaveData saveData)
         {
             if (saveData == null) return;
-            saveData.pipBond = GetBondState("pip").bondLevel;
+            saveData.pipBond  = GetBondState("pip").bondLevel;
             saveData.mimiBond = GetBondState("mimi").bondLevel;
             saveData.tomoBond = GetBondState("tomo").bondLevel;
             saveData.lumaBond = GetBondState("luma").bondLevel;
+            saveData.noriBond = GetBondState("nori").bondLevel;
+            saveData.solBond  = GetBondState("sol").bondLevel;
         }
     }
 }

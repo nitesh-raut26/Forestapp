@@ -101,6 +101,7 @@ namespace ForestFriendsQuest
             if (region.discoveredLoreIds.Contains(loreId)) return;
 
             region.discoveredLoreIds.Add(loreId);
+            region.loreCollected = true;
             OnLoreDiscovered?.Invoke(loreId);
 
             if (_saveSystem != null)

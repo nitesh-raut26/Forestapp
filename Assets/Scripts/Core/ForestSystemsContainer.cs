@@ -73,6 +73,37 @@ namespace ForestFriendsQuest
         public CreatureEvolutionSystem      Evolution           { get; private set; }
         public BossEncounterSystem          Bosses              { get; private set; }
 
+        // ─── Phase 2 AAA Systems ──────────────────────────────────────────────────
+        public UIStateController            UIState             { get; private set; }
+        public ForestUIRouter               UIRouter            { get; private set; }
+        public AnimatedTransitionController Transitions         { get; private set; }
+        public AccessibilityManager         Accessibility       { get; private set; }
+        public ReducedMotionController      ReducedMotion       { get; private set; }
+        public ForestMusicDirector          MusicDirector       { get; private set; }
+        public AudioAssetLibrary            AudioLibrary        { get; private set; }
+        public DynamicAmbientMixer          AmbientMixer        { get; private set; }
+        public PuzzleSFXManager             PuzzleSFX           { get; private set; }
+        public CreatureVoiceSystem          CreatureVoice       { get; private set; }
+        public CreatureMoodBrain            MoodBrain           { get; private set; }
+        public RelationshipMemorySystem     RelationshipMemory  { get; private set; }
+        public DynamicSeasonManager         SeasonManager       { get; private set; }
+        public RareWorldEventSystem         WorldEvents         { get; private set; }
+        public EnvironmentalStorySystem     StorySystem         { get; private set; }
+        public LivingWorldController        LivingWorld         { get; private set; }
+        public WeeklyInsightGenerator       WeeklyInsights      { get; private set; }
+
+        // ─── Performance + VFX Overhaul ───────────────────────────────────────────
+        public PerformanceManager           Performance         { get; private set; }
+        public MemoryBudgetController       MemoryBudget        { get; private set; }
+        public FireflyTrailSystem           FireflyFX           { get; private set; }
+        public WaterRippleSystem            WaterFX             { get; private set; }
+        public SpriteParticleRenderer       SpriteParticles     { get; private set; }
+        public EnvironmentalFXDirector      EnvFX               { get; private set; }
+
+        // ─── Task 7: Performance Utilities ────────────────────────────────────────
+        public UIPoolManager                UIPool              { get; private set; }
+        public AsyncContentLoader           ContentLoader       { get; private set; }
+
         // ─── Canvases ─────────────────────────────────────────────────────────────
 
         public Canvas      MainCanvas     { get; private set; }
@@ -251,7 +282,128 @@ namespace ForestFriendsQuest
                 if (Exploration.TotalLoreCollected >= 12) Achievements.TryUnlock("sec_lore_complete");
             };
 
-            Debug.Log("[ForestSystemsContainer] All 24 systems initialized successfully.");
+            // ─── Phase 2 AAA Systems ───────────────────────────────────────────────
+
+            // 25. Accessibility
+            Accessibility = gameObject.AddComponent<AccessibilityManager>();
+            Accessibility.Initialize(ForestUiFactory.GetDefaultFont(), ForestUiFactory.GetDefaultFont());
+
+            // 26. Animated Transitions
+            Transitions = gameObject.AddComponent<AnimatedTransitionController>();
+
+            // 27-28. UI State Controller + Router (mutually dependent — router created first)
+            UIRouter = gameObject.AddComponent<ForestUIRouter>();
+            UIState  = gameObject.AddComponent<UIStateController>();
+            UIState.Initialize(Transitions, UIRouter);
+            UIRouter.Initialize(UIState, this, SaveSystem?.ActiveData);
+
+            // 29. Reduced Motion
+            ReducedMotion = gameObject.AddComponent<ReducedMotionController>();
+            ReducedMotion.Initialize(Particles, Transitions);
+
+            // Wire accessibility calm mode to reduced motion
+            var savedCalmMode = UnityEngine.PlayerPrefs.GetInt("FFQ.Access.CalmMode", 0) == 1;
+            if (savedCalmMode) { Accessibility.SetCalmMode(true); ReducedMotion.SetReducedMotion(true); }
+
+            // 30. Audio Library + Music Director
+            AudioLibrary = gameObject.AddComponent<AudioAssetLibrary>();
+
+            var audioGo = new GameObject("MusicDirector");
+            audioGo.transform.SetParent(transform, false);
+            MusicDirector = audioGo.AddComponent<ForestMusicDirector>();
+            MusicDirector.Initialize(AudioLibrary);
+
+            AmbientMixer = gameObject.AddComponent<DynamicAmbientMixer>();
+            AmbientMixer.Initialize(AudioLibrary);
+
+            PuzzleSFX = gameObject.AddComponent<PuzzleSFXManager>();
+            PuzzleSFX.Initialize(AudioLibrary);
+
+            // 31. Creature Systems
+            MoodBrain = gameObject.AddComponent<CreatureMoodBrain>();
+            MoodBrain.Initialize(BondingEngine);
+
+            CreatureVoice = gameObject.AddComponent<CreatureVoiceSystem>();
+            CreatureVoice.Initialize(AudioLibrary, MoodBrain);
+
+            RelationshipMemory = gameObject.AddComponent<RelationshipMemorySystem>();
+            RelationshipMemory.Initialize();
+
+            // 32. Living World
+            SeasonManager = gameObject.AddComponent<DynamicSeasonManager>();
+            SeasonManager.Initialize(SaveSystem);
+
+            WorldEvents = gameObject.AddComponent<RareWorldEventSystem>();
+            WorldEvents.Initialize(SeasonManager, SaveSystem);
+
+            StorySystem = gameObject.AddComponent<EnvironmentalStorySystem>();
+            StorySystem.Initialize(SeasonManager, World, WorldEvents);
+
+            LivingWorld = gameObject.AddComponent<LivingWorldController>();
+            LivingWorld.Initialize(SeasonManager, WorldEvents, StorySystem, MusicDirector);
+
+            // Wire region unlock to music director
+            World.OnRegionUnlocked += r => MusicDirector.OnRegionUnlocked(r.regionId);
+
+            // Wire boss events to music director
+            Bosses.OnBossDefeated += boss =>
+            {
+                MusicDirector.OnBossDefeated();
+                PuzzleSFX.OnPuzzleComplete();
+            };
+
+            // 33. Weekly Insights
+            WeeklyInsights = gameObject.AddComponent<WeeklyInsightGenerator>();
+            WeeklyInsights.Initialize(Analytics, Achievements, BondingEngine);
+
+            // 34. Performance
+            Performance = gameObject.AddComponent<PerformanceManager>();
+            Performance.Initialize();
+
+            // Apply performance caps to existing systems
+            if (!Performance.AmbientVFXEnabled)
+            {
+                AmbientVFX.gameObject.SetActive(false);
+                Glow.gameObject.SetActive(false);
+            }
+
+            // 35. Memory Budget
+            MemoryBudget = gameObject.AddComponent<MemoryBudgetController>();
+            MemoryBudget.Initialize(Performance, AudioLibrary);
+
+            // 36. VFX Overhaul systems (attached to VFX layer)
+            var vfxOverhaulGo = new GameObject("VFXOverhaul");
+            vfxOverhaulGo.transform.SetParent(transform, false);
+
+            FireflyFX = vfxOverhaulGo.AddComponent<FireflyTrailSystem>();
+            FireflyFX.Initialize(_vfxLayer, Performance);
+
+            WaterFX = vfxOverhaulGo.AddComponent<WaterRippleSystem>();
+            WaterFX.Initialize(_vfxLayer, Performance);
+
+            SpriteParticles = vfxOverhaulGo.AddComponent<SpriteParticleRenderer>();
+            SpriteParticles.Initialize(_vfxLayer, Performance);
+
+            EnvFX = vfxOverhaulGo.AddComponent<EnvironmentalFXDirector>();
+            EnvFX.Initialize(FireflyFX, WaterFX, Particles, AmbientVFX, Performance);
+
+            // Wire zone changes to environmental FX
+            Exploration.OnZoneFirstVisited += zoneId => EnvFX.OnZoneChanged(zoneId);
+
+            // Wire season changes to environmental FX
+            SeasonManager.OnSeasonChanged += (prev, next) => EnvFX.OnSeasonChanged(next);
+
+            // Wire world events to environmental FX
+            WorldEvents.OnEventStarted += e => EnvFX.OnWorldEventStarted(e);
+
+            // Task 7 — Performance Utilities
+            UIPool = new UIPoolManager();
+
+            ContentLoader = gameObject.AddComponent<AsyncContentLoader>();
+            // LevelDataRegistry must be assigned via ContentLoader.Initialize(registry)
+            // or through the Inspector before any LoadLevel call is issued.
+
+            Debug.Log("[ForestSystemsContainer] All 36 systems initialized successfully.");
         }
 
         // ─── Canvas Hierarchy ─────────────────────────────────────────────────────

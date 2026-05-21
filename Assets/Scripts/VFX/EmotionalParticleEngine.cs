@@ -360,11 +360,18 @@ namespace ForestFriendsQuest
             }
         }
 
+        // ─── Emission Toggle (for calm / reduced-motion mode) ─────────────────────
+
+        private bool _emissionEnabled = true;
+
+        public void SetEmissionEnabled(bool enabled) => _emissionEnabled = enabled;
+
         // ─── Public Spawn API ────────────────────────────────────────────────────
 
         /// <summary>Spawn N particles of the given emotional type at a canvas position.</summary>
         public void Spawn(EmotionalParticleType type, Vector2 canvasPosition, int count = 6)
         {
+            if (!_emissionEnabled) return;
             if (!Profiles.TryGetValue(type, out var profile)) return;
 
             for (var i = 0; i < count; i++)
