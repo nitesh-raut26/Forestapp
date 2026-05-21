@@ -99,9 +99,15 @@ namespace ForestFriendsQuest
             {
                 _cache.Remove(key);
                 _refCounts.Remove(key);
-                Resources.UnloadUnusedAssets();
+                StartCoroutine(UnloadAsync());
                 Debug.Log($"[AddressableContentManager] Released: {key}");
             }
+        }
+
+        private IEnumerator UnloadAsync()
+        {
+            yield return new WaitForSeconds(2f); // defer to avoid mid-frame GC
+            yield return Resources.UnloadUnusedAssets();
         }
 
         /// <summary>Hot-swap a seasonal bundle at runtime (e.g., winter event pack).</summary>

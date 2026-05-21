@@ -173,6 +173,9 @@ namespace ForestFriendsQuest
             }
         }
 
+        public int GetBondLevel(string creatureId)
+            => GetBondState(creatureId)?.bondLevel ?? 0;
+
         public void ShiftCreatureMoods()
         {
             var moods = (CreatureMood[])Enum.GetValues(typeof(CreatureMood));

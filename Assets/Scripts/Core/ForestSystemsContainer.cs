@@ -129,6 +129,16 @@ namespace ForestFriendsQuest
         public ReleaseConfiguration         Config              { get; private set; }
         public DebugToolkit                 DebugTools          { get; private set; }
 
+        // ─── Monetization & Analytics ─────────────────────────────────────────────
+        public CosmeticCatalogSystem        CosmeticCatalog     { get; private set; }
+        public PremiumUnlockController      PremiumUnlocks      { get; private set; }
+        public ParentPurchaseGate           PurchaseGate        { get; private set; }
+        public IAPManager                   IAP                 { get; private set; }
+        public FirebaseAnalyticsConnector   FirebaseAnalytics   { get; private set; }
+        public AnalyticsEventRouter         AnalyticsRouter     { get; private set; }
+        public RetentionCohortTracker       CohortTracker       { get; private set; }
+        public FunnelAnalysisSystem         Funnels             { get; private set; }
+
         // ─── Canvases ─────────────────────────────────────────────────────────────
 
         public Canvas      MainCanvas     { get; private set; }
@@ -534,7 +544,54 @@ namespace ForestFriendsQuest
             DebugTools = gameObject.AddComponent<DebugToolkit>();
             DebugTools.Initialize(this, Config);
 
-            Debug.Log("[ForestSystemsContainer] All 54 production systems initialized successfully.");
+            // ─── Phase 4: Monetization Systems ───────────────────────────────────
+
+            // 55. Cosmetic Catalog
+            CosmeticCatalog = gameObject.AddComponent<CosmeticCatalogSystem>();
+            CosmeticCatalog.Initialize();
+
+            // 56. Premium Unlock Controller
+            PremiumUnlocks = gameObject.AddComponent<PremiumUnlockController>();
+            PremiumUnlocks.Initialize(SanctuaryDecor, CosmeticCatalog, SaveSystem);
+
+            // 57. Parent Purchase Gate (uses a dedicated canvas overlay)
+            var gateCanvasGo = new GameObject("PurchaseGateCanvas");
+            gateCanvasGo.transform.SetParent(transform, false);
+            var gateCanvas = gateCanvasGo.AddComponent<Canvas>();
+            gateCanvas.renderMode  = RenderMode.ScreenSpaceOverlay;
+            gateCanvas.sortingOrder = 99;
+            gateCanvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            PurchaseGate = gameObject.AddComponent<ParentPurchaseGate>();
+            PurchaseGate.Initialize(gateCanvas);
+
+            // 58. IAP Manager
+            IAP = gameObject.AddComponent<IAPManager>();
+            IAP.Initialize(PremiumUnlocks, PurchaseGate);
+
+            // ─── Phase 5: Analytics Systems ──────────────────────────────────────
+
+            // 59. Firebase Analytics Connector
+            FirebaseAnalytics = gameObject.AddComponent<FirebaseAnalyticsConnector>();
+            FirebaseAnalytics.Initialize();
+
+            // 60. Retention Cohort Tracker
+            CohortTracker = gameObject.AddComponent<RetentionCohortTracker>();
+            CohortTracker.Initialize(FirebaseAnalytics);
+
+            // 61. Funnel Analysis System
+            Funnels = gameObject.AddComponent<FunnelAnalysisSystem>();
+            Funnels.Initialize(FirebaseAnalytics);
+
+            // 62. Analytics Event Router (must be last — wires all system events)
+            AnalyticsRouter = gameObject.AddComponent<AnalyticsEventRouter>();
+            AnalyticsRouter.Initialize(FirebaseAnalytics, this);
+
+            // Wire IAP → analytics
+            IAP.OnPurchaseSuccess += productId => FirebaseAnalytics.LogPremiumConversion(productId);
+            IAP.OnPurchaseSuccess += productId => Funnels.OnPurchaseCompleted(productId);
+
+            Debug.Log("[ForestSystemsContainer] All 62 production systems initialized successfully.");
         }
 
         // ─── Canvas Hierarchy ─────────────────────────────────────────────────────

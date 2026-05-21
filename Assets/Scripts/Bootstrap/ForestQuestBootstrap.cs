@@ -14,7 +14,7 @@ namespace ForestFriendsQuest
     ///   1. Camera (if missing)
     ///   2. EventSystem (if missing)
     ///   3. Root GameObject (DontDestroyOnLoad)
-    ///      ├── ForestSystemsContainer.InitializeAll()  ← all 19 systems
+    ///      ├── ForestSystemsContainer.InitializeAll()  ← all 54 systems
     ///      └── ForestQuestApp                          ← UI + game loop
     /// </summary>
     public static class ForestQuestBootstrap

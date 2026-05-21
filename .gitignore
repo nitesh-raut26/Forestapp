@@ -45,6 +45,13 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Build-signing secrets — never commit these
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+steam_appid.txt
+
 # OS share files
 .DS_Store
 .DS_Store?
