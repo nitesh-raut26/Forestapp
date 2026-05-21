@@ -86,6 +86,21 @@ namespace ForestFriendsQuest
                 OnItemRemoved?.Invoke(item);
         }
 
+        /// <summary>
+        /// Unlock all high-tier premium decoration items immediately (called by PremiumUnlockController
+        /// when the PremiumDecorPack IAP product is purchased). Items with bondRequired >= 20
+        /// are gated as "premium tier" that normally require deep progression.
+        /// </summary>
+        public void UnlockPremiumCategory()
+        {
+            foreach (var item in _catalogue.Values)
+            {
+                if (item.bondRequired >= 20)
+                    UnlockItem(item.id);
+            }
+            Debug.Log("[SanctuaryDecorationSystem] Premium category unlocked.");
+        }
+
         /// <summary>Apply a seasonal visual theme to the sanctuary.</summary>
         public void ApplySeasonTheme(string season)
         {

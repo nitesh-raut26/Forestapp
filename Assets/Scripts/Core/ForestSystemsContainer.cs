@@ -312,7 +312,7 @@ namespace ForestFriendsQuest
                 Biome.EnterBiome(zoneId);
             };
 
-            Exploration.OnLoreCollected += (_) =>
+            Exploration.OnLoreCollected += _ =>
             {
                 if (Exploration.TotalLoreCollected >= 12) Achievements.TryUnlock("sec_lore_complete");
             };
@@ -488,7 +488,7 @@ namespace ForestFriendsQuest
             Evolution.OnStageEvolved     += (id, stage) => Milestones.TriggerEvolutionReveal(id, stage.stageName);
             World.OnRegionUnlocked       += r           => Milestones.TriggerRegionUnlock(r.displayName);
             Bosses.OnBossDefeated        += b           => Milestones.TriggerBossDefeat(b.name);
-            Exploration.OnLoreCollected  += loreId      => Milestones.TriggerLoreDiscovery(loreId);
+            Exploration.OnLoreCollected  += entry       => Milestones.TriggerLoreDiscovery(entry.title);
             Seasons.OnEventAttended      += ev          => Milestones.TriggerSeasonalEventReveal(ev.title);
             Progression.OnMilestoneReached += count    => Milestones.TriggerPuzzleMilestone(count);
 
@@ -499,7 +499,7 @@ namespace ForestFriendsQuest
             // 48. Interactive Campfire Controller
             CampfireCtrl = gameObject.AddComponent<InteractiveCampfireController>();
             CampfireCtrl.Initialize(TimeController, BondingEngine, Audio, VFX);
-            CampfireCtrl.OnStoryUnlocked  += storyId => Scrapbook?.RecordSeasonalEvent(storyId, SeasonManager?.CurrentSeason ?? "spring");
+            CampfireCtrl.OnStoryUnlocked  += storyId => Scrapbook?.RecordSeasonalEvent(storyId, SeasonManager?.CurrentSeason.ToString() ?? "spring");
 
             // 49. Creature Home Behavior
             CreatureHomes = gameObject.AddComponent<CreatureHomeBehavior>();
@@ -538,7 +538,7 @@ namespace ForestFriendsQuest
             // Wire scrapbook to progression events
             Bosses.OnBossDefeated  += b => Scrapbook.RecordBossDefeat(b.name, "unknown");
             Evolution.OnStageEvolved += (id, stage) => Scrapbook.RecordEvolution(id, stage.stageName);
-            Exploration.OnLoreCollected += loreId => Scrapbook.RecordLoreDiscovery(loreId, "unknown");
+            Exploration.OnLoreCollected += entry => Scrapbook.RecordLoreDiscovery(entry.title, entry.zoneId ?? "unknown");
 
             // 54. Debug Toolkit (Release-builds auto-disable)
             DebugTools = gameObject.AddComponent<DebugToolkit>();

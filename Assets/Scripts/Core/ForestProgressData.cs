@@ -9,6 +9,7 @@ namespace ForestFriendsQuest
         public bool premiumUnlocked;
         public bool soundEnabled = true;
         public int totalLevelAttempts;
+        public int totalLevelsCleared;   // puzzles successfully completed (used by ProgressionPacingSystem)
         public int totalHintsUsed;
         public int totalWrongAnswers;
         public LevelProgressData[] levelProgress;

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace ForestFriendsQuest
 {
-    public enum Season { Spring = 0, Summer = 1, Autumn = 2, Winter = 3 }
+    // NOTE: Season enum is defined in SeasonalEventSystem.cs (single canonical definition).
 
     /// <summary>
     /// Advances the in-game season based on real calendar days played.

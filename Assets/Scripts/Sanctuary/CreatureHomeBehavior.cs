@@ -52,7 +52,7 @@ namespace ForestFriendsQuest
             RegisterCreatureHomes();
 
             if (_bonding != null)
-                _bonding.OnBondLevelChanged += OnBondLevelChanged;
+                _bonding.OnBondLevelUp += OnBondLevelChanged;   // OnBondLevelUp is the canonical event
 
             Debug.Log($"[CreatureHomeBehavior] {_homes.Count} creature homes registered.");
         }
@@ -118,7 +118,7 @@ namespace ForestFriendsQuest
 
         private void CheckCreatureReturns()
         {
-            var hour = _time?.CurrentTime ?? 12f;
+            var hour = _time?.CurrentHour ?? 12f;
             foreach (var (id, home) in _homes)
             {
                 if (!IsHomeUnlocked(id)) continue;
@@ -138,7 +138,7 @@ namespace ForestFriendsQuest
         private void OnDestroy()
         {
             if (_bonding != null)
-                _bonding.OnBondLevelChanged -= OnBondLevelChanged;
+                _bonding.OnBondLevelUp -= OnBondLevelChanged;
         }
     }
 

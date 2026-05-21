@@ -87,7 +87,7 @@ namespace ForestFriendsQuest
 
             // ── Phase 2: Bond increment + sparkle ─────────────────────────────────
             _bonding?.IncreaseBond(creatureId, 1);
-            _moodBrain?.SetMood(creatureId, CreatureMood.Joy);
+            _moodBrain?.TriggerReaction(creatureId, CreatureEmotion.Happy); // CreatureMood.Joy → Happy emotion
 
             _vfx?.OnDiscovery(burstPos);
             yield return new WaitForSeconds(reducedMotion ? 0.1f : 0.6f);

@@ -176,6 +176,9 @@ namespace ForestFriendsQuest
         public int GetBondLevel(string creatureId)
             => GetBondState(creatureId)?.bondLevel ?? 0;
 
+        /// <summary>Alias for AddTrust — increases bond progress by <paramref name="amount"/> trust points.</summary>
+        public void IncreaseBond(string creatureId, int amount) => AddTrust(creatureId, amount);
+
         public void ShiftCreatureMoods()
         {
             var moods = (CreatureMood[])Enum.GetValues(typeof(CreatureMood));

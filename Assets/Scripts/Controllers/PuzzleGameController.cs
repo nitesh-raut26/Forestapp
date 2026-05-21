@@ -222,14 +222,21 @@ namespace ForestFriendsQuest
 
             switch (gm)
             {
-                case "choice":         BuildChoicePuzzle(level);          break;
-                case "memory":         BuildMemoryPuzzle(level);          break;
-                case "path":           BuildPathPuzzle(level);            break;
-                case "lightreflection": BuildManagedLightReflection(level); break;
-                case "pressuregate":   BuildManagedPressureGate(level);   break;
-                case "rotatingpath":   BuildManagedRotatingPath(level);   break;
-                case "timememory":     BuildManagedTimeMemory(level);     break;
-                default:               BuildChoicePuzzle(level);          break;
+                case "choice":           BuildChoicePuzzle(level);              break;
+                case "memory":           BuildMemoryPuzzle(level);              break;
+                case "path":             BuildManagedForestRouting(level);      break;
+                case "lightreflection":  BuildManagedLightReflection(level);    break;
+                case "pressuregate":     BuildManagedPressureGate(level);       break;
+                case "rotatingpath":     BuildManagedRotatingPath(level);       break;
+                case "timememory":       BuildManagedTimeMemory(level);         break;
+                case "runesequence":     BuildManagedRuneSequence(level);       break;
+                case "musicpattern":     BuildManagedMusicPattern(level);       break;
+                case "symbolcipher":     BuildManagedSymbolCipher(level);       break;
+                case "shadowmatch":      BuildManagedShadowMatch(level);        break;
+                case "pollensort":       BuildManagedPollenSort(level);         break;
+                case "starconstellation":BuildManagedStarConstellation(level);  break;
+                case "bridgebuilder":    BuildManagedBridgeBuilder(level);      break;
+                default:                 BuildChoicePuzzle(level);              break;
             }
         }
 
@@ -279,9 +286,69 @@ namespace ForestFriendsQuest
             memComp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
         }
 
-        private void BuildPathPuzzle(LevelData level)
+        private void BuildManagedForestRouting(LevelData level)
         {
             _pathTrail.Clear();
+            var comp = _optionsContainer.gameObject.AddComponent<ForestRoutingPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedRuneSequence(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<RuneSequencePuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedMusicPattern(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<MusicPatternPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedSymbolCipher(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<SymbolCipherPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedShadowMatch(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<ShadowMatchPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedPollenSort(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<PollenSortPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedStarConstellation(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<StarConstellationPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
+        }
+
+        private void BuildManagedBridgeBuilder(LevelData level)
+        {
+            var comp = _optionsContainer.gameObject.AddComponent<BridgeBuilderPuzzle>();
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
+                SaveData?.explorerTier ?? "scout");
+            comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
         }
 
         private void BuildManagedLightReflection(LevelData level)
@@ -442,14 +509,21 @@ namespace ForestFriendsQuest
         {
             return gameplayMode switch
             {
-                "memory"          => PuzzleType.MemoryTrail,
-                "path"            => PuzzleType.ForestRouting,
-                "choice"          => PuzzleType.LogicMirror,
-                "pressuregate"    => PuzzleType.PressureGate,
-                "lightreflection" => PuzzleType.LightReflection,
-                "rotatingpath"    => PuzzleType.RotatingPath,
-                "timememory"      => PuzzleType.TimeMemory,
-                _                 => PuzzleType.LogicMirror
+                "memory"           => PuzzleType.MemoryTrail,
+                "path"             => PuzzleType.ForestRouting,
+                "choice"           => PuzzleType.LogicMirror,
+                "pressuregate"     => PuzzleType.PressureGate,
+                "lightreflection"  => PuzzleType.LightReflection,
+                "rotatingpath"     => PuzzleType.RotatingPath,
+                "timememory"       => PuzzleType.TimeMemory,
+                "runesequence"     => PuzzleType.RuneSequence,
+                "musicpattern"     => PuzzleType.MusicPattern,
+                "symbolcipher"     => PuzzleType.SymbolCipher,
+                "shadowmatch"      => PuzzleType.ShadowMatch,
+                "pollensort"       => PuzzleType.PollenSort,
+                "starconstellation"=> PuzzleType.StarConstellation,
+                "bridgebuilder"    => PuzzleType.BridgeBuilder,
+                _                  => PuzzleType.LogicMirror
             };
         }
 
@@ -459,18 +533,33 @@ namespace ForestFriendsQuest
             switch (gameplayMode)
             {
                 case "memory":
+                    Systems.Quests.ProgressObjective("memory_trail_complete");    break;
                 case "timememory":
-                    Systems.Quests.ProgressObjective("memory_trail_complete");
-                    break;
+                    Systems.Quests.ProgressObjective("time_memory_complete");     break;
                 case "path":
+                    Systems.Quests.ProgressObjective("forest_route_completed");   break;
                 case "rotatingpath":
-                    Systems.Quests.ProgressObjective("river_trail_complete");
-                    break;
+                    Systems.Quests.ProgressObjective("rotating_path_solved");     break;
                 case "pressuregate":
+                    Systems.Quests.ProgressObjective("pressure_gate_solved");     break;
                 case "lightreflection":
+                    Systems.Quests.ProgressObjective("light_path_completed");     break;
+                case "runesequence":
+                    Systems.Quests.ProgressObjective("rune_puzzle_solved");       break;
+                case "musicpattern":
+                    Systems.Quests.ProgressObjective("music_pattern_complete");   break;
+                case "symbolcipher":
+                    Systems.Quests.ProgressObjective("symbol_cipher_decoded");    break;
+                case "shadowmatch":
+                    Systems.Quests.ProgressObjective("shadow_matched");           break;
+                case "pollensort":
+                    Systems.Quests.ProgressObjective("pollen_sorted");            break;
+                case "starconstellation":
+                    Systems.Quests.ProgressObjective("constellation_traced");     break;
+                case "bridgebuilder":
+                    Systems.Quests.ProgressObjective("bridge_built");             break;
                 default:
-                    Systems.Quests.ProgressObjective("mirror_puzzle_solved");
-                    break;
+                    Systems.Quests.ProgressObjective("mirror_puzzle_solved");     break;
             }
         }
     }

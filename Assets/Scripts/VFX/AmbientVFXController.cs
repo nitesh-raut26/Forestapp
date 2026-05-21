@@ -21,7 +21,7 @@ namespace ForestFriendsQuest
 
         // ─── Internal State ──────────────────────────────────────────────────────
 
-        private TimeOfDay    _currentTime    = TimeOfDay.Day;
+        private TimeOfDay    _currentTime    = TimeOfDay.Afternoon;  // TimeOfDay.Day doesn't exist; Afternoon is the default daytime state
         private WeatherState _currentWeather = WeatherState.Clear;
 
         private float _fireflyTimer;

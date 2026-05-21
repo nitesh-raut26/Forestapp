@@ -130,6 +130,34 @@ namespace ForestFriendsQuest
             PlayToneSequence(new[] { 330f, 440f, 550f, 660f, 880f, 1100f }, 0.08f, 0.1f);
         }
 
+        /// <summary>
+        /// Play a context-appropriate cue for a creature or environment source.
+        /// Routes to the closest matching procedural tone pattern.
+        /// </summary>
+        public void PlayCreatureCue(string sourceId, string cueType)
+        {
+            if (!_soundEnabled) return;
+            switch (cueType?.ToLower())
+            {
+                case "greeting":
+                    // Warm ascending chime — friendly hello
+                    PlayToneSequence(new[] { 440f, 550f, 660f }, 0.09f, 0.08f);
+                    break;
+                case "warmth":
+                case "ignite":
+                    // Soft crackle-like chord — campfire warmth
+                    PlayToneSequence(new[] { 220f, 330f, 440f }, 0.12f, 0.06f);
+                    break;
+                case "storytime":
+                    // Gentle lullaby arpeggio
+                    PlayToneSequence(new[] { 330f, 415f, 494f, 523f }, 0.14f, 0.07f);
+                    break;
+                default:
+                    PlayTapCue();
+                    break;
+            }
+        }
+
         private float GetCharacterBaseFrequency(CharacterProfile profile)
         {
             if (profile == null || profile.voice == null) return 440f;

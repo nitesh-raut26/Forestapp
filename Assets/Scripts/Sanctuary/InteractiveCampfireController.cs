@@ -143,7 +143,7 @@ namespace ForestFriendsQuest
 
         private void TryUnlockBedtimeStory()
         {
-            var hour = _timeController?.CurrentTime ?? 0f;
+            var hour = _timeController?.CurrentHour ?? 0f;
             bool isDusk = hour >= 18f || hour < 6f; // evening / night
 
             if (isDusk && _isLit && _warmthLevel >= 0.6f)
@@ -166,10 +166,10 @@ namespace ForestFriendsQuest
             Debug.Log($"[InteractiveCampfireController] {creature} gathers at campfire.");
         }
 
-        private void OnTimeChanged(float hour)
+        private void OnTimeChanged(TimeOfDay time)
         {
             // Naturally dim at dawn
-            if (hour >= 6f && hour < 8f && _isLit)
+            if (time == TimeOfDay.Morning && _isLit)
             {
                 _warmthLevel = Mathf.Max(0f, _warmthLevel - 0.1f);
                 if (_warmthLevel <= 0f)

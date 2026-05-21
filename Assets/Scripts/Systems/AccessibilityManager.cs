@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,15 @@ namespace ForestFriendsQuest
 
     public class AccessibilityManager : MonoBehaviour
     {
+        // ─── Events ──────────────────────────────────────────────────────────────
+
+        /// <summary>Fired whenever calm mode is toggled. Passes the new enabled state.</summary>
+        public event Action<bool>              OnCalmModeChanged;
+        /// <summary>Fired whenever the colorblind filter changes. Passes the new filter.</summary>
+        public event Action<ColorblindFilter>  OnColorblindModeChanged;
+
+        // ─── State ───────────────────────────────────────────────────────────────
+
         private bool _dyslexiaFontEnabled = false;
         private bool _calmModeEnabled = false;
         private ColorblindFilter _activeFilter = ColorblindFilter.None;
@@ -40,12 +50,14 @@ namespace ForestFriendsQuest
         {
             _calmModeEnabled = enabled;
             ApplyAccessibilitySettings();
+            OnCalmModeChanged?.Invoke(enabled);
         }
 
         public void SetColorblindFilter(ColorblindFilter filter)
         {
             _activeFilter = filter;
             ApplyAccessibilitySettings();
+            OnColorblindModeChanged?.Invoke(filter);
         }
 
         public void ApplyAccessibilitySettings()

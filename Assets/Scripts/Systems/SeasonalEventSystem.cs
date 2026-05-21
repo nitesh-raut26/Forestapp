@@ -52,6 +52,8 @@ namespace ForestFriendsQuest
         public event Action<Season>        OnSeasonChanged;
         public event Action<SeasonalEvent> OnSpecialEventStarted;
         public event Action<SeasonalEvent> OnSpecialEventEnded;
+        /// <summary>Fired when the player attends (participates in) a seasonal event.</summary>
+        public event Action<SeasonalEvent> OnEventAttended;
 
         // ─── Season State ─────────────────────────────────────────────────────────
 
@@ -114,6 +116,7 @@ namespace ForestFriendsQuest
                 _saveSystem.SetAchievementUnlocked($"SeasonEvent.{eventId}", true);
 
             Debug.Log($"[SeasonalEventSystem] Attended: {ev.title}");
+            OnEventAttended?.Invoke(ev);
         }
 
         public bool HasAttended(string eventId) => _attendedIds.Contains(eventId);

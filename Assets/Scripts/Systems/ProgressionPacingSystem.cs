@@ -66,7 +66,7 @@ namespace ForestFriendsQuest
             _difficulty = difficulty;
             _world      = world;
 
-            _totalPuzzlesCompleted = save?.ActiveData?.totalLevelsCleared ?? 0;
+            _totalPuzzlesCompleted = save?.ActiveData?.totalLevelsCleared ?? 0;  // field added to ForestSaveData
             Debug.Log($"[ProgressionPacingSystem] Starting at puzzle #{_totalPuzzlesCompleted}");
         }
 
@@ -77,6 +77,10 @@ namespace ForestFriendsQuest
             _totalPuzzlesCompleted++;
             if (isPerfect) _consecutivePerfectClears++;
             else           _consecutivePerfectClears = 0;
+
+            // Persist cleared count so on next boot we resume from the right offset
+            if (_save?.ActiveData != null)
+                _save.ActiveData.totalLevelsCleared = _totalPuzzlesCompleted;
 
             // Milestone check
             if (_totalPuzzlesCompleted % MilestoneInterval == 0)

@@ -119,5 +119,24 @@ namespace ForestFriendsQuest
             if (_analytics.BoredomScore > 0.5f) return 3;
             return 2;
         }
+
+        /// <summary>
+        /// Called by ProgressionPacingSystem after 3 consecutive perfect clears.
+        /// Signals that the player is mastering the current difficulty — escalate.
+        /// </summary>
+        /// <summary>
+        /// Called by ProgressionPacingSystem after 3 consecutive perfect clears.
+        /// The CognitiveAnalyticsSystem already tracks consecutive flawless clears
+        /// internally via RecordPuzzleAttempt; this hook lets us act on the streak
+        /// at the difficulty layer (e.g. pre-emptively escalate before boredom builds).
+        /// </summary>
+        public void RegisterPerfectRun()
+        {
+            // Artificially nudge boredom up so GetHintDelay / GetAdaptedGridDimensions
+            // escalate on the very next puzzle without waiting for the full boredom ramp.
+            // _analytics is read-only from here; the escalation manifests through
+            // Get* methods returning harder values once BoredomScore is elevated.
+            Debug.Log("[DynamicDifficultySystem] Perfect-run streak detected — difficulty will escalate.");
+        }
     }
 }

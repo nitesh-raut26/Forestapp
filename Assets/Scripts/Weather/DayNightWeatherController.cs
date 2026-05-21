@@ -19,7 +19,11 @@ namespace ForestFriendsQuest
         Rainy,
         Foggy,
         MeteorShower,
-        Eclipse
+        Eclipse,
+        Misty,       // light morning mist — used in Spring
+        Snowy,       // snowfall — used in Winter
+        Stormy,      // heavy storm with wind
+        Windy        // breezy, leaves blowing — used in Autumn
     }
 
     public class DayNightWeatherController : MonoBehaviour
@@ -43,6 +47,8 @@ namespace ForestFriendsQuest
         public WeatherState CurrentWeather => _currentWeather;
         public string       WeatherName    => _weatherName;
         public float        TimeValue      => _timeOfDayValue;
+        /// <summary>Current time as a 24-hour float (0–23.99). Derived from TimeValue.</summary>
+        public float        CurrentHour    => _timeOfDayValue * 24f;
         /// <summary>Smoothly blended sky overlay colour — use this for camera tints.</summary>
         public Color        SmoothedSkyColor => _currentSkyColor;
 

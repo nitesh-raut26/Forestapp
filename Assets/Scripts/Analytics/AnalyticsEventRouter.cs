@@ -57,9 +57,9 @@ namespace ForestFriendsQuest
             if (_systems.Bosses != null)
                 _systems.Bosses.OnBossDefeated += b => _firebase.LogBossDefeated(b.name);
 
-            // Lore
+            // Lore — OnLoreCollected fires Action<LoreEntry>; pass entry.id to Firebase
             if (_systems.Exploration != null)
-                _systems.Exploration.OnLoreCollected += id => _firebase.LogLoreDiscovered(id);
+                _systems.Exploration.OnLoreCollected += entry => _firebase.LogLoreDiscovered(entry.id);
 
             // Evolution (proxy for deep engagement)
             if (_systems.Evolution != null)
@@ -70,16 +70,16 @@ namespace ForestFriendsQuest
                         { "stage_name",  stage.stageName }
                     });
 
-            // Sanctuary
+            // Sanctuary — event is OnItemPlaced(SanctuaryItem), not OnDecorationPlaced
             if (_systems.SanctuaryDecor != null)
-                _systems.SanctuaryDecor.OnDecorationPlaced += (itemId, pos) =>
-                    _firebase.LogSanctuaryCustomized("place", itemId);
+                _systems.SanctuaryDecor.OnItemPlaced += item =>
+                    _firebase.LogSanctuaryCustomized("place", item.id);
 
             // Accessibility features
             if (_systems.Accessibility != null)
             {
-                _systems.Accessibility.OnCalmModeChanged      += v => { if (v) _firebase.LogAccessibilityEnabled("calm_mode"); };
-                _systems.Accessibility.OnColorblindModeChanged += m => { if (m != ColorblindMode.None) _firebase.LogAccessibilityEnabled($"colorblind_{m}"); };
+                _systems.Accessibility.OnCalmModeChanged       += v => { if (v) _firebase.LogAccessibilityEnabled("calm_mode"); };
+                _systems.Accessibility.OnColorblindModeChanged += m => { if (m != ColorblindFilter.None) _firebase.LogAccessibilityEnabled($"colorblind_{m}"); };
             }
 
             // Premium conversions

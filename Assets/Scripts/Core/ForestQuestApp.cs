@@ -1735,12 +1735,19 @@ namespace ForestFriendsQuest
             if (startLevel != null && _systems?.PuzzleManager != null)
             {
                 var gm = string.IsNullOrEmpty(startLevel.gameplayMode) ? "choice" : startLevel.gameplayMode.ToLower();
-                var pType = gm == "memory"          ? PuzzleType.MemoryTrail
-                          : gm == "path"            ? PuzzleType.ForestRouting
-                          : gm == "pressuregate"    ? PuzzleType.PressureGate
-                          : gm == "lightreflection" ? PuzzleType.LightReflection
-                          : gm == "rotatingpath"    ? PuzzleType.RotatingPath
-                          : gm == "timememory"      ? PuzzleType.TimeMemory
+                var pType = gm == "memory"            ? PuzzleType.MemoryTrail
+                          : gm == "path"              ? PuzzleType.ForestRouting
+                          : gm == "pressuregate"      ? PuzzleType.PressureGate
+                          : gm == "lightreflection"   ? PuzzleType.LightReflection
+                          : gm == "rotatingpath"      ? PuzzleType.RotatingPath
+                          : gm == "timememory"        ? PuzzleType.TimeMemory
+                          : gm == "runesequence"      ? PuzzleType.RuneSequence
+                          : gm == "musicpattern"      ? PuzzleType.MusicPattern
+                          : gm == "symbolcipher"      ? PuzzleType.SymbolCipher
+                          : gm == "shadowmatch"       ? PuzzleType.ShadowMatch
+                          : gm == "pollensort"        ? PuzzleType.PollenSort
+                          : gm == "starconstellation" ? PuzzleType.StarConstellation
+                          : gm == "bridgebuilder"     ? PuzzleType.BridgeBuilder
                           : PuzzleType.LogicMirror;
                 _systems.PuzzleManager.StartPuzzle(pType, _saveData.explorerTier ?? "scout");
 

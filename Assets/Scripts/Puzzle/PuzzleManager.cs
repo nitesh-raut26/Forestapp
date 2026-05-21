@@ -15,7 +15,11 @@ namespace ForestFriendsQuest
         PressureGate,
         LightReflection,
         RotatingPath,
-        TimeMemory
+        TimeMemory,
+        ShadowMatch,
+        PollenSort,
+        StarConstellation,
+        BridgeBuilder,
     }
 
     public enum PuzzleResult
@@ -251,6 +255,33 @@ namespace ForestFriendsQuest
                     break;
                 case PuzzleType.SymbolCipher:
                     _quests.ProgressObjective("symbol_cipher_decoded");
+                    break;
+                case PuzzleType.ForestRouting:
+                    _quests.ProgressObjective("forest_route_completed");
+                    break;
+                case PuzzleType.PressureGate:
+                    _quests.ProgressObjective("pressure_gate_solved");
+                    break;
+                case PuzzleType.LightReflection:
+                    _quests.ProgressObjective("light_path_completed");
+                    break;
+                case PuzzleType.RotatingPath:
+                    _quests.ProgressObjective("rotating_path_solved");
+                    break;
+                case PuzzleType.TimeMemory:
+                    _quests.ProgressObjective("time_memory_complete");
+                    break;
+                case PuzzleType.ShadowMatch:
+                    _quests.ProgressObjective("shadow_matched");
+                    break;
+                case PuzzleType.PollenSort:
+                    _quests.ProgressObjective("pollen_sorted");
+                    break;
+                case PuzzleType.StarConstellation:
+                    _quests.ProgressObjective("constellation_traced");
+                    break;
+                case PuzzleType.BridgeBuilder:
+                    _quests.ProgressObjective("bridge_built");
                     break;
             }
         }

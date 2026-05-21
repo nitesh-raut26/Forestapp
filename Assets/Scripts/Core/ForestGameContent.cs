@@ -12,7 +12,7 @@ namespace ForestFriendsQuest
         public LevelData[] levels;
         public RewardMilestoneData[] rewards;
         public BiomeData[] biomes;
-        public LoreEntry[] lore;
+        public LorePageData[] lore;
         public SeasonalEventData[] seasonalEvents;
         public CreatureEvolutionData[] creatureEvolution;
         public BossData[] bosses;
@@ -149,8 +149,11 @@ namespace ForestFriendsQuest
         public string[] residentCreatureIds;
     }
 
+    // NOTE: The runtime LoreEntry class (id, title, content, zoneId, collected) is
+    // defined in ExplorationAnalyticsSystem.cs. This content-file model is named
+    // LorePageData to avoid CS0101 duplicate-type error.
     [Serializable]
-    public class LoreEntry
+    public class LorePageData
     {
         public string id;
         public string regionId;

@@ -157,6 +157,29 @@ namespace ForestFriendsQuest
             };
         }
 
+        /// <summary>Total number of successfully cleared puzzle sessions this run.</summary>
+        public int GetSessionCount() => _totalClears;
+
+        /// <summary>Fraction of puzzle attempts that ended in failure (0–1).</summary>
+        public float GetErrorRate() => _totalAttempts > 0 ? Mathf.Clamp01((float)(_totalAttempts - _totalClears) / _totalAttempts) : 0f;
+
+        /// <summary>Fraction of puzzle attempts that ended in success (0–1).</summary>
+        public float GetSuccessRate() => _totalAttempts > 0 ? Mathf.Clamp01((float)_totalClears / _totalAttempts) : 0.5f;
+
+        /// <summary>
+        /// Returns the 0–100 score for a named cognitive skill area.
+        /// Recognized keys: "memory", "pattern", "spatial", "logic", "music".
+        /// Music maps to patternScore (rhythm recognition).
+        /// </summary>
+        public float GetSkillScore(string skillKey) => skillKey?.ToLower() switch
+        {
+            "memory"  or "pattern" => _metrics.patternScore,
+            "spatial"              => _metrics.spatialScore,
+            "logic"                => _metrics.logicScore,
+            "music"                => _metrics.patternScore,   // music rhythm ≈ pattern recognition
+            _                      => 0f
+        };
+
         public void HydrateFromSave(int attempts, int mistakes, int hints)
         {
             _totalAttempts = attempts;
