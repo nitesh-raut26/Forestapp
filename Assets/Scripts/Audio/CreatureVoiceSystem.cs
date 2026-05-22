@@ -61,6 +61,22 @@ namespace ForestFriendsQuest
 
         public void PlayInteractionVoice(string creatureId, string interactionType)
         {
+            // Try rich character cue line first (greeting, hint, cheer)
+            var cueType = interactionType switch
+            {
+                "greet" or "greeting" => "greeting",
+                "hint"                => "hint",
+                "cheer" or "win"      => "cheer",
+                _                     => null
+            };
+
+            if (cueType != null)
+            {
+                var cueClip = _library?.GetCharacterCueLine(creatureId, cueType);
+                if (cueClip != null) { _voiceSource.PlayOneShot(cueClip); return; }
+            }
+
+            // Fall back to emotion-mapped voice chirp
             var emotion = interactionType switch
             {
                 "pet"  => CreatureEmotion.Happy,
