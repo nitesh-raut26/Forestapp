@@ -2652,6 +2652,12 @@ namespace ForestFriendsQuest
         {
             var currentTier = _saveData.explorerTier ?? "scout";
 
+            // ── Character Showcase (live animated GIF preview of all 6 guides) ──────
+            var showcaseSection = CreateSection(_scrollContent, "Your Forest Friends", "Meet all 6 guide companions", true);
+            var showcaseHolder  = ForestUiFactory.CreateUiObject("ShowcaseHolder", showcaseSection);
+            ForestUiFactory.AddLayout(showcaseHolder.gameObject, preferredHeight: 620f, flexibleWidth: 1f);
+            CharacterShowcaseAnimator.Create(_font, showcaseHolder);
+
             var sanctuaryBody = CreateSection(_scrollContent, "Sanctuary Sandbox", "My Cozy Forest Meadow", false);
             CreateBodyText(sanctuaryBody, "A safe place for your forest keepsakes. Drag and drop decorations to build your magical clearing!", _forest, 20);
 
