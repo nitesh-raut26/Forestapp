@@ -67,6 +67,84 @@ namespace ForestFriendsQuest
             return clip;
         }
 
+        // ─── Character Cue Lines ─────────────────────────────────────────────────
+        // Richer multi-note phrases for "greeting", "hint", and "cheer" per character.
+        // Each phrase reflects the character's personality and pitch register.
+
+        public AudioClip GetCharacterCueLine(string characterId, string cueType)
+        {
+            var key = $"cue_{characterId}_{cueType}";
+            if (_cache.TryGetValue(key, out var cached)) return cached;
+
+            var clip = characterId switch
+            {
+                "pip"  => PipCue(cueType),
+                "mimi" => MimiCue(cueType),
+                "tomo" => TomoCue(cueType),
+                "luma" => LumaCue(cueType),
+                "nori" => NoriCue(cueType),
+                "sol"  => SolCue(cueType),
+                _      => null
+            };
+
+            if (clip != null) _cache[key] = clip;
+            return clip;
+        }
+
+        // pip — bright fox scout (C5 = 523.3 Hz): quick, chirpy, adventurous
+        private AudioClip PipCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 523.3f, 587.3f, 659.3f, 783.9f },         0.08f, 0.11f),
+            "hint"     => SynthLoop(new[] { 587.3f, 523.3f, 659.3f },                 0.09f, 0.10f),
+            "cheer"    => SynthLoop(new[] { 523.3f, 659.3f, 783.9f, 880f, 1046.5f }, 0.07f, 0.12f),
+            _          => SynthChirp(523.3f, 2, 0.07f, 0.10f)
+        };
+
+        // mimi — sweet songbird (E5 = 659.3 Hz): melodic, harmonic, joyful
+        private AudioClip MimiCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 659.3f, 783.9f, 880f, 783.9f },           0.10f, 0.13f),
+            "hint"     => SynthLoop(new[] { 783.9f, 880f, 659.3f },                   0.11f, 0.12f),
+            "cheer"    => SynthChord(new[] { 659.3f, 783.9f, 880f, 987.8f },          0.35f, 0.13f),
+            _          => SynthChirp(659.3f, 2, 0.08f, 0.11f)
+        };
+
+        // tomo — grounded turtle (G4 = 392 Hz): calm, deliberate, wise
+        private AudioClip TomoCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 392f, 440f, 392f },                        0.18f, 0.09f),
+            "hint"     => SynthLoop(new[] { 440f, 392f, 349.2f },                      0.17f, 0.09f),
+            "cheer"    => SynthLoop(new[] { 392f, 493.9f, 587.3f },                    0.16f, 0.10f),
+            _          => SynthShort(392f, 0.15f, 0.09f)
+        };
+
+        // luma — sparkly firefly (D5 = 587.3 Hz): quick, ethereal, twinkling
+        private AudioClip LumaCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 587.3f, 659.3f, 587.3f, 783.9f },         0.07f, 0.12f),
+            "hint"     => SynthLoop(new[] { 659.3f, 783.9f, 587.3f },                 0.08f, 0.11f),
+            "cheer"    => SynthLoop(new[] { 587.3f, 783.9f, 880f, 1046.5f },          0.07f, 0.13f),
+            _          => SynthChirp(587.3f, 3, 0.06f, 0.11f)
+        };
+
+        // nori — gentle deer guardian (F4 = 349.2 Hz): soft, earthy, natural
+        private AudioClip NoriCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 349.2f, 392f, 440f, 392f },               0.14f, 0.10f),
+            "hint"     => SynthLoop(new[] { 392f, 349.2f, 440f },                     0.15f, 0.10f),
+            "cheer"    => SynthLoop(new[] { 349.2f, 440f, 523.3f, 587.3f },           0.13f, 0.11f),
+            _          => SynthShort(349.2f, 0.12f, 0.09f)
+        };
+
+        // sol — wise arch-druid owl (A4 = 440 Hz): resonant, complex, majestic
+        private AudioClip SolCue(string cue) => cue switch
+        {
+            "greeting" => SynthLoop(new[] { 440f, 349.2f, 440f },                     0.20f, 0.11f),
+            "hint"     => SynthChord(new[] { 440f, 523.3f, 392f },                    0.30f, 0.10f),
+            "cheer"    => SynthLoop(new[] { 440f, 523.3f, 659.3f, 783.9f },           0.15f, 0.12f),
+            _          => SynthShort(440f, 0.18f, 0.10f)
+        };
+
         // ─── Creature Voice Clips ─────────────────────────────────────────────────
 
         public AudioClip GetCreatureVoice(string creatureId, CreatureEmotion emotion)

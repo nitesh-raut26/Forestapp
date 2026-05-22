@@ -69,6 +69,7 @@ namespace ForestFriendsQuest
         // ─── AAA Expansion Systems ────────────────────────────────────────────────
         public WorldStateManager            World               { get; private set; }
         public BiomeController              Biome               { get; private set; }
+        public BiomeBackgroundRenderer      BiomeBackground     { get; private set; }
         public SeasonalEventSystem          Seasons             { get; private set; }
         public CreatureEvolutionSystem      Evolution           { get; private set; }
         public BossEncounterSystem          Bosses              { get; private set; }
@@ -251,6 +252,11 @@ namespace ForestFriendsQuest
             // 21. Biome Controller
             Biome = gameObject.AddComponent<BiomeController>();
             Biome.Initialize(TimeController, Audio);
+
+            // 21b. Biome Background Renderer — wires into Biome.OnBiomeEntered
+            var rootCanvas = FindObjectOfType<Canvas>();
+            if (rootCanvas != null)
+                BiomeBackground = BiomeBackgroundRenderer.Create(Biome, rootCanvas.transform);
 
             // 22. Seasonal Event System
             Seasons = gameObject.AddComponent<SeasonalEventSystem>();
