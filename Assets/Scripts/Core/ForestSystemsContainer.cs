@@ -192,10 +192,19 @@ namespace ForestFriendsQuest
             VFX = vfxGo.AddComponent<VFXManager>();
             VFX.Initialize(Particles, Glow, AmbientVFX);
 
-            // 10. Camera Feel
+            // 10. Camera Feel & Post-Processing Setup
             CameraFeel = Camera.main != null
                 ? Camera.main.gameObject.AddComponent<CameraFeelController>()
                 : gameObject.AddComponent<CameraFeelController>();
+
+            if (Camera.main != null)
+            {
+                var cameraData = Camera.main.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+                if (cameraData == null)
+                    cameraData = Camera.main.gameObject.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+                cameraData.renderPostProcessing = true;
+            }
+            PostProcessingSetup.CreateGlobalVolume();
 
             // 11. Quest Engine
             Quests = gameObject.AddComponent<QuestEngine>();
@@ -254,7 +263,7 @@ namespace ForestFriendsQuest
             Biome.Initialize(TimeController, Audio);
 
             // 21b. Biome Background Renderer — wires into Biome.OnBiomeEntered
-            var rootCanvas = FindObjectOfType<Canvas>();
+            var rootCanvas = FindAnyObjectByType<Canvas>();
             if (rootCanvas != null)
                 BiomeBackground = BiomeBackgroundRenderer.Create(Biome, rootCanvas.transform);
 
@@ -610,6 +619,7 @@ namespace ForestFriendsQuest
             MainCanvas = canvasGo.AddComponent<Canvas>();
             MainCanvas.renderMode  = RenderMode.ScreenSpaceOverlay;
             MainCanvas.sortingOrder = 0;
+            MainCanvas.pixelPerfect = true;
 
             var scaler = canvasGo.AddComponent<CanvasScaler>();
             scaler.uiScaleMode        = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -628,6 +638,7 @@ namespace ForestFriendsQuest
 
             // UI layer — dialogue, HUD, menus (drawn above VFX)
             _uiLayer = CreateLayer("UILayer", 2);
+            _uiLayer.gameObject.AddComponent<SafeArea>();
         }
 
         private RectTransform CreateLayer(string name, int siblingOrder)
@@ -686,7 +697,7 @@ namespace ForestFriendsQuest
             get
             {
                 if (_instance == null)
-                    _instance = FindFirstObjectByType<ForestSystemsContainer>();
+                    _instance = FindAnyObjectByType<ForestSystemsContainer>();
                 return _instance;
             }
         }

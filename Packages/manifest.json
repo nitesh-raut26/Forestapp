@@ -1,5 +1,20 @@
 {
   "dependencies": {
-    "com.unity.ugui": "1.0.0"
+    "com.unity.ugui": "2.0.0",
+    "com.unity.modules.audio": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.unitywebrequest": "1.0.0",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.render-pipelines.universal": "17.0.3",
+    "com.unity.shadergraph": "17.0.3",
+    "com.unity.addressables": "2.2.4",
+    "com.unity.inputsystem": "1.13.0",
+    "com.unity.cinemachine": "3.1.2",
+    "com.unity.adaptiveperformance": "5.1.0",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.spriteshape": "9.0.5",
+    "com.unity.2d.animation": "9.1.1",
+    "com.unity.2d.pixel-perfect": "8.0.3",
+    "com.unity.2d.spriteatlas": "1.0.0"
   }
 }

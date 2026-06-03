@@ -63,7 +63,7 @@ namespace ForestFriendsQuest
         public void ApplyAccessibilitySettings()
         {
             // Traverse all Text elements in active Canvas and apply correct font settings
-            var texts = FindObjectsByType<Text>(FindObjectsSortMode.None);
+            var texts = FindObjectsByType<Text>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var targetFont = _dyslexiaFontEnabled && _dyslexicFont != null ? _dyslexicFont : _standardFont;
 
             if (targetFont != null)

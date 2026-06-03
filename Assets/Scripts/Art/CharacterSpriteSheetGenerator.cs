@@ -8,9 +8,9 @@ namespace ForestFriendsQuest
     // Frames are lazily generated and cached — call GetSpriteSheet / GetEmotionFrame at runtime.
     public static class CharacterSpriteSheetGenerator
     {
-        private const int FrameSize  = 64;
+        private const int FrameSize  = 256;
         private const int FrameCount = 8;
-        private const int SheetW     = FrameSize * FrameCount; // 512
+        private const int SheetW     = FrameSize * FrameCount; // 2048
 
         private static readonly CreatureEmotion[] EmotionOrder =
         {
@@ -61,7 +61,7 @@ namespace ForestFriendsQuest
         private static Texture2D BuildSheet(string id)
         {
             var tex = new Texture2D(SheetW, FrameSize, TextureFormat.RGBA32, false)
-                { filterMode = FilterMode.Point };
+                { filterMode = FilterMode.Bilinear };
             tex.SetPixels(new Color[SheetW * FrameSize]); // clear to transparent
 
             for (var e = 0; e < FrameCount; e++)
@@ -72,7 +72,7 @@ namespace ForestFriendsQuest
                 var bl  = em == CreatureEmotion.Playful || em == CreatureEmotion.Shy;
                 var ey  = (em == CreatureEmotion.Shy || em == CreatureEmotion.Sleepy) ? -1 : 0;
                 var by  = em == CreatureEmotion.Excited ? 2 : (em == CreatureEmotion.Proud ? 1 : 0);
-                var ox  = e * FrameSize;
+                var ox  = e * 64;
 
                 switch (id)
                 {
@@ -425,40 +425,84 @@ namespace ForestFriendsQuest
         private static void E(Texture2D t, int cx, int cy, int rx, int ry, Color c)
         {
             if (rx <= 0 || ry <= 0) return;
-            for (var y = cy - ry; y <= cy + ry; y++)
-                for (var x = cx - rx; x <= cx + rx; x++)
+            float scale = t.height / 64f;
+            int acx = Mathf.RoundToInt(cx * scale);
+            int acy = Mathf.RoundToInt(cy * scale);
+            int arx = Mathf.RoundToInt(rx * scale);
+            int ary = Mathf.RoundToInt(ry * scale);
+            for (var y = acy - ary; y <= acy + ary; y++)
+                for (var x = acx - arx; x <= acx + arx; x++)
                 {
-                    float nx = (x - cx) / (float)rx, ny = (y - cy) / (float)ry;
+                    float nx = (x - acx) / (float)arx, ny = (y - acy) / (float)ary;
                     if (nx * nx + ny * ny <= 1.01f) Blend(t, x, y, c);
                 }
         }
 
         private static void EO(Texture2D t, int cx, int cy, int rx, int ry, Color c)
         {
-            for (var a = 0; a < 360; a += 4)
+            float scale = t.height / 64f;
+            int acx = Mathf.RoundToInt(cx * scale);
+            int acy = Mathf.RoundToInt(cy * scale);
+            int arx = Mathf.RoundToInt(rx * scale);
+            int ary = Mathf.RoundToInt(ry * scale);
+            int steps = 1440;
+            float thickness = Mathf.Max(1f, scale * 0.5f);
+            for (var a = 0; a < steps; a++)
             {
-                var rad = a * Mathf.Deg2Rad;
-                Blend(t, Mathf.RoundToInt(cx + rx * Mathf.Cos(rad)),
-                        Mathf.RoundToInt(cy + ry * Mathf.Sin(rad)), c);
+                var rad = (a * 360f / steps) * Mathf.Deg2Rad;
+                float px = acx + arx * Mathf.Cos(rad);
+                float py = acy + ary * Mathf.Sin(rad);
+                
+                int ipx = Mathf.RoundToInt(px);
+                int ipy = Mathf.RoundToInt(py);
+                if (thickness <= 1f)
+                {
+                    Blend(t, ipx, ipy, c);
+                }
+                else
+                {
+                    int r_brush = Mathf.RoundToInt(thickness / 2f);
+                    for (int dy = -r_brush; dy <= r_brush; dy++)
+                    {
+                        for (int dx = -r_brush; dx <= r_brush; dx++)
+                        {
+                            if (dx*dx + dy*dy <= r_brush*r_brush)
+                                Blend(t, ipx + dx, ipy + dy, c);
+                        }
+                    }
+                }
             }
         }
 
         private static void R(Texture2D t, int x, int y, int w, int h, Color c)
         {
-            for (var py = y; py < y + h; py++)
-                for (var px = x; px < x + w; px++)
+            float scale = t.height / 64f;
+            int ax = Mathf.RoundToInt(x * scale);
+            int ay = Mathf.RoundToInt(y * scale);
+            int aw = Mathf.RoundToInt(w * scale);
+            int ah = Mathf.RoundToInt(h * scale);
+            for (var py = ay; py < ay + ah; py++)
+                for (var px = ax; px < ax + aw; px++)
                     Blend(t, px, py, c);
         }
 
         private static void Tri(Texture2D t, int x0,int y0,int x1,int y1,int x2,int y2, Color c)
         {
-            var mnX = Mathf.Min(x0, Mathf.Min(x1, x2));
-            var mxX = Mathf.Max(x0, Mathf.Max(x1, x2));
-            var mnY = Mathf.Min(y0, Mathf.Min(y1, y2));
-            var mxY = Mathf.Max(y0, Mathf.Max(y1, y2));
+            float scale = t.height / 64f;
+            int ax0 = Mathf.RoundToInt(x0 * scale);
+            int ay0 = Mathf.RoundToInt(y0 * scale);
+            int ax1 = Mathf.RoundToInt(x1 * scale);
+            int ay1 = Mathf.RoundToInt(y1 * scale);
+            int ax2 = Mathf.RoundToInt(x2 * scale);
+            int ay2 = Mathf.RoundToInt(y2 * scale);
+
+            var mnX = Mathf.Min(ax0, Mathf.Min(ax1, ax2));
+            var mxX = Mathf.Max(ax0, Mathf.Max(ax1, ax2));
+            var mnY = Mathf.Min(ay0, Mathf.Min(ay1, ay2));
+            var mxY = Mathf.Max(ay0, Mathf.Max(ay1, ay2));
             for (var py = mnY; py <= mxY; py++)
                 for (var px = mnX; px <= mxX; px++)
-                    if (InTri(px, py, x0, y0, x1, y1, x2, y2))
+                    if (InTri(px, py, ax0, ay0, ax1, ay1, ax2, ay2))
                         Blend(t, px, py, c);
         }
 
@@ -472,19 +516,58 @@ namespace ForestFriendsQuest
 
         private static void L(Texture2D t, int x0, int y0, int x1, int y1, Color c)
         {
-            int dx=Mathf.Abs(x1-x0), sx=x0<x1?1:-1;
-            int dy=-Mathf.Abs(y1-y0), sy=y0<y1?1:-1, err=dx+dy;
+            float scale = t.height / 64f;
+            int ax0 = Mathf.RoundToInt(x0 * scale);
+            int ay0 = Mathf.RoundToInt(y0 * scale);
+            int ax1 = Mathf.RoundToInt(x1 * scale);
+            int ay1 = Mathf.RoundToInt(y1 * scale);
+
+            int dx = Mathf.Abs(ax1 - ax0), sx = ax0 < ax1 ? 1 : -1;
+            int dy = -Mathf.Abs(ay1 - ay0), sy = ay0 < ay1 ? 1 : -1, err = dx + dy;
+            int thickness = Mathf.Max(1, Mathf.RoundToInt(scale * 0.5f));
+
             while (true)
             {
-                Blend(t, x0, y0, c);
-                if (x0==x1 && y0==y1) break;
-                int e2=2*err;
-                if (e2>=dy){err+=dy; x0+=sx;}
-                if (e2<=dx){err+=dx; y0+=sy;}
+                if (thickness <= 1)
+                {
+                    Blend(t, ax0, ay0, c);
+                }
+                else
+                {
+                    for (int dy_t = -thickness / 2; dy_t <= thickness / 2; dy_t++)
+                    {
+                        for (int dx_t = -thickness / 2; dx_t <= thickness / 2; dx_t++)
+                        {
+                            if (dx_t * dx_t + dy_t * dy_t <= (thickness / 2f) * (thickness / 2f))
+                                Blend(t, ax0 + dx_t, ay0 + dy_t, c);
+                        }
+                    }
+                }
+
+                if (ax0 == ax1 && ay0 == ay1) break;
+                int e2 = 2 * err;
+                if (e2 >= dy) { err += dy; ax0 += sx; }
+                if (e2 <= dx) { err += dx; ay0 += sy; }
             }
         }
 
-        private static void P(Texture2D t, int x, int y, Color c) => Blend(t, x, y, c);
+        private static void P(Texture2D t, int x, int y, Color c)
+        {
+            float scale = t.height / 64f;
+            int ax = Mathf.RoundToInt(x * scale);
+            int ay = Mathf.RoundToInt(y * scale);
+            int thickness = Mathf.Max(1, Mathf.RoundToInt(scale * 0.5f));
+            if (thickness <= 1)
+            {
+                Blend(t, ax, ay, c);
+            }
+            else
+            {
+                for (int dy = -thickness / 2; dy <= thickness / 2; dy++)
+                    for (int dx = -thickness / 2; dx <= thickness / 2; dx++)
+                        Blend(t, ax + dx, ay + dy, c);
+            }
+        }
 
         private static void Blend(Texture2D t, int x, int y, Color s)
         {

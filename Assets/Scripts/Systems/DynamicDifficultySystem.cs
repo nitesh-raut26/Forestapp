@@ -120,6 +120,11 @@ namespace ForestFriendsQuest
             return 2;
         }
 
+        public void NotifyMistake()
+        {
+            Debug.Log("[DynamicDifficultySystem] Mistake noted for adaptive pacing.");
+        }
+
         /// <summary>
         /// Called by ProgressionPacingSystem after 3 consecutive perfect clears.
         /// Signals that the player is mastering the current difficulty — escalate.

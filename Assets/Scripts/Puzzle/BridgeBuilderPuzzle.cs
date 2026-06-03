@@ -141,7 +141,6 @@ namespace ForestFriendsQuest
             // Interior: spread gaps evenly among stones
             var rng        = new System.Random(19);
             var gapSlots   = new HashSet<int>(PickGapSlots(interior, _gapCount, rng));
-            int gapCounter = 0;
 
             // Assign gap sequence randomly distributed across the gap slots
             var gapSeqOrder = new List<int>();

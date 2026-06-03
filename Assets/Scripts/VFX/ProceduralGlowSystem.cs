@@ -41,6 +41,7 @@ namespace ForestFriendsQuest
         private class CreaturePulse
         {
             public RectTransform target;
+            public RectTransform rect;
             public Image         glowImage;
             public float         timer;
             public float         duration;

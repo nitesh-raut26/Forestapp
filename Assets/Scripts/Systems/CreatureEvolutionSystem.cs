@@ -93,6 +93,18 @@ namespace ForestFriendsQuest
             return false;
         }
 
+        /// <summary>Debug/QA: immediately advance a creature to its next evolution stage.</summary>
+        public void ForceEvolve(string creatureId)
+        {
+            if (!_paths.TryGetValue(creatureId, out var path)) return;
+            var idx     = _currentStageIndex.TryGetValue(creatureId, out var i) ? i : 0;
+            var nextIdx = Mathf.Min(idx + 1, path.stages.Length - 1);
+            _currentStageIndex[creatureId] = nextIdx;
+            PersistStage(creatureId, nextIdx);
+            OnStageEvolved?.Invoke(creatureId, path.stages[nextIdx]);
+            Debug.Log($"[CreatureEvolution] Force-evolved {creatureId} to stage {nextIdx}");
+        }
+
         // ─── Bond Level Reaction ─────────────────────────────────────────────────
 
         private void OnCreatureBondLevelUp(string creatureId, int newBondLevel)

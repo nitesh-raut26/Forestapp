@@ -7,6 +7,8 @@ namespace ForestFriendsQuest
     public class ForestQuestApp : MonoBehaviour
     {
         private const string SaveKey = "ForestFriendsQuest.Save";
+        private const string PlayScreenMap = "map";
+        private const string PlayScreenMission = "mission";
 
         private readonly HashSet<string> _completedLevelIds = new HashSet<string>();
         private readonly Dictionary<string, LevelProgressData> _levelProgressById = new Dictionary<string, LevelProgressData>();
@@ -28,10 +30,12 @@ namespace ForestFriendsQuest
         private ForestSaveData _saveData;
         private Font _font;
         private ForestAudioController _audioController;
+        private ScrollRect _mainScrollRect;
         private RectTransform _scrollContent;
         private RectTransform _modalLayer;
 
         private string _activeTab = "play";
+        private string _playScreen = PlayScreenMap;
         private string _selectedZoneId;
         private string _selectedLevelId;
         private string _selectedCharacterId;
@@ -60,19 +64,25 @@ namespace ForestFriendsQuest
         private bool _riddle3Solved;
         private bool _logicSwitchActive;
         private TimeMemoryChallenge _activeTimeMemory;
+        private float _pendingMapFocusY = -1f;
+        private float _currentMapHeight = 1920f;
 
         private void Awake()
         {
             _content = ForestDataLoader.Load();
             _font = ForestUiFactory.GetDefaultFont();
             _audioController = gameObject.AddComponent<ForestAudioController>();
+            _systems = ForestSystemsContainer.Instance;
 
             LoadProgress();
             InitializeState();
             BuildCanvas();
             Rebuild();
 
-            _systems = ForestSystemsContainer.Instance;
+            // Force the ContentSizeFitter / VerticalLayoutGroup chain to compute heights
+            // immediately so the scroll view shows content in the very first frame.
+            if (_scrollContent != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollContent);
         }
 
         private void LoadProgress()
@@ -197,24 +207,29 @@ namespace ForestFriendsQuest
 
             var canvas = canvasRoot.gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.pixelPerfect = false;
+            canvas.sortingOrder = 1;   // above MainCanvas (sortingOrder=0) in ForestSystemsContainer
+            canvas.pixelPerfect = true;
 
             var scaler = canvasRoot.gameObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1080f, 1920f);
-            scaler.matchWidthOrHeight = 1f;
+            scaler.matchWidthOrHeight = 0.5f;
 
             canvasRoot.gameObject.AddComponent<GraphicRaycaster>();
 
             var background = ForestUiFactory.CreateImage(canvasRoot, "Background", _forestDeep);
             ForestUiFactory.Stretch(background.rectTransform);
 
-            var scrollRoot = ForestUiFactory.CreateUiObject("ScrollRoot", background.transform);
+            var safeAreaContainer = ForestUiFactory.CreateUiObject("SafeAreaContainer", background.transform);
+            ForestUiFactory.Stretch(safeAreaContainer);
+            safeAreaContainer.gameObject.AddComponent<SafeArea>();
+
+            var scrollRoot = ForestUiFactory.CreateUiObject("ScrollRoot", safeAreaContainer.transform);
             ForestUiFactory.Stretch(scrollRoot);
-            ForestUiFactory.CreateScrollView(scrollRoot, out _scrollContent);
+            _mainScrollRect = ForestUiFactory.CreateScrollView(scrollRoot, out _scrollContent);
             ForestUiFactory.Stretch(scrollRoot);
 
-            _modalLayer = ForestUiFactory.CreateUiObject("ModalLayer", background.transform);
+            _modalLayer = ForestUiFactory.CreateUiObject("ModalLayer", safeAreaContainer.transform);
             ForestUiFactory.Stretch(_modalLayer);
         }
 
@@ -224,6 +239,31 @@ namespace ForestFriendsQuest
 
             ForestUiFactory.ClearChildren(_scrollContent);
             ForestUiFactory.ClearChildren(_modalLayer);
+            _pendingMapFocusY = -1f;
+
+            if (_mainScrollRect != null)
+            {
+                _mainScrollRect.vertical = true;
+                _mainScrollRect.horizontal = false;
+            }
+
+            // ── Showcase tab: full-screen visual experience, no hero/tabs overlay ──
+            if (_activeTab == "showcase")
+            {
+                BuildShowcaseTab();
+                if (_parentGateOpen) BuildParentGateModal();
+                if (_scrollContent != null) LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollContent);
+                return;
+            }
+
+            if (_activeTab == "play")
+            {
+                BuildPlayTab();
+                if (_parentGateOpen) BuildParentGateModal();
+                if (_scrollContent != null) LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollContent);
+                FocusMapOnCurrentGuide();
+                return;
+            }
 
             BuildHero();
             BuildTabs();
@@ -248,6 +288,123 @@ namespace ForestFriendsQuest
             {
                 BuildParentGateModal();
             }
+
+            // Force ContentSizeFitter / VerticalLayoutGroup to compute heights immediately
+            // so every Rebuild() shows content without waiting for the next Canvas update.
+            if (_scrollContent != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollContent);
+        }
+
+        // ── Showcase Tab: AAA Visual Character + Biome Experience ─────────────────
+
+        private void BuildShowcaseTab()
+        {
+            // Full-screen dark background
+            var bg = ForestUiFactory.CreateImage(_scrollContent, "ShowcaseBG",
+                new Color(0.04f, 0.12f, 0.06f, 1f));
+            ForestUiFactory.Stretch(bg.rectTransform);
+
+            // Back button (top-left, always visible)
+            var backBtn = ForestUiFactory.CreateButton(
+                bg.transform,
+                "ShowcaseBack",
+                "◀  Forest",
+                _font,
+                new Color(0.05f, 0.18f, 0.09f, 0.90f),
+                new Color(0.75f, 0.95f, 0.80f),
+                () =>
+                {
+                    _activeTab = "play";
+                    _playScreen = PlayScreenMap;
+                    _audioController.PlaySelect(_soundEnabled);
+                    Rebuild();
+                },
+                22
+            );
+            var backRt = backBtn.GetComponent<RectTransform>();
+            backRt.anchorMin        = new Vector2(0f, 1f);
+            backRt.anchorMax        = new Vector2(0f, 1f);
+            backRt.pivot            = new Vector2(0f, 1f);
+            backRt.anchoredPosition = new Vector2(16f, -16f);
+            backRt.sizeDelta        = new Vector2(180f, 64f);
+
+            // Stretch container for the showcase screen
+            var showcaseHolder = ForestUiFactory.CreateUiObject("ShowcaseHolder", bg.transform);
+            ForestUiFactory.Stretch(showcaseHolder);
+
+            // Build the self-animating visual showcase
+            // Pass the callback so tapping "Play with X" navigates to the game
+            VisualShowcaseScreen.Build(
+                showcaseHolder, _font, _systems,
+                onPlayWithCharacter: (charId) => LaunchGameWithCharacter(charId));
+        }
+
+        /// <summary>
+        /// Called by VisualShowcaseScreen when the player taps "Play with [Character]!".
+        /// Finds the first unlocked level for that character and starts the game.
+        /// </summary>
+        private void LaunchGameWithCharacter(string characterId)
+        {
+            if (string.IsNullOrEmpty(characterId)) return;
+
+            // Find the best level for this character
+            LevelData target = null;
+
+            if (_content?.levels != null)
+            {
+                // First pass: find an unlocked, incomplete level for this character
+                foreach (var level in _content.levels)
+                {
+                    if (level.characterId != characterId) continue;
+                    if (!IsLevelUnlocked(level))          continue;
+                    if (_completedLevelIds.Contains(level.id)) continue;
+                    target = level;
+                    break;
+                }
+
+                // Second pass: any unlocked level for this character (replay scenario)
+                if (target == null)
+                {
+                    foreach (var level in _content.levels)
+                    {
+                        if (level.characterId != characterId) continue;
+                        if (!IsLevelUnlocked(level))          continue;
+                        target = level;
+                        break;
+                    }
+                }
+
+                // Third pass: very first level for this character regardless of lock
+                if (target == null)
+                {
+                    foreach (var level in _content.levels)
+                    {
+                        if (level.characterId == characterId)
+                        {
+                            target = level;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (target == null)
+            {
+                // Fallback: just go to play tab with character pre-selected
+                _selectedCharacterId = characterId;
+                _activeTab = "play";
+                _playScreen = PlayScreenMap;
+                _audioController.PlaySelect(_soundEnabled);
+                Rebuild();
+                return;
+            }
+
+            // Select the level and navigate to play tab
+            _playScreen = PlayScreenMission;
+            SelectLevel(target.id);
+            _activeTab = "play";
+            _audioController.PlaySuccess(null, _soundEnabled);
+            Rebuild();
         }
 
         private void EnsureSelectionIsValid()
@@ -354,6 +511,24 @@ namespace ForestFriendsQuest
             CreateStatCard(statRow, "Session", _content.summary.sessionLength, "Short, cheerful levels built for repeat play.");
             CreateStatCard(statRow, "Progress", $"{_completedLevelIds.Count}/{GetTotalLevelCount()} cleared", "Stars, unlocks, and rewards save on this device.");
             CreateStatCard(statRow, "Adventure", _premiumUnlocked ? "Full adventure" : "Free preview", _premiumUnlocked ? "Premium missions can unlock as you progress." : "Parent gate protects premium content.");
+
+            // ── AAA Cast Showcase entry button ─────────────────────────────────────
+            var castBtn = ForestUiFactory.CreateButton(
+                hero,
+                "MeetTheCast",
+                "✨  Meet the Cast — All 6 Characters Animated",
+                _font,
+                new Color(0.18f, 0.52f, 0.32f, 1f),
+                _cream,
+                () =>
+                {
+                    _activeTab = "showcase";
+                    _audioController.PlaySelect(_soundEnabled);
+                    Rebuild();
+                },
+                26
+            );
+            ForestUiFactory.AddLayout(castBtn.gameObject, preferredHeight: 88f, flexibleWidth: 1f);
         }
 
         private void BuildTabs()
@@ -382,6 +557,25 @@ namespace ForestFriendsQuest
                 );
                 ForestUiFactory.AddLayout(button.gameObject, preferredHeight: 78f, flexibleWidth: 1f);
             }
+
+            // ── Showcase tab (always present as the visual “Cast” button) ──
+            var isShowcase = _activeTab == "showcase";
+            var showcaseBtn = ForestUiFactory.CreateButton(
+                row,
+                "Tab-showcase",
+                "✨ Cast",
+                _font,
+                isShowcase ? _amber : new Color(0.18f, 0.52f, 0.32f, 0.85f),
+                isShowcase ? _ink   : _cream,
+                () =>
+                {
+                    _activeTab = "showcase";
+                    _audioController.PlaySelect(_soundEnabled);
+                    Rebuild();
+                },
+                24
+            );
+            ForestUiFactory.AddLayout(showcaseBtn.gameObject, preferredHeight: 78f, flexibleWidth: 1f);
         }
 
         private void BuildWorldTab()
@@ -531,6 +725,573 @@ namespace ForestFriendsQuest
         }
 
         private void BuildPlayTab()
+        {
+            if (_playScreen == PlayScreenMission)
+            {
+                BuildMissionScreen();
+                return;
+            }
+
+            BuildJungleMapScreen();
+        }
+
+        private void BuildJungleMapScreen()
+        {
+            var totalLevels = GetTotalLevelCount();
+            _currentMapHeight = Mathf.Max(1920f, 700f + Mathf.Max(1, totalLevels) * 156f);
+
+            var map = ForestUiFactory.CreateImage(_scrollContent, "JungleLevelMap", _forestDeep);
+            ForestUiFactory.AddLayout(map.gameObject, preferredHeight: _currentMapHeight, flexibleWidth: 1f);
+
+            BuildJungleBackdrop(map.rectTransform, _currentMapHeight);
+            BuildMapZoneBands(map.rectTransform);
+            BuildMapPathAndNodes(map.rectTransform);
+            BuildMapHud(map.rectTransform);
+
+            if (_mainScrollRect != null)
+            {
+                _mainScrollRect.vertical = true;
+            }
+        }
+
+        private void BuildMissionScreen()
+        {
+            var level = GetSelectedLevel();
+            var character = level != null ? GetCharacter(level.characterId) : GetSelectedCharacter();
+            var zone = level != null ? GetZone(level.zoneId) : GetSelectedZone();
+
+            var mission = ForestUiFactory.CreateImage(_scrollContent, "MissionScreen", _forestDeep);
+            ForestUiFactory.AddLayout(mission.gameObject, preferredHeight: 1920f, flexibleWidth: 1f);
+            BuildJungleBackdrop(mission.rectTransform, 1920f);
+
+            var column = ForestUiFactory.CreateUiObject("MissionColumn", mission.transform);
+            ForestUiFactory.Stretch(column, 28f, 28f, 28f, 28f);
+            ForestUiFactory.AddVerticalLayout(column.gameObject, 18f);
+
+            var hud = CreatePanel(column, "MissionHud", new Color(0.02f, 0.08f, 0.05f, 0.88f), 10f, 18);
+            var hudRow = ForestUiFactory.CreateUiObject("MissionHudRow", hud);
+            ForestUiFactory.AddHorizontalLayout(hudRow.gameObject, 12f);
+            hudRow.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var back = ForestUiFactory.CreateButton(hudRow, "BackToMap", "Map", _font, _amber, _ink, ShowAdventureMap, 22);
+            ForestUiFactory.AddLayout(back.gameObject, preferredHeight: 70f, preferredWidth: 140f);
+
+            var titleText = level != null
+                ? $"{GetLevelNumber(level)}  {level.name}"
+                : "Choose a forest mission";
+            var title = ForestUiFactory.CreateText(hudRow, "MissionTitle", titleText, _font, 28, _cream, TextAnchor.MiddleLeft, FontStyle.Bold);
+            ForestUiFactory.AddLayout(title.gameObject, preferredHeight: 70f, flexibleWidth: 1f);
+
+            var progress = ForestUiFactory.CreateText(
+                hudRow,
+                "MissionProgress",
+                $"{_completedLevelIds.Count}/{GetTotalLevelCount()} clear",
+                _font,
+                22,
+                _mint,
+                TextAnchor.MiddleRight,
+                FontStyle.Bold
+            );
+            ForestUiFactory.AddLayout(progress.gameObject, preferredHeight: 70f, preferredWidth: 190f);
+
+            var scene = CreatePanel(column, "MissionScene", new Color(0.04f, 0.17f, 0.10f, 0.9f), 12f, 20);
+            ForestUiFactory.AddLayout(scene.gameObject, preferredHeight: 430f, flexibleWidth: 1f);
+
+            var sceneRow = ForestUiFactory.CreateUiObject("SceneRow", scene);
+            ForestUiFactory.AddHorizontalLayout(sceneRow.gameObject, 16f);
+            ForestUiFactory.AddLayout(sceneRow.gameObject, preferredHeight: 320f, flexibleWidth: 1f);
+
+            var guideHolder = ForestUiFactory.CreateUiObject("MissionGuide", sceneRow);
+            ForestUiFactory.AddLayout(guideHolder.gameObject, preferredWidth: 270f, preferredHeight: 300f);
+            var guide = guideHolder.gameObject.AddComponent<GuideCharacterView>();
+            guide.Build(character, _font);
+
+            var missionCopy = ForestUiFactory.CreateUiObject("MissionCopy", sceneRow);
+            ForestUiFactory.AddVerticalLayout(missionCopy.gameObject, 10f);
+            ForestUiFactory.AddLayout(missionCopy.gameObject, flexibleWidth: 1f, preferredHeight: 300f);
+
+            CreateCardTitle(missionCopy, zone != null ? zone.title : "Forest trail", _amber, 22);
+            CreateCardTitle(missionCopy, level != null ? level.type : "Mission", _cream, 34);
+            CreateBodyText(missionCopy, level != null ? level.prompt : "Tap Map and choose an unlocked level.", _cream, 24);
+            CreateBodyText(missionCopy, character != null ? GetCharacterLine(character, "greeting") : _feedbackMessage, _mint, 20);
+
+            BuildPuzzleCard(column);
+
+            var mapButton = ForestUiFactory.CreateButton(column, "BottomBackToMap", "Return to jungle map", _font, _forest, _cream, ShowAdventureMap, 22);
+            ForestUiFactory.AddLayout(mapButton.gameObject, preferredHeight: 76f, flexibleWidth: 1f);
+        }
+
+        private void BuildJungleBackdrop(RectTransform parent, float height)
+        {
+            var canopy = ForestUiFactory.CreateImage(parent, "CanopyShade", new Color(0.03f, 0.15f, 0.08f, 0.72f));
+            SetTopLeft(canopy.rectTransform, new Vector2(0f, 0f), new Vector2(1080f, 260f));
+
+            var river = ForestUiFactory.CreateImage(parent, "RiverRibbon", new Color(0.13f, 0.44f, 0.48f, 0.35f));
+            SetCentered(river.rectTransform, new Vector2(920f, height * 0.52f), new Vector2(92f, height * 0.78f));
+            river.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -8f);
+
+            var leftShadow = ForestUiFactory.CreateImage(parent, "LeftJungleShadow", new Color(0.02f, 0.10f, 0.05f, 0.58f));
+            SetCentered(leftShadow.rectTransform, new Vector2(70f, height * 0.52f), new Vector2(140f, height * 0.95f));
+
+            for (var i = 0; i < 26; i++)
+            {
+                var x = 80f + (i * 157f) % 940f;
+                var y = 120f + i * 245f;
+                if (y > height - 120f)
+                {
+                    y = 120f + (y % (height - 220f));
+                }
+
+                var size = 70f + (i % 4) * 22f;
+                var color = i % 3 == 0
+                    ? new Color(0.13f, 0.38f, 0.18f, 0.48f)
+                    : i % 3 == 1
+                        ? new Color(0.18f, 0.48f, 0.24f, 0.36f)
+                        : new Color(0.08f, 0.25f, 0.13f, 0.44f);
+
+                var leaf = ForestUiFactory.CreateImage(parent, $"LeafPatch-{i}", color, true);
+                SetCentered(leaf.rectTransform, new Vector2(x, y), new Vector2(size, size * 0.72f));
+                leaf.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -28f + (i % 7) * 9f);
+            }
+
+            for (var i = 0; i < 16; i++)
+            {
+                var glow = ForestUiFactory.CreateImage(parent, $"Firefly-{i}", new Color(0.86f, 0.92f, 0.43f, 0.42f), true);
+                SetCentered(glow.rectTransform, new Vector2(180f + (i * 233f) % 700f, 240f + i * 330f), new Vector2(22f, 22f));
+                glow.gameObject.AddComponent<PulseGlow>().speed = 0.8f + i * 0.07f;
+            }
+        }
+
+        private void BuildMapHud(RectTransform parent)
+        {
+            var hud = ForestUiFactory.CreateImage(parent, "MapHud", new Color(0.02f, 0.08f, 0.05f, 0.92f));
+            SetTopLeft(hud.rectTransform, new Vector2(24f, 24f), new Vector2(1032f, 190f));
+
+            CreateAnchoredText(hud.transform, "Title", _content.summary.title, new Vector2(24f, 18f), new Vector2(510f, 48f), 36, _cream, TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateAnchoredText(hud.transform, "Subtitle", "Jungle trail map", new Vector2(24f, 70f), new Vector2(350f, 38f), 24, _mint, TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateAnchoredText(hud.transform, "Progress", $"{_completedLevelIds.Count}/{GetTotalLevelCount()} missions cleared", new Vector2(24f, 112f), new Vector2(430f, 38f), 22, _amber, TextAnchor.MiddleLeft, FontStyle.Bold);
+
+            var sound = ForestUiFactory.CreateButton(
+                hud.transform,
+                "MapSound",
+                _soundEnabled ? "Sound On" : "Sound Off",
+                _font,
+                _soundEnabled ? _amber : new Color(1f, 1f, 1f, 0.12f),
+                _soundEnabled ? _ink : _cream,
+                () =>
+                {
+                    _soundEnabled = !_soundEnabled;
+                    _saveData.soundEnabled = _soundEnabled;
+                    SaveProgress();
+                    Rebuild();
+                },
+                18
+            );
+            SetTopLeft(sound.GetComponent<RectTransform>(), new Vector2(690f, 24f), new Vector2(140f, 58f));
+
+            var cast = ForestUiFactory.CreateButton(hud.transform, "MapCast", "Cast", _font, _forest, _cream, () =>
+            {
+                _activeTab = "showcase";
+                _audioController.PlaySelect(_soundEnabled);
+                Rebuild();
+            }, 18);
+            SetTopLeft(cast.GetComponent<RectTransform>(), new Vector2(844f, 24f), new Vector2(122f, 58f));
+
+            var parents = ForestUiFactory.CreateButton(hud.transform, "MapParents", "Parents", _font, _forest, _cream, () =>
+            {
+                _activeTab = "parents";
+                _audioController.PlaySelect(_soundEnabled);
+                Rebuild();
+            }, 18);
+            SetTopLeft(parents.GetComponent<RectTransform>(), new Vector2(690f, 96f), new Vector2(140f, 58f));
+
+            var meadow = ForestUiFactory.CreateButton(hud.transform, "MapMeadow", "Meadow", _font, _forest, _cream, () =>
+            {
+                _activeTab = "sanctuary";
+                _audioController.PlaySelect(_soundEnabled);
+                Rebuild();
+            }, 18);
+            SetTopLeft(meadow.GetComponent<RectTransform>(), new Vector2(844f, 96f), new Vector2(122f, 58f));
+
+            var feedbackColor = _feedbackSuccess ? new Color(0.38f, 0.74f, 0.36f, 0.34f) : new Color(1f, 1f, 1f, 0.08f);
+            var message = ForestUiFactory.CreateImage(parent, "MapGuideMessage", feedbackColor);
+            SetTopLeft(message.rectTransform, new Vector2(54f, 228f), new Vector2(972f, 102f));
+            CreateAnchoredText(message.transform, "Message", _feedbackMessage, new Vector2(22f, 12f), new Vector2(926f, 76f), 24, _cream, TextAnchor.MiddleLeft, FontStyle.Bold);
+        }
+
+        private void BuildMapZoneBands(RectTransform parent)
+        {
+            if (_content.zones == null || _content.levels == null)
+            {
+                return;
+            }
+
+            foreach (var zone in _content.zones)
+            {
+                var firstIndex = -1;
+                var lastIndex = -1;
+                for (var i = 0; i < _content.levels.Length; i++)
+                {
+                    if (_content.levels[i].zoneId != zone.id)
+                    {
+                        continue;
+                    }
+
+                    if (firstIndex < 0)
+                    {
+                        firstIndex = i;
+                    }
+
+                    lastIndex = i;
+                }
+
+                if (firstIndex < 0)
+                {
+                    continue;
+                }
+
+                var firstPos = GetMapNodePosition(firstIndex);
+                var lastPos = GetMapNodePosition(lastIndex);
+                var top = Mathf.Max(340f, firstPos.y - 94f);
+                var bandHeight = Mathf.Max(230f, lastPos.y - firstPos.y + 210f);
+                var accent = ForestUiFactory.FromHex(zone.accentHex, _moss);
+                var unlocked = IsZoneUnlocked(zone);
+                var bandColor = new Color(accent.r, accent.g, accent.b, unlocked ? 0.15f : 0.06f);
+
+                var band = ForestUiFactory.CreateImage(parent, $"ZoneBand-{zone.id}", bandColor);
+                SetTopLeft(band.rectTransform, new Vector2(74f, top), new Vector2(852f, bandHeight));
+
+                CreateAnchoredText(
+                    band.transform,
+                    "ZoneName",
+                    unlocked ? zone.title : $"{zone.title} locked",
+                    new Vector2(22f, 16f),
+                    new Vector2(500f, 34f),
+                    24,
+                    unlocked ? _cream : new Color(_cream.r, _cream.g, _cream.b, 0.55f),
+                    TextAnchor.MiddleLeft,
+                    FontStyle.Bold
+                );
+
+                CreateAnchoredText(
+                    band.transform,
+                    "ZoneStatus",
+                    GetZoneStatusText(zone),
+                    new Vector2(22f, bandHeight - 48f),
+                    new Vector2(760f, 34f),
+                    18,
+                    unlocked ? _mint : new Color(_cream.r, _cream.g, _cream.b, 0.46f),
+                    TextAnchor.MiddleLeft
+                );
+            }
+        }
+
+        private void BuildMapPathAndNodes(RectTransform parent)
+        {
+            if (_content.levels == null)
+            {
+                return;
+            }
+
+            var guideLevel = FindMapGuideLevel();
+            var guideLevelId = guideLevel != null ? guideLevel.id : string.Empty;
+            Vector2 previous = Vector2.zero;
+
+            for (var i = 0; i < _content.levels.Length; i++)
+            {
+                var level = _content.levels[i];
+                var pos = GetMapNodePosition(i);
+
+                if (i > 0)
+                {
+                    CreateMapPathLine(parent, previous, pos, level);
+                }
+
+                previous = pos;
+            }
+
+            for (var i = 0; i < _content.levels.Length; i++)
+            {
+                BuildMapLevelNode(parent, _content.levels[i], i, guideLevelId);
+            }
+
+            if (guideLevel != null)
+            {
+                BuildMapCharacterMarker(parent, guideLevel);
+            }
+        }
+
+        private void CreateMapPathLine(RectTransform parent, Vector2 from, Vector2 to, LevelData toLevel)
+        {
+            var start = new Vector2(from.x, -from.y);
+            var end = new Vector2(to.x, -to.y);
+            var center = (start + end) * 0.5f;
+            var delta = end - start;
+            var length = delta.magnitude;
+            var angle = Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
+            var unlocked = IsLevelUnlocked(toLevel);
+
+            var line = ForestUiFactory.CreateImage(parent, $"PathTo-{toLevel.id}", unlocked ? new Color(0.86f, 0.68f, 0.28f, 0.72f) : new Color(0.55f, 0.55f, 0.49f, 0.28f));
+            var rt = line.rectTransform;
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = center;
+            rt.sizeDelta = new Vector2(length, 18f);
+            rt.localRotation = Quaternion.Euler(0f, 0f, angle);
+        }
+
+        private void BuildMapLevelNode(RectTransform parent, LevelData level, int index, string guideLevelId)
+        {
+            var pos = GetMapNodePosition(index);
+            var unlocked = IsLevelUnlocked(level);
+            var done = _completedLevelIds.Contains(level.id);
+            var isGuideHere = level.id == guideLevelId;
+
+            var ringColor = isGuideHere
+                ? _amber
+                : done
+                    ? _mint
+                    : unlocked
+                        ? new Color(0.97f, 0.86f, 0.45f, 0.55f)
+                        : new Color(0.4f, 0.42f, 0.38f, 0.46f);
+
+            var ring = ForestUiFactory.CreateImage(parent, $"NodeRing-{level.id}", ringColor, true);
+            SetCentered(ring.rectTransform, pos, new Vector2(isGuideHere ? 142f : 122f, isGuideHere ? 142f : 122f));
+            if (isGuideHere)
+            {
+                ring.gameObject.AddComponent<PulseGlow>().speed = 1.2f;
+                _pendingMapFocusY = pos.y;
+            }
+
+            var nodeColor = done
+                ? new Color(0.47f, 0.74f, 0.38f, 1f)
+                : unlocked
+                    ? new Color(0.94f, 0.65f, 0.26f, 1f)
+                    : new Color(0.24f, 0.28f, 0.25f, 0.95f);
+
+            var node = ForestUiFactory.CreateImage(parent, $"LevelNode-{level.id}", nodeColor, true);
+            SetCentered(node.rectTransform, pos, new Vector2(96f, 96f));
+
+            var button = node.gameObject.AddComponent<Button>();
+            button.targetGraphic = node;
+            var capturedId = level.id;
+            button.onClick.AddListener(() => HandleMapLevelTap(capturedId));
+
+            var colors = button.colors;
+            colors.normalColor = nodeColor;
+            colors.highlightedColor = Color.Lerp(nodeColor, Color.white, 0.18f);
+            colors.pressedColor = Color.Lerp(nodeColor, Color.black, 0.12f);
+            colors.selectedColor = nodeColor;
+            button.colors = colors;
+
+            CreateAnchoredText(
+                node.transform,
+                "LevelNumber",
+                GetLevelNumber(level),
+                new Vector2(8f, 18f),
+                new Vector2(80f, 34f),
+                24,
+                done || unlocked ? _ink : new Color(_cream.r, _cream.g, _cream.b, 0.62f),
+                TextAnchor.MiddleCenter,
+                FontStyle.Bold
+            );
+
+            CreateAnchoredText(
+                node.transform,
+                "NodeState",
+                done ? "CLEAR" : unlocked ? "PLAY" : "LOCK",
+                new Vector2(8f, 52f),
+                new Vector2(80f, 24f),
+                14,
+                done || unlocked ? _ink : new Color(_cream.r, _cream.g, _cream.b, 0.62f),
+                TextAnchor.MiddleCenter,
+                FontStyle.Bold
+            );
+
+            var labelWidth = 292f;
+            var labelX = pos.x < 540f ? pos.x + 74f : pos.x - labelWidth - 74f;
+            var labelY = pos.y - 50f;
+            var label = ForestUiFactory.CreateImage(parent, $"NodeLabel-{level.id}", new Color(0.02f, 0.08f, 0.05f, unlocked ? 0.76f : 0.42f));
+            SetTopLeft(label.rectTransform, new Vector2(labelX, labelY), new Vector2(labelWidth, 104f));
+
+            var stars = GetBestStars(level.id);
+            var status = done ? $"{stars}/3 stars" : unlocked ? level.type : "Locked path";
+            CreateAnchoredText(label.transform, "Name", level.name, new Vector2(14f, 10f), new Vector2(labelWidth - 28f, 42f), 18, unlocked ? _cream : new Color(_cream.r, _cream.g, _cream.b, 0.52f), TextAnchor.MiddleLeft, FontStyle.Bold);
+            CreateAnchoredText(label.transform, "Status", status, new Vector2(14f, 55f), new Vector2(labelWidth - 28f, 30f), 16, unlocked ? _mint : new Color(_mint.r, _mint.g, _mint.b, 0.48f), TextAnchor.MiddleLeft);
+        }
+
+        private void BuildMapCharacterMarker(RectTransform parent, LevelData level)
+        {
+            var index = GetLevelIndex(level.id);
+            if (index < 0)
+            {
+                return;
+            }
+
+            var pos = GetMapNodePosition(index);
+            var marker = ForestUiFactory.CreateUiObject("GuideOnMap", parent);
+            SetCentered(marker, new Vector2(pos.x, Mathf.Max(270f, pos.y - 128f)), new Vector2(230f, 230f));
+
+            var character = GetCharacter(level.characterId);
+            var guide = marker.gameObject.AddComponent<GuideCharacterView>();
+            guide.Build(character, _font);
+            DisableRaycastsInChildren(marker);
+
+            var callout = ForestUiFactory.CreateImage(parent, "GuideCallout", new Color(0.02f, 0.08f, 0.05f, 0.86f));
+            var calloutX = Mathf.Clamp(pos.x - 190f, 70f, 700f);
+            var calloutY = Mathf.Max(235f, pos.y - 238f);
+            SetTopLeft(callout.rectTransform, new Vector2(calloutX, calloutY), new Vector2(380f, 66f));
+            CreateAnchoredText(callout.transform, "Text", $"Next: {level.name}", new Vector2(14f, 10f), new Vector2(352f, 46f), 19, _cream, TextAnchor.MiddleCenter, FontStyle.Bold);
+            DisableRaycastsInChildren(callout.transform);
+        }
+
+        private void HandleMapLevelTap(string levelId)
+        {
+            var level = GetLevel(levelId);
+            if (level == null)
+            {
+                return;
+            }
+
+            if (!IsLevelUnlocked(level))
+            {
+                _feedbackMessage = GetLevelLockMessage(level);
+                _feedbackSuccess = false;
+                var zone = GetZone(level.zoneId);
+                if (zone != null && zone.isPremium && !_premiumUnlocked)
+                {
+                    OpenParentGate();
+                    return;
+                }
+
+                _audioController.PlayWrong(GetCharacter(level.characterId), _soundEnabled);
+                Rebuild();
+                return;
+            }
+
+            _playScreen = PlayScreenMission;
+            SelectLevel(level.id);
+        }
+
+        private void ShowAdventureMap()
+        {
+            _playScreen = PlayScreenMap;
+            _activeTab = "play";
+            _audioController.PlaySelect(_soundEnabled);
+            Rebuild();
+        }
+
+        private LevelData FindMapGuideLevel()
+        {
+            if (_content.levels == null || _content.levels.Length == 0)
+            {
+                return null;
+            }
+
+            foreach (var level in _content.levels)
+            {
+                if (IsLevelUnlocked(level) && !_completedLevelIds.Contains(level.id))
+                {
+                    return level;
+                }
+            }
+
+            for (var i = _content.levels.Length - 1; i >= 0; i--)
+            {
+                if (_completedLevelIds.Contains(_content.levels[i].id))
+                {
+                    return _content.levels[i];
+                }
+            }
+
+            return _content.levels[0];
+        }
+
+        private Vector2 GetMapNodePosition(int index)
+        {
+            var y = 420f + index * 156f;
+            var wave = Mathf.Sin(index * 0.78f) * 260f;
+            var x = Mathf.Clamp(540f + wave, 168f, 900f);
+            return new Vector2(x, y);
+        }
+
+        private int GetLevelIndex(string levelId)
+        {
+            if (_content.levels == null)
+            {
+                return -1;
+            }
+
+            for (var i = 0; i < _content.levels.Length; i++)
+            {
+                if (_content.levels[i].id == levelId)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        private string GetLevelNumber(LevelData level)
+        {
+            if (level == null || string.IsNullOrEmpty(level.id))
+            {
+                return "--";
+            }
+
+            return level.id.Replace("level-", "L");
+        }
+
+        private void FocusMapOnCurrentGuide()
+        {
+            if (_activeTab != "play" || _playScreen != PlayScreenMap || _mainScrollRect == null || _pendingMapFocusY < 0f)
+            {
+                return;
+            }
+
+            var visibleHeight = 1920f;
+            var scrollable = Mathf.Max(1f, _currentMapHeight - visibleHeight);
+            var desiredOffset = Mathf.Clamp(_pendingMapFocusY - 820f, 0f, scrollable);
+            _mainScrollRect.verticalNormalizedPosition = 1f - desiredOffset / scrollable;
+        }
+
+        private Text CreateAnchoredText(Transform parent, string name, string value, Vector2 topLeft, Vector2 size, int fontSize, Color color, TextAnchor anchor, FontStyle style = FontStyle.Normal)
+        {
+            var text = ForestUiFactory.CreateText(parent, name, value, _font, fontSize, color, anchor, style);
+            SetTopLeft(text.rectTransform, topLeft, size);
+            return text;
+        }
+
+        private void SetTopLeft(RectTransform rect, Vector2 topLeft, Vector2 size)
+        {
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(topLeft.x, -topLeft.y);
+            rect.sizeDelta = size;
+        }
+
+        private void SetCentered(RectTransform rect, Vector2 center, Vector2 size)
+        {
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(center.x, -center.y);
+            rect.sizeDelta = size;
+        }
+
+        private void DisableRaycastsInChildren(Transform root)
+        {
+            var graphics = root.GetComponentsInChildren<Graphic>(true);
+            foreach (var graphic in graphics)
+            {
+                graphic.raycastTarget = false;
+            }
+        }
+
+        private void BuildClassicPlayTab()
         {
             if (_systems?.DailyRitual != null)
             {
@@ -3036,4 +3797,3 @@ namespace ForestFriendsQuest
         }
     }
 }
-

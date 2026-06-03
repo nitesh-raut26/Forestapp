@@ -306,8 +306,8 @@ namespace ForestFriendsQuest
         private void BuildManagedMusicPattern(LevelData level)
         {
             var comp = _optionsContainer.gameObject.AddComponent<MusicPatternPuzzle>();
-            comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
-                SaveData?.explorerTier ?? "scout");
+            comp.Initialize(Systems?.PuzzleManager, Systems?.Audio, Systems?.Particles,
+                _optionsContainer, SaveData?.explorerTier ?? "scout");
             comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
         }
 
@@ -379,7 +379,7 @@ namespace ForestFriendsQuest
         {
             var comp = _optionsContainer.gameObject.AddComponent<TimeMemoryChallenge>();
             comp.Initialize(Systems?.PuzzleManager, Systems?.Particles, _optionsContainer,
-                SaveData?.explorerTier ?? "scout");
+                5, SaveData?.explorerTier ?? "scout");
             comp.OnPuzzleEnd += success => HandlePuzzleEnd(success);
             _activeTimeMemory = comp;
         }
@@ -399,7 +399,7 @@ namespace ForestFriendsQuest
                 _mistakes++;
                 _feedbackLabel.text = option.reply ?? "Not quite — try again.";
                 _feedbackLabel.color = new Color(1f, 0.65f, 0.4f);
-                _audio?.PlayWrong(_activeLevel?.characterId);
+                _audio?.PlayWrong(_activeLevel?.characterId, true);
                 Systems?.Difficulty?.NotifyMistake();
             }
         }

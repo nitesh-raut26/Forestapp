@@ -59,6 +59,16 @@ namespace ForestFriendsQuest
         public bool NeedsFirstBond(string creatureId)
             => PlayerPrefs.GetInt(PlayedKeyPrefix + creatureId, 0) == 0;
 
+        /// <summary>
+        /// Coroutine: plays the first-bond sequence for Pip and waits until it completes.
+        /// Used by OnboardingDirector via yield return.
+        /// </summary>
+        public System.Collections.IEnumerator PlayFirstBondSequence(RectTransform parent)
+        {
+            PlayFirstBond("pip", parent);
+            while (_playing) yield return null;
+        }
+
         /// <summary>Trigger the first-bond cinematic for a creature.</summary>
         public void PlayFirstBond(string creatureId, RectTransform creatureAnchor = null)
         {

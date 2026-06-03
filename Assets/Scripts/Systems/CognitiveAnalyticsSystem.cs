@@ -87,6 +87,13 @@ namespace ForestFriendsQuest
             CalculateEcosystemFeel();
         }
 
+        public void RecordHintUsed(string levelId)
+        {
+            _totalHints++;
+            CalculateEcosystemFeel();
+            Debug.Log($"[CognitiveAnalytics] Hint used for level: {levelId}");
+        }
+
         private void UpdateMetricsOnSuccess(string puzzleType, int mistakes, bool hintUsed, float timeSeconds)
         {
             float reward = 5f;

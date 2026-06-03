@@ -35,16 +35,16 @@ namespace ForestFriendsQuest
         private RareWorldEventSystem _events;
         private SaveModule          _module;
 
-        private readonly List<ContentBundle> _loadedBundles = new List<ContentBundle>();
+        private readonly List<LiveContentBundle> _loadedBundles = new List<LiveContentBundle>();
         private bool                         _fetchComplete;
 
         private const string DefaultContentUrl  = "https://cdn.forestfriendsquest.com/content";
         private const string ManifestVersionKey = "manifestVersion";
 
         public bool IsFetchComplete => _fetchComplete;
-        public IReadOnlyList<ContentBundle> LoadedBundles => _loadedBundles;
+        public IReadOnlyList<LiveContentBundle> LoadedBundles => _loadedBundles;
 
-        public event Action<ContentBundle> OnBundleLoaded;
+        public event Action<LiveContentBundle> OnBundleLoaded;
 
         // ─── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -66,9 +66,9 @@ namespace ForestFriendsQuest
         public bool HasNewContent() => _loadedBundles.Count > 0;
 
         /// <summary>Get all loaded bundles of a given type.</summary>
-        public List<ContentBundle> GetBundles(string type)
+        public List<LiveContentBundle> GetBundles(string type)
         {
-            var result = new List<ContentBundle>();
+            var result = new List<LiveContentBundle>();
             foreach (var b in _loadedBundles)
                 if (b.bundleType == type) result.Add(b);
             return result;
@@ -131,10 +131,10 @@ namespace ForestFriendsQuest
 
             if (req.result != UnityWebRequest.Result.Success) yield break;
 
-            ContentBundle bundle = null;
+            LiveContentBundle bundle = null;
             try
             {
-                bundle = JsonUtility.FromJson<ContentBundle>(req.downloadHandler.text);
+                bundle = JsonUtility.FromJson<LiveContentBundle>(req.downloadHandler.text);
             }
             catch { yield break; }
 
@@ -148,7 +148,7 @@ namespace ForestFriendsQuest
 
         // ─── Bundle Injection ─────────────────────────────────────────────────────
 
-        private void InjectBundle(ContentBundle bundle)
+        private void InjectBundle(LiveContentBundle bundle)
         {
             switch (bundle.bundleType)
             {
@@ -162,17 +162,17 @@ namespace ForestFriendsQuest
             }
         }
 
-        private void InjectRituals(ContentBundle bundle)
+        private void InjectRituals(LiveContentBundle bundle)
         {
             if (_rituals == null || bundle.rituals == null) return;
             foreach (var ritual in bundle.rituals)
             {
                 _rituals.RegisterLiveRitual(ritual);
-                Debug.Log($"[LiveContent] Injected ritual: {ritual.ritualId}");
+                Debug.Log($"[LiveContent] Injected ritual: {ritual.id}");
             }
         }
 
-        private void InjectEvents(ContentBundle bundle)
+        private void InjectEvents(LiveContentBundle bundle)
         {
             // Events injected on next day tick via RareWorldEventSystem extension point
             Debug.Log($"[LiveContent] Event bundle ready: {bundle.bundleId}");
@@ -196,7 +196,7 @@ namespace ForestFriendsQuest
     }
 
     [Serializable]
-    public class ContentBundle
+    public class LiveContentBundle
     {
         public string        bundleId;
         public string        bundleType;

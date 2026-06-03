@@ -11,8 +11,8 @@ namespace ForestFriendsQuest
     // Initialization: BiomeBackgroundRenderer.Create(biomeController, canvasRoot)
     public class BiomeBackgroundRenderer : MonoBehaviour
     {
-        private const int TexW = 256;
-        private const int TexH = 512;
+        private const int TexW = 2048;
+        private const int TexH = 4096;
 
         private RawImage _bg;
         private readonly Dictionary<string, Texture2D> _cache = new Dictionary<string, Texture2D>();
@@ -74,7 +74,7 @@ namespace ForestFriendsQuest
             var tex = new Texture2D(TexW, TexH, TextureFormat.RGBA32, false)
                 { filterMode = FilterMode.Bilinear, wrapMode = TextureWrapMode.Clamp };
 
-            // Layers painted bottom→top (y=0 = ground, y=511 = zenith)
+            // Layers painted bottom→top (y=0 = ground, y=4095 = zenith)
             PaintSky(tex, p);
             PaintHorizonFog(tex, p);
             PaintGround(tex, p);
@@ -93,11 +93,13 @@ namespace ForestFriendsQuest
                 p.skyTintColor.g * 0.55f,
                 p.skyTintColor.b * 0.70f, 1f);
 
-            for (var y = TexH / 3; y < TexH; y++)
+            int w = t.width;
+            int h = t.height;
+            for (var y = h / 3; y < h; y++)
             {
-                var frac  = (y - TexH / 3f) / (TexH - TexH / 3f);
+                var frac  = (y - h / 3f) / (h - h / 3f);
                 var color = Color.Lerp(skyLow, skyHigh, frac);
-                for (var x = 0; x < TexW; x++)
+                for (var x = 0; x < w; x++)
                     t.SetPixel(x, y, color);
             }
         }
@@ -105,15 +107,17 @@ namespace ForestFriendsQuest
         // Fog band at the horizon
         private static void PaintHorizonFog(Texture2D t, BiomeProfile p)
         {
-            int bandBot = TexH * 28 / 100;
-            int bandTop = TexH * 42 / 100;
+            int h = t.height;
+            int w = t.width;
+            int bandBot = h * 28 / 100;
+            int bandTop = h * 42 / 100;
 
             for (var y = bandBot; y < bandTop; y++)
             {
                 var frac  = Mathf.SmoothStep(0f, 1f, (y - bandBot) / (float)(bandTop - bandBot));
                 var alpha = Mathf.Sin(frac * Mathf.PI) * Mathf.Clamp(p.fogColor.a * 3f, 0.1f, 0.8f);
                 var col   = new Color(p.fogColor.r, p.fogColor.g, p.fogColor.b, alpha);
-                for (var x = 0; x < TexW; x++)
+                for (var x = 0; x < w; x++)
                     BlendPixel(t, x, y, col);
             }
         }
@@ -121,7 +125,9 @@ namespace ForestFriendsQuest
         // Ground band with vignette
         private static void PaintGround(Texture2D t, BiomeProfile p)
         {
-            int groundTop = TexH * 32 / 100;
+            int h = t.height;
+            int w = t.width;
+            int groundTop = h * 32 / 100;
 
             for (var y = 0; y < groundTop; y++)
             {
@@ -129,7 +135,7 @@ namespace ForestFriendsQuest
                 var color = Color.Lerp(
                     new Color(p.groundTintColor.r * 0.45f, p.groundTintColor.g * 0.45f, p.groundTintColor.b * 0.45f),
                     p.groundTintColor, frac);
-                for (var x = 0; x < TexW; x++)
+                for (var x = 0; x < w; x++)
                     t.SetPixel(x, y, color);
             }
         }
@@ -158,7 +164,7 @@ namespace ForestFriendsQuest
         {
             // Rolling meadow hills + fern fronds
             var darkGreen = new Color(p.groundTintColor.r * 0.7f, p.groundTintColor.g * 0.7f, p.groundTintColor.b * 0.7f);
-            DrawHillSilhouette(t, new[] { 80, 95, 70, 105, 88, 100, 75, 110 }, darkGreen, TexH * 30 / 100);
+            DrawHillSilhouette(t, new[] { 80, 95, 70, 105, 88, 100, 75, 110 }, darkGreen, 512 * 30 / 100);
 
             // Tall grass stems
             var stemC = new Color(0.20f, 0.50f, 0.22f);
@@ -166,23 +172,23 @@ namespace ForestFriendsQuest
             {
                 int x = 10 + i * 13;
                 int h = 30 + (x * 7 + 11) % 25;
-                DrawVine(t, x, TexH * 30 / 100, h, stemC);
+                DrawVine(t, x, 512 * 30 / 100, h, stemC);
             }
 
             // Sun haze
-            DrawCircleGlow(t, TexW * 3 / 4, TexH * 7 / 8, 40, new Color(1f, 0.98f, 0.75f, 0.30f));
+            DrawCircleGlow(t, 256 * 3 / 4, 512 * 78 / 100, 40, new Color(1f, 0.98f, 0.75f, 0.30f));
         }
 
         private static void PaintFireflyHollow(Texture2D t, BiomeProfile p)
         {
             // Dark dense tree silhouettes
             var treeC = new Color(0.08f, 0.16f, 0.10f);
-            DrawTreeSilhouette(t, 20,  TexH * 32 / 100, 18, 80, treeC);
-            DrawTreeSilhouette(t, 55,  TexH * 32 / 100, 14, 65, treeC);
-            DrawTreeSilhouette(t, 100, TexH * 32 / 100, 20, 90, treeC);
-            DrawTreeSilhouette(t, 155, TexH * 32 / 100, 16, 70, treeC);
-            DrawTreeSilhouette(t, 200, TexH * 32 / 100, 18, 85, treeC);
-            DrawTreeSilhouette(t, 235, TexH * 32 / 100, 12, 55, treeC);
+            DrawTreeSilhouette(t, 20,  512 * 32 / 100, 18, 80, treeC);
+            DrawTreeSilhouette(t, 55,  512 * 32 / 100, 14, 65, treeC);
+            DrawTreeSilhouette(t, 100, 512 * 32 / 100, 20, 90, treeC);
+            DrawTreeSilhouette(t, 155, 512 * 32 / 100, 16, 70, treeC);
+            DrawTreeSilhouette(t, 200, 512 * 32 / 100, 18, 85, treeC);
+            DrawTreeSilhouette(t, 235, 512 * 32 / 100, 12, 55, treeC);
 
             // Firefly glow dots
             var ffc = new Color(0.75f, 1f, 0.55f, 0.65f);
@@ -194,48 +200,61 @@ namespace ForestFriendsQuest
 
         private static void PaintRiverBend(Texture2D t, BiomeProfile p)
         {
-            // Wavy river band
+            int w = t.width;
+            int h = t.height;
+            float scaleX = w / 256f;
+            float scaleY = h / 512f;
+
             var riverC = new Color(0.35f, 0.65f, 0.85f, 0.80f);
-            int riverY = TexH * 25 / 100;
-            for (var x = 0; x < TexW; x++)
+            int riverY = Mathf.RoundToInt(h * 0.25f);
+            int halfHeight = Mathf.RoundToInt(14f * scaleY);
+
+            for (var x = 0; x < w; x++)
             {
-                int wave  = Mathf.RoundToInt(8f * Mathf.Sin(x * 0.06f));
-                for (var y = riverY + wave - 14; y < riverY + wave + 14; y++)
+                float vx = x / scaleX;
+                int wave = Mathf.RoundToInt(8f * scaleY * Mathf.Sin(vx * 0.06f));
+                for (var y = riverY + wave - halfHeight; y < riverY + wave + halfHeight; y++)
                 {
-                    float fade = 1f - Mathf.Abs(y - riverY - wave) / 14f;
+                    float fade = 1f - Mathf.Abs(y - riverY - wave) / (float)halfHeight;
                     BlendPixel(t, x, y, new Color(riverC.r, riverC.g, riverC.b, riverC.a * fade));
                 }
             }
+
             // Reflection shimmer
             var shimmerC = new Color(0.85f, 0.95f, 1f, 0.35f);
-            for (var x = 0; x < TexW; x += 4)
-                BlendPixel(t, x, riverY + Mathf.RoundToInt(4f * Mathf.Sin(x * 0.12f)), shimmerC);
+            for (var x = 0; x < w; x += Mathf.Max(1, Mathf.RoundToInt(4f * scaleX)))
+            {
+                float vx = x / scaleX;
+                int wave = Mathf.RoundToInt(4f * scaleY * Mathf.Sin(vx * 0.12f));
+                BlendPixel(t, x, riverY + wave, shimmerC);
+            }
 
             // Riverside trees
             var treeC = new Color(0.18f, 0.42f, 0.28f);
-            DrawTreeSilhouette(t, 15,  TexH * 32 / 100, 12, 55, treeC);
-            DrawTreeSilhouette(t, 200, TexH * 32 / 100, 14, 60, treeC);
+            DrawTreeSilhouette(t, 15,  163, 12, 55, treeC);
+            DrawTreeSilhouette(t, 200, 163, 14, 60, treeC);
         }
 
         private static void PaintMoonlitCreek(Texture2D t, BiomeProfile p)
         {
             // Moon disc
-            DrawCircleGlow(t, TexW * 3 / 4, TexH * 78 / 100, 28, new Color(0.95f, 0.98f, 1f, 0.90f));
-            DrawCircleGlow(t, TexW * 3 / 4, TexH * 78 / 100, 18, new Color(1f, 1f, 1f, 0.95f));
+            DrawCircleGlow(t, 256 * 3 / 4, 512 * 78 / 100, 28, new Color(0.95f, 0.98f, 1f, 0.90f));
+            DrawCircleGlow(t, 256 * 3 / 4, 512 * 78 / 100, 18, new Color(1f, 1f, 1f, 0.95f));
 
             // Moon reflection in water
-            DrawCircleGlow(t, TexW * 3 / 4, TexH * 18 / 100, 10,
+            DrawCircleGlow(t, 256 * 3 / 4, 512 * 18 / 100, 10,
                 new Color(0.90f, 0.93f, 1f, 0.55f));
 
             // Stars
             var starC = new Color(1f, 1f, 0.90f, 0.70f);
             int[] sx = {  25,  55,  80, 115, 145, 170, 210, 38, 98, 130, 185, 225 };
             int[] sy = { 380, 420, 390, 440, 410, 450, 420, 460, 480, 500, 470, 495 };
-            for (var i = 0; i < sx.Length; i++) BlendPixel(t, sx[i], sy[i], starC);
+            for (var i = 0; i < sx.Length; i++)
+                DrawCircleGlow(t, sx[i], sy[i], 1, starC);
 
             // Dark creek shore
             var shoreC = new Color(0.12f, 0.22f, 0.38f);
-            DrawHillSilhouette(t, new[] { 60, 50, 70, 45, 65, 55, 75, 48 }, shoreC, TexH * 30 / 100);
+            DrawHillSilhouette(t, new[] { 60, 50, 70, 45, 65, 55, 75, 48 }, shoreC, 512 * 30 / 100);
         }
 
         private static void PaintElderwoodGrove(Texture2D t, BiomeProfile p)
@@ -243,15 +262,15 @@ namespace ForestFriendsQuest
             // Giant ancient tree trunk in center
             var trunkC = new Color(0.28f, 0.20f, 0.12f);
             var canopyC = new Color(0.15f, 0.35f, 0.18f);
-            FillRect(t, TexW/2 - 18, 0, 36, TexH * 52 / 100, trunkC);
+            FillRect(t, 256/2 - 18, 0, 36, 266, trunkC);
             // Bark texture lines
-            for (var y = 10; y < TexH * 52 / 100; y += 18)
-                for (var x = TexW/2 - 17; x < TexW/2 + 17; x += 5)
-                    BlendPixel(t, x, y, new Color(0.20f, 0.14f, 0.08f, 0.50f));
+            for (var y = 10; y < 266; y += 18)
+                for (var x = 256/2 - 17; x < 256/2 + 17; x += 5)
+                    DrawCircleGlow(t, x, y, 1, new Color(0.20f, 0.14f, 0.08f, 0.50f));
 
             // Canopy
-            DrawCircleGlow(t, TexW/2, TexH * 55 / 100, 90, canopyC);
-            DrawCircleGlow(t, TexW/2, TexH * 55 / 100, 70, new Color(0.18f, 0.42f, 0.22f));
+            DrawCircleGlow(t, 256/2, 281, 90, canopyC);
+            DrawCircleGlow(t, 256/2, 281, 70, new Color(0.18f, 0.42f, 0.22f));
 
             // Falling leaves
             var leafC = new Color(0.35f, 0.60f, 0.28f, 0.70f);
@@ -263,28 +282,33 @@ namespace ForestFriendsQuest
 
         private static void PaintCrystalCaverns(Texture2D t, BiomeProfile p)
         {
-            // Crystalline ceiling drips
+            int w = t.width;
+            int h = t.height;
+            float scaleX = w / 256f;
+            float scaleY = h / 512f;
+
             var crystalC = new Color(0.55f, 0.85f, 1f, 0.80f);
             var glowC    = new Color(0.70f, 0.90f, 1f, 0.40f);
             int[] cx = { 20, 50, 80, 110, 140, 170, 200, 230, 35, 65, 95, 125, 155, 185, 215 };
             int[] ch = { 60, 45, 70, 55,  65,  50,  75,  42,  80, 38, 68, 52,  62,  48,  72  };
             for (var i = 0; i < cx.Length; i++)
             {
-                FillRect(t, cx[i]-2, TexH - ch[i], 4, ch[i], crystalC);
-                DrawCircleGlow(t, cx[i], TexH - ch[i], 8, glowC);
+                FillRect(t, cx[i]-2, 512 - ch[i], 4, ch[i], crystalC);
+                DrawCircleGlow(t, cx[i], 512 - ch[i], 8, glowC);
             }
 
             // Crystal reflections on floor
             for (var i = 0; i < cx.Length; i++)
-                DrawEllipse(t, cx[i], TexH * 12 / 100, 5, 3,
+                DrawEllipse(t, cx[i], 61, 5, 3,
                     new Color(crystalC.r, crystalC.g, crystalC.b, 0.35f));
 
             // Deep cave gradient overlay
-            for (var y = 0; y < TexH; y++)
+            for (var y = 0; y < h; y++)
             {
-                float d = (TexH - y) / (float)TexH;
-                for (var x = 0; x < TexW; x++)
-                    BlendPixel(t, x, y, new Color(0f, 0f, 0.08f, d * 0.40f));
+                float d = (h - y) / (float)h;
+                var col = new Color(0f, 0f, 0.08f, d * 0.40f);
+                for (var x = 0; x < w; x++)
+                    BlendPixel(t, x, y, col);
             }
         }
 
@@ -294,7 +318,7 @@ namespace ForestFriendsQuest
             var mossC  = new Color(0.28f, 0.40f, 0.20f);
 
             // Stone arch silhouette
-            int archCX = TexW / 2, archY = TexH * 32 / 100;
+            int archCX = 256 / 2, archY = 163;
             FillRect(t, archCX - 45, archY, 12, 70, stoneC);
             FillRect(t, archCX + 33, archY, 12, 70, stoneC);
             // Arch curve
@@ -309,7 +333,7 @@ namespace ForestFriendsQuest
             // Rubble on ground + moss
             for (var i = 0; i < 12; i++)
             {
-                int rx = 15 + i * 19, ry = TexH * 28 / 100 + i % 3 * 8;
+                int rx = 15 + i * 19, ry = 143 + i % 3 * 8;
                 DrawEllipse(t, rx, ry, 8 + i % 4 * 2, 5 + i % 3, stoneC);
                 DrawEllipse(t, rx + 3, ry + 2, 4, 2, mossC);
             }
@@ -317,23 +341,30 @@ namespace ForestFriendsQuest
 
         private static void PaintFireflyMarsh(Texture2D t, BiomeProfile p)
         {
+            int w = t.width;
+            int h = t.height;
+            float scaleX = w / 256f;
+            float scaleY = h / 512f;
+
             // Bulrush silhouettes
             var reedC = new Color(0.12f, 0.28f, 0.16f);
             var headC = new Color(0.28f, 0.18f, 0.10f);
             int[] rx = { 20, 40, 60, 80, 120, 150, 175, 200, 225 };
             for (var i = 0; i < rx.Length; i++)
             {
-                int h = 55 + i % 4 * 15;
-                FillRect(t, rx[i]-1, TexH * 25 / 100, 2, h, reedC);
-                DrawEllipse(t, rx[i], TexH * 25 / 100 + h, 3, 10, headC);
+                int hval = 55 + i % 4 * 15;
+                FillRect(t, rx[i]-1, 128, 2, hval, reedC);
+                DrawEllipse(t, rx[i], 128 + hval, 3, 10, headC);
             }
 
             // Murky water
             var waterC = new Color(0.12f, 0.25f, 0.18f, 0.70f);
-            for (var x = 0; x < TexW; x++)
+            int waterLimitY = Mathf.RoundToInt(h * 0.22f);
+            for (var x = 0; x < w; x++)
             {
-                int wave = Mathf.RoundToInt(4f * Mathf.Sin(x * 0.08f));
-                for (var y = 0; y < TexH * 22 / 100 + wave; y++)
+                float vx = x / scaleX;
+                int wave = Mathf.RoundToInt(4f * scaleY * Mathf.Sin(vx * 0.08f));
+                for (var y = 0; y < waterLimitY + wave; y++)
                     BlendPixel(t, x, y, waterC);
             }
 
@@ -341,8 +372,8 @@ namespace ForestFriendsQuest
             var ffc = new Color(0.65f, 1f, 0.45f, 0.60f);
             for (var i = 0; i < 20; i++)
             {
-                int fx = (i * 37 + 15) % TexW;
-                int fy = TexH * 30 / 100 + (i * 23) % (TexH * 30 / 100);
+                int fx = (i * 37 + 15) % 256;
+                int fy = 153 + (i * 23) % 153;
                 DrawCircleGlow(t, fx, fy, 5, ffc);
             }
         }
@@ -353,22 +384,23 @@ namespace ForestFriendsQuest
             var starC = new Color(1f, 1f, 0.85f, 0.85f);
             for (var i = 0; i < 40; i++)
             {
-                int sx = (i * 41 + 7) % TexW;
-                int sy = TexH * 45 / 100 + (i * 31) % (TexH * 50 / 100);
-                BlendPixel(t, sx, sy, starC);
-                if (i % 4 == 0) BlendPixel(t, sx+1, sy, new Color(1f,1f,0.8f,0.40f));
+                int sx = (i * 41 + 7) % 256;
+                int sy = 230 + (i * 31) % 256;
+                DrawCircleGlow(t, sx, sy, 1, starC);
+                if (i % 4 == 0)
+                    DrawCircleGlow(t, sx + 1, sy, 2, new Color(1f, 1f, 0.8f, 0.40f));
             }
 
             // Observatory dome silhouette
             var domeC = new Color(0.18f, 0.18f, 0.35f);
-            DrawCircleGlow(t, TexW/2, TexH * 33 / 100, 55, domeC);
+            DrawCircleGlow(t, 256/2, 169, 55, domeC);
             // Dome slit
-            FillRect(t, TexW/2 - 3, TexH * 32 / 100, 6, 26, new Color(0.55f, 0.60f, 1f, 0.70f));
+            FillRect(t, 256/2 - 3, 163, 6, 26, new Color(0.55f, 0.60f, 1f, 0.70f));
             // Base
-            FillRect(t, TexW/2 - 40, TexH * 25 / 100, 80, 18, domeC);
+            FillRect(t, 256/2 - 40, 128, 80, 18, domeC);
 
             // Telescope silhouette
-            FillRect(t, TexW/2 - 2, TexH * 33 / 100, 4, 35, new Color(0.35f, 0.35f, 0.55f));
+            FillRect(t, 256/2 - 2, 169, 4, 35, new Color(0.35f, 0.35f, 0.55f));
         }
 
         private static void PaintSkyrootCanopy(Texture2D t, BiomeProfile p)
@@ -376,20 +408,29 @@ namespace ForestFriendsQuest
             // Floating island
             var islandC = new Color(0.28f, 0.55f, 0.25f);
             var rockC   = new Color(0.50f, 0.45f, 0.32f);
-            DrawEllipse(t, TexW/2, TexH * 68 / 100, 75, 22, islandC);
-            DrawEllipse(t, TexW/2, TexH * 66 / 100, 68, 14, rockC);
+            DrawEllipse(t, 256/2, 348, 75, 22, islandC);
+            DrawEllipse(t, 256/2, 337, 68, 14, rockC);
 
             // Root tendrils hanging down
             var rootC = new Color(0.28f, 0.20f, 0.12f);
-            int[] rrx = { TexW/2 - 55, TexW/2 - 30, TexW/2, TexW/2 + 30, TexW/2 + 55 };
+            int[] rrx = { 256/2 - 55, 256/2 - 30, 256/2, 256/2 + 30, 256/2 + 55 };
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int thickness = Mathf.Max(1, Mathf.RoundToInt(1.5f * scaleX));
+
             for (var i = 0; i < rrx.Length; i++)
             {
                 int rootLen = 80 + i % 3 * 25;
-                int baseY   = TexH * 63 / 100;
-                for (var y = baseY; y > baseY - rootLen; y -= 2)
+                int baseY   = 322;
+                int actualBaseY = Mathf.RoundToInt(baseY * scaleY);
+                int actualRootLen = Mathf.RoundToInt(rootLen * scaleY);
+
+                for (var y = actualBaseY; y > actualBaseY - actualRootLen; y--)
                 {
-                    int xOff = Mathf.RoundToInt(5f * Mathf.Sin((baseY - y) * 0.08f));
-                    BlendPixel(t, rrx[i] + xOff, y, rootC);
+                    float vy = y / scaleY;
+                    int xOff = Mathf.RoundToInt(5f * Mathf.Sin((baseY - vy) * 0.08f));
+                    int ax = Mathf.RoundToInt((rrx[i] + xOff) * scaleX);
+                    FillRectActual(t, ax - thickness / 2, y, thickness, 1, rootC);
                 }
             }
 
@@ -397,31 +438,37 @@ namespace ForestFriendsQuest
             var pollenC = new Color(0.98f, 0.95f, 0.60f, 0.55f);
             for (var i = 0; i < 24; i++)
             {
-                int px = (i * 29 + 12) % TexW;
-                int py = TexH * 40 / 100 + (i * 19) % (TexH * 55 / 100);
+                int px = (i * 29 + 12) % 256;
+                int py = 204 + (i * 19) % 281;
                 DrawCircleGlow(t, px, py, 3, pollenC);
             }
 
             // Canopy leaf clusters at top
             var leafC = new Color(0.22f, 0.58f, 0.24f);
-            DrawCircleGlow(t, TexW/2,           TexH * 90/100, 70, leafC);
-            DrawCircleGlow(t, TexW/2 - 60,      TexH * 88/100, 45, leafC);
-            DrawCircleGlow(t, TexW/2 + 60,      TexH * 88/100, 45, leafC);
+            DrawCircleGlow(t, 256/2, 460, 70, leafC);
+            DrawCircleGlow(t, 256/2 - 60, 450, 45, leafC);
+            DrawCircleGlow(t, 256/2 + 60, 450, 45, leafC);
         }
 
         // ─── Shared Drawing Helpers ───────────────────────────────────────────────
 
         private static void DrawHillSilhouette(Texture2D t, int[] heights, Color c, int baseY)
         {
-            int segW = TexW / heights.Length;
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int segW = Mathf.RoundToInt((256f / heights.Length) * scaleX);
+            int actualBaseY = Mathf.RoundToInt(baseY * scaleY);
+
             for (var s = 0; s < heights.Length - 1; s++)
             {
-                int x0 = s * segW, x1 = (s + 1) * segW;
+                int x0 = Mathf.RoundToInt(s * (256f / heights.Length) * scaleX);
+                int x1 = Mathf.RoundToInt((s + 1) * (256f / heights.Length) * scaleX);
                 for (var x = x0; x < x1; x++)
                 {
                     var frac = (x - x0) / (float)(x1 - x0);
-                    var h    = Mathf.RoundToInt(Mathf.Lerp(heights[s], heights[s + 1], frac));
-                    for (var y = baseY; y < baseY + h; y++)
+                    var h    = Mathf.Lerp(heights[s], heights[s + 1], frac) * scaleY;
+                    int actualH = Mathf.RoundToInt(h);
+                    for (var y = actualBaseY; y < actualBaseY + actualH; y++)
                         t.SetPixel(x, y, c);
                 }
             }
@@ -436,10 +483,18 @@ namespace ForestFriendsQuest
 
         private static void DrawVine(Texture2D t, int x, int baseY, int height, Color c)
         {
-            for (var y = baseY; y < baseY + height; y++)
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int startY = Mathf.RoundToInt(baseY * scaleY);
+            int endY = Mathf.RoundToInt((baseY + height) * scaleY);
+            int thickness = Mathf.Max(1, Mathf.RoundToInt(scaleX));
+
+            for (var y = startY; y < endY; y++)
             {
-                int xOff = Mathf.RoundToInt(2f * Mathf.Sin(y * 0.3f));
-                BlendPixel(t, x + xOff, y, c);
+                float vy = y / scaleY;
+                int xOff = Mathf.RoundToInt(2f * Mathf.Sin(vy * 0.3f));
+                int cx = Mathf.RoundToInt((x + xOff) * scaleX);
+                FillRectActual(t, cx - thickness / 2, y, thickness, 1, c);
             }
             // Frond tip
             DrawEllipse(t, x, baseY + height, 3, 2, c);
@@ -447,12 +502,18 @@ namespace ForestFriendsQuest
 
         private static void DrawCircleGlow(Texture2D t, int cx, int cy, int r, Color c)
         {
-            for (var y = cy - r; y <= cy + r; y++)
-                for (var x = cx - r; x <= cx + r; x++)
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int acx = Mathf.RoundToInt(cx * scaleX);
+            int acy = Mathf.RoundToInt(cy * scaleY);
+            int ar = Mathf.RoundToInt(r * scaleX);
+
+            for (var y = acy - ar; y <= acy + ar; y++)
+                for (var x = acx - ar; x <= acx + ar; x++)
                 {
-                    float d = Vector2.Distance(new Vector2(x, y), new Vector2(cx, cy));
-                    if (d > r) continue;
-                    float fade = 1f - d / r;
+                    float d = Vector2.Distance(new Vector2(x, y), new Vector2(acx, acy));
+                    if (d > ar) continue;
+                    float fade = 1f - d / ar;
                     BlendPixel(t, x, y, new Color(c.r, c.g, c.b, c.a * fade));
                 }
         }
@@ -460,15 +521,36 @@ namespace ForestFriendsQuest
         private static void DrawEllipse(Texture2D t, int cx, int cy, int rx, int ry, Color c)
         {
             if (rx <= 0 || ry <= 0) return;
-            for (var y = cy - ry; y <= cy + ry; y++)
-                for (var x = cx - rx; x <= cx + rx; x++)
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int acx = Mathf.RoundToInt(cx * scaleX);
+            int acy = Mathf.RoundToInt(cy * scaleY);
+            int arx = Mathf.RoundToInt(rx * scaleX);
+            int ary = Mathf.RoundToInt(ry * scaleY);
+
+            for (var y = acy - ary; y <= acy + ary; y++)
+                for (var x = acx - arx; x <= acx + arx; x++)
                 {
-                    float nx = (x - cx) / (float)rx, ny = (y - cy) / (float)ry;
+                    float nx = (x - acx) / (float)arx, ny = (y - acy) / (float)ary;
                     if (nx*nx + ny*ny <= 1.01f) BlendPixel(t, x, y, c);
                 }
         }
 
         private static void FillRect(Texture2D t, int x, int y, int w, int h, Color c)
+        {
+            float scaleX = t.width / 256f;
+            float scaleY = t.height / 512f;
+            int ax = Mathf.RoundToInt(x * scaleX);
+            int ay = Mathf.RoundToInt(y * scaleY);
+            int aw = Mathf.RoundToInt(w * scaleX);
+            int ah = Mathf.RoundToInt(h * scaleY);
+
+            for (var py = ay; py < ay + ah; py++)
+                for (var px = ax; px < ax + aw; px++)
+                    BlendPixel(t, px, py, c);
+        }
+
+        private static void FillRectActual(Texture2D t, int x, int y, int w, int h, Color c)
         {
             for (var py = y; py < y + h; py++)
                 for (var px = x; px < x + w; px++)
@@ -489,3 +571,4 @@ namespace ForestFriendsQuest
         }
     }
 }
+

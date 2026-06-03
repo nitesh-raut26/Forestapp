@@ -32,7 +32,9 @@ namespace ForestFriendsQuest
     {
         // ─── State ───────────────────────────────────────────────────────────────
 
+#pragma warning disable CS0414
         private bool   _ready;
+#pragma warning restore CS0414
         private bool   _trackingEnabled;
         private string _sessionId;
 

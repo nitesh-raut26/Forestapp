@@ -12,7 +12,7 @@ namespace ForestFriendsQuest
     /// </summary>
     public static class AvatarSpriteLibrary
     {
-        private const int Size = 128;
+        private const int Size = 512;
 
         private static readonly Dictionary<string, Sprite> _cache = new Dictionary<string, Sprite>();
 
@@ -344,39 +344,65 @@ namespace ForestFriendsQuest
 
         private static void FillRect(Texture2D tex, int x, int y, int w, int h, Color c)
         {
-            for (var py = y; py < y + h; py++)
-                for (var px = x; px < x + w; px++)
+            float scale = Size / 128f;
+            int ax = Mathf.RoundToInt(x * scale);
+            int ay = Mathf.RoundToInt(y * scale);
+            int aw = Mathf.RoundToInt(w * scale);
+            int ah = Mathf.RoundToInt(h * scale);
+
+            for (var py = ay; py < ay + ah; py++)
+                for (var px = ax; px < ax + aw; px++)
                     if (px >= 0 && px < Size && py >= 0 && py < Size)
                         BlendPixel(tex, px, py, c);
         }
 
-        private static void FillEllipse(Texture2D tex, int cx, int cy, int rx, int ry, Color c)
+        private static void FillEllipseActual(Texture2D tex, int acx, int acy, int arx, int ary, Color c)
         {
-            for (var py = cy - ry; py <= cy + ry; py++)
+            if (arx <= 0 || ary <= 0) return;
+            for (var py = acy - ary; py <= acy + ary; py++)
             {
-                for (var px = cx - rx; px <= cx + rx; px++)
+                for (var px = acx - arx; px <= acx + arx; px++)
                 {
                     if (px < 0 || px >= Size || py < 0 || py >= Size) continue;
-                    var dx = (float)(px - cx) / rx;
-                    var dy = (float)(py - cy) / ry;
+                    var dx = (float)(px - acx) / arx;
+                    var dy = (float)(py - acy) / ary;
                     if (dx * dx + dy * dy <= 1f)
                         BlendPixel(tex, px, py, c);
                 }
             }
         }
 
+        private static void FillEllipse(Texture2D tex, int cx, int cy, int rx, int ry, Color c)
+        {
+            float scale = Size / 128f;
+            FillEllipseActual(tex,
+                Mathf.RoundToInt(cx * scale),
+                Mathf.RoundToInt(cy * scale),
+                Mathf.RoundToInt(rx * scale),
+                Mathf.RoundToInt(ry * scale),
+                c);
+        }
+
         private static void FillTriangle(Texture2D tex, int x0, int y0, int x1, int y1, int x2, int y2, Color c)
         {
-            var minX = Mathf.Max(0, Mathf.Min(x0, Mathf.Min(x1, x2)));
-            var maxX = Mathf.Min(Size - 1, Mathf.Max(x0, Mathf.Max(x1, x2)));
-            var minY = Mathf.Max(0, Mathf.Min(y0, Mathf.Min(y1, y2)));
-            var maxY = Mathf.Min(Size - 1, Mathf.Max(y0, Mathf.Max(y1, y2)));
+            float scale = Size / 128f;
+            int ax0 = Mathf.RoundToInt(x0 * scale);
+            int ay0 = Mathf.RoundToInt(y0 * scale);
+            int ax1 = Mathf.RoundToInt(x1 * scale);
+            int ay1 = Mathf.RoundToInt(y1 * scale);
+            int ax2 = Mathf.RoundToInt(x2 * scale);
+            int ay2 = Mathf.RoundToInt(y2 * scale);
+
+            var minX = Mathf.Max(0, Mathf.Min(ax0, Mathf.Min(ax1, ax2)));
+            var maxX = Mathf.Min(Size - 1, Mathf.Max(ax0, Mathf.Max(ax1, ax2)));
+            var minY = Mathf.Max(0, Mathf.Min(ay0, Mathf.Min(ay1, ay2)));
+            var maxY = Mathf.Min(Size - 1, Mathf.Max(ay0, Mathf.Max(ay1, ay2)));
 
             for (var py = minY; py <= maxY; py++)
             {
                 for (var px = minX; px <= maxX; px++)
                 {
-                    if (InTriangle(px, py, x0, y0, x1, y1, x2, y2))
+                    if (InTriangle(px, py, ax0, ay0, ax1, ay1, ax2, ay2))
                         BlendPixel(tex, px, py, c);
                 }
             }
@@ -397,25 +423,33 @@ namespace ForestFriendsQuest
 
         private static void DrawLine(Texture2D tex, int x0, int y0, int x1, int y1, Color c, int thickness = 1)
         {
-            var dx = Mathf.Abs(x1 - x0);
-            var dy = Mathf.Abs(y1 - y0);
-            var sx = x0 < x1 ? 1 : -1;
-            var sy = y0 < y1 ? 1 : -1;
+            float scale = Size / 128f;
+            int ax0 = Mathf.RoundToInt(x0 * scale);
+            int ay0 = Mathf.RoundToInt(y0 * scale);
+            int ax1 = Mathf.RoundToInt(x1 * scale);
+            int ay1 = Mathf.RoundToInt(y1 * scale);
+            int athickness = Mathf.Max(1, Mathf.RoundToInt(thickness * scale));
+
+            var dx = Mathf.Abs(ax1 - ax0);
+            var dy = Mathf.Abs(ay1 - ay0);
+            var sx = ax0 < ax1 ? 1 : -1;
+            var sy = ay0 < ay1 ? 1 : -1;
             var err = dx - dy;
 
             while (true)
             {
-                FillEllipse(tex, x0, y0, thickness, thickness, c);
-                if (x0 == x1 && y0 == y1) break;
+                FillEllipseActual(tex, ax0, ay0, athickness, athickness, c);
+                if (ax0 == ax1 && ay0 == ay1) break;
                 var e2 = 2 * err;
-                if (e2 > -dy) { err -= dy; x0 += sx; }
-                if (e2 < dx)  { err += dx; y0 += sy; }
+                if (e2 > -dy) { err -= dy; ax0 += sx; }
+                if (e2 < dx)  { err += dx; ay0 += sy; }
             }
         }
 
         private static void DrawArc(Texture2D tex, int cx, int cy, int r, float startAngle, float endAngle, Color c, int thickness)
         {
-            var steps = Mathf.Max(16, r * 3);
+            float scale = Size / 128f;
+            var steps = Mathf.RoundToInt(Mathf.Max(16, r * 3) * scale);
             var prev  = true;
             int lx = 0, ly = 0;
             for (var i = 0; i <= steps; i++)

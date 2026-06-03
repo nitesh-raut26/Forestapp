@@ -40,6 +40,17 @@ namespace ForestFriendsQuest
             };
         }
 
+        /// <summary>
+        /// Coroutine: displays tier-selection UI (or auto-detects) then calls back
+        /// with the chosen tier string so OnboardingDirector can store it.
+        /// </summary>
+        public System.Collections.IEnumerator PromptAgeTier(RectTransform parent, System.Action<string> onTierSelected)
+        {
+            // Use the tier already detected from save data
+            onTierSelected?.Invoke(_detectedTier);
+            yield break;
+        }
+
         public bool ShouldShowSkipButton(string tier) => tier is "scout" or "druid";
         public bool ShouldShowTextHints(string tier)  => tier != "sprout";
         public float GetTapTargetScale(string tier)   => tier == "sprout" ? 1.4f : 1f;

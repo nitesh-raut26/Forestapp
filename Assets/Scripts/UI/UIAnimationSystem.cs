@@ -53,6 +53,7 @@ namespace ForestFriendsQuest
                     if (tween.transform != null)
                         tween.transform.localScale = tween.toScale;
                     _activeTweens.RemoveAt(i);
+                    tween.onComplete?.Invoke();
                 }
             }
         }

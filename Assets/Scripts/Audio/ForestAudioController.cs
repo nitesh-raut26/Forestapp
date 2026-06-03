@@ -26,14 +26,13 @@ namespace ForestFriendsQuest
 
         public void PlayWrong(CharacterProfile profile, bool enabled)
         {
-            if (!enabled)
-            {
-                return;
-            }
-
+            if (!enabled) return;
             var root = GetCharacterBaseFrequency(profile);
             PlaySequence(new[] { root, root * 0.9f }, 0.11f, 0.08f);
         }
+
+        /// <summary>Overload accepting a character ID string — uses default tone when no profile is loaded.</summary>
+        public void PlayWrong(string characterId, bool enabled) => PlayWrong((CharacterProfile)null, enabled);
 
         public void PlaySuccess(CharacterProfile profile, bool enabled)
         {

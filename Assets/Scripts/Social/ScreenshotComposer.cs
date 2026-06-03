@@ -21,7 +21,9 @@ namespace ForestFriendsQuest
         // ─── Events ──────────────────────────────────────────────────────────────
 
         public event Action<Texture2D, string> OnScreenshotReady;   // texture, filePath
+#pragma warning disable CS0067   // reserved for future share-sheet integration
         public event Action<string>            OnShareComplete;      // destination
+#pragma warning restore CS0067
 
         // ─── State ───────────────────────────────────────────────────────────────
 

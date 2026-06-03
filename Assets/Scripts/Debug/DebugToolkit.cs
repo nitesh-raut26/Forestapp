@@ -30,7 +30,7 @@ namespace ForestFriendsQuest
         private ReleaseConfiguration   _config;
         private bool                   _isVisible;
         private Canvas                 _debugCanvas;
-        private UnityEngine.UI.Text    _fpsText;
+        private Text                   _fpsText;
 
         private float _fpsTimer;
         private int   _frameCount;
@@ -91,7 +91,7 @@ namespace ForestFriendsQuest
 
         public void CheatTriggerBossEncounter(string regionId = "fern-trail")
         {
-            _systems?.Bosses?.StartEncounter(regionId, null);
+            _systems?.Bosses?.StartEncounter(regionId);
             Debug.Log($"[DebugToolkit] CHEAT: Boss encounter triggered for {regionId}");
         }
 
@@ -159,8 +159,8 @@ namespace ForestFriendsQuest
             // FPS counter in corner
             var fpsGo = new GameObject("FPSText");
             fpsGo.transform.SetParent(go.transform, false);
-            _fpsText = fpsGo.AddComponent<UnityEngine.UI.Text>();
-            _fpsText.font     = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _fpsText = fpsGo.AddComponent<Text>();
+            _fpsText.font     = TMPro.TMP_Settings.defaultFontAsset;
             _fpsText.fontSize = 24;
             _fpsText.color    = Color.yellow;
             _fpsText.text     = "FPS: --";

@@ -60,6 +60,9 @@ namespace ForestFriendsQuest
 
         // ─── Public API ───────────────────────────────────────────────────────────
 
+        /// <summary>Persist the active data immediately (crash-safe entry point).</summary>
+        public void ForceSave() => Save(_activeData);
+
         /// <summary>Persist the current save data immediately.</summary>
         public void Save(ForestSaveData data)
         {

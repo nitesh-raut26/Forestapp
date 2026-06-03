@@ -83,6 +83,16 @@ namespace ForestFriendsQuest
             StartCoroutine(DelayThenAdvance(step.pauseAfterSeconds));
         }
 
+        /// <summary>
+        /// Coroutine: starts the tutorial and waits until it is finished.
+        /// Used by OnboardingDirector via yield return.
+        /// </summary>
+        public System.Collections.IEnumerator RunTutorial(RectTransform parent, string tier)
+        {
+            StartTutorial();
+            while (_active) yield return null;
+        }
+
         /// <summary>Skip the entire tutorial (player taps skip).</summary>
         public void SkipTutorial()
         {

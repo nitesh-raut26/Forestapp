@@ -58,6 +58,7 @@ namespace ForestFriendsQuest
         // ─── Active Puzzle State ─────────────────────────────────────────────────
 
         private PuzzleType    _activePuzzleType;
+        private string        _activeLevelId;
         private string        _currentTier;
         private bool          _puzzleActive;
         private float         _puzzleStartTime;
@@ -108,6 +109,13 @@ namespace ForestFriendsQuest
         // ─── Public API ───────────────────────────────────────────────────────────
 
         /// <summary>Begin a new puzzle session of the given type.</summary>
+        public void BeginLevel(string levelId, PuzzleType type, string tier = "scout")
+        {
+            _activeLevelId = levelId;
+            StartPuzzle(type, tier);
+        }
+
+        /// <summary>Begin a new puzzle session of the given type.</summary>
         public void StartPuzzle(PuzzleType type, string tier)
         {
             _activePuzzleType = type;
@@ -119,7 +127,7 @@ namespace ForestFriendsQuest
             _hintAvailable    = false;
             _hintCooldown     = _difficulty?.GetHintDelay() ?? 10f;
 
-            Debug.Log($"[PuzzleManager] Started {type} puzzle — tier: {tier}");
+            Debug.Log($"[PuzzleManager] Started {type} puzzle — level: {_activeLevelId ?? "direct"} — tier: {tier}");
         }
 
         /// <summary>Record a correct step in the current puzzle.</summary>

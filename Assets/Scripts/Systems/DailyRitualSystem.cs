@@ -196,6 +196,28 @@ namespace ForestFriendsQuest
             return GetTodaysRitual().type;
         }
 
+        /// <summary>Number of consecutive days the player has completed a daily ritual.</summary>
+        public int CurrentStreak
+        {
+            get
+            {
+                int streak = 0;
+                for (int i = 0; i < 365; i++)
+                {
+                    var date   = DateTime.Today.AddDays(-i);
+                    var ritual = AllRituals[date.DayOfYear % AllRituals.Count];
+                    bool done;
+                    if (_saveSystem != null)
+                        done = _saveSystem.GetDailyRitualComplete(ritual.id);
+                    else
+                        done = PlayerPrefs.GetInt($"FFQ.DailyRitual.{date:yyyyMMdd}", 0) == 1;
+                    if (done) streak++;
+                    else break;
+                }
+                return streak;
+            }
+        }
+
         /// <summary>Inject a ritual from LiveContentPipeline — added to pool immediately.</summary>
         public void RegisterLiveRitual(DailyRitual ritual)
         {

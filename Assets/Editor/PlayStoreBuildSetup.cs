@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace ForestFriendsQuest.Editor
@@ -30,11 +31,11 @@ namespace ForestFriendsQuest.Editor
             PlayerSettings.Android.bundleVersionCode = 1;
 
             // ── Android SDK ───────────────────────────────────────────────────────
-            PlayerSettings.Android.minSdkVersion    = AndroidSdkVersions.AndroidApiLevel23; // Android 6.0
+            PlayerSettings.Android.minSdkVersion    = AndroidSdkVersions.AndroidApiLevel25; // Android 7.1 (minimum supported)
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevel34; // Android 14
 
             // ── 64-bit requirement (Google Play mandates this) ─────────────────────
-            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Android, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
 
             // ── Display ───────────────────────────────────────────────────────────
@@ -53,14 +54,14 @@ namespace ForestFriendsQuest.Editor
             {
                 var icons = new Texture2D[7];
                 for (var i = 0; i < icons.Length; i++) icons[i] = icon;
-                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Android, icons);
+                PlayerSettings.SetIcons(NamedBuildTarget.Android, icons, IconKind.Application);
             }
 
             // ── Store metadata stub ───────────────────────────────────────────────
             Debug.Log("[PlayStoreBuildSetup] Android settings configured.");
             Debug.Log("[PlayStoreBuildSetup] Bundle ID : com.forestfriendsstudio.forestfriendsquest");
             Debug.Log("[PlayStoreBuildSetup] Version   : 1.0.0 (build 1)");
-            Debug.Log("[PlayStoreBuildSetup] Min SDK   : API 23 (Android 6)");
+            Debug.Log("[PlayStoreBuildSetup] Min SDK   : API 25 (Android 7.1)");
             Debug.Log("[PlayStoreBuildSetup] Target SDK: API 34 (Android 14)");
             Debug.Log("[PlayStoreBuildSetup] Backend   : IL2CPP  ARM64 + ARMv7");
 

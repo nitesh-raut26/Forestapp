@@ -219,9 +219,11 @@ namespace ForestFriendsQuest
         {
             if (SaveData == null || SaveData.forestTreats <= 0) return;
 
-            Systems?.BondingEngine?.FeedTreat(character.id,
-                Systems.BondingEngine.GetFavoriteTreat(character.id),
-                out var lovedIt);
+            var lovedIt = false;
+            if (Systems?.BondingEngine != null)
+                Systems.BondingEngine.FeedTreat(character.id,
+                    Systems.BondingEngine.GetFavoriteTreat(character.id),
+                    out lovedIt);
 
             SaveData.forestTreats--;
 

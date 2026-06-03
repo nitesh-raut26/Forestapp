@@ -173,7 +173,7 @@ namespace ForestFriendsQuest
                 name, label,
                 ForestUiFactory.GetDefaultFont(),
                 bgColor, textColor,
-                onClick, fontSize);
+                () => onClick?.Invoke(), fontSize);
         }
 
         protected Image CreatePanel(Transform parent, string name, Color color, float radius = 8f)

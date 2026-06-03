@@ -407,6 +407,12 @@ namespace ForestFriendsQuest
             Spawn(EmotionalParticleType.JoySparkle,       pos, 8);
         }
 
+        /// <summary>Burst a fixed count of particles at a canvas position with a tint color.</summary>
+        public void BurstAt(Vector2 pos, int count, Color color)
+        {
+            Spawn(EmotionalParticleType.HappyPollenBurst, pos, count);
+        }
+
         /// <summary>Spawn thankful petal drift (replaces emoji blossom).</summary>
         public void SpawnThankfulParticles(Vector2 pos)
         {

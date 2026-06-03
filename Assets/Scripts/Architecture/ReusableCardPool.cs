@@ -24,7 +24,9 @@ namespace ForestFriendsQuest
 
         // Card visual settings
         private float _cardSpacing    = 16f;
+#pragma warning disable CS0414
         private float _cardPadding    = 18f;
+#pragma warning restore CS0414
         private float _defaultHeight  = 120f;
 
         public ReusableCardPool(RectTransform parent, int maxCapacity = 40)

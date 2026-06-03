@@ -121,6 +121,17 @@ namespace ForestFriendsQuest
 
         public bool HasAttended(string eventId) => _attendedIds.Contains(eventId);
 
+        /// <summary>Debug/QA: force-start the next available event immediately.</summary>
+        public void ForceNextEvent()
+        {
+            if (_allEvents.Count == 0) return;
+            var ev = _allEvents[_totalDays % _allEvents.Count];
+            if (!_activeEvents.Contains(ev))
+                _activeEvents.Add(ev);
+            OnSpecialEventStarted?.Invoke(ev);
+            Debug.Log($"[SeasonalEventSystem] Force-started event: {ev.title}");
+        }
+
         /// <summary>
         /// Advance by one in-game day. Should be called by TimeController or
         /// manually from ForestSystemsContainer on a real-time cadence.

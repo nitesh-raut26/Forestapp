@@ -50,10 +50,12 @@ namespace ForestFriendsQuest
             _reducedMotion = reducedMotion;
 
             if (_seasonManager != null)
-                _seasonManager.OnSeasonChanged += (prev, next) => ApplySeason(next);
+                _seasonManager.OnSeasonChanged += (prev, next) => ApplySeason(next.ToString().ToLower());
 
             // Apply current season immediately
-            ApplySeason(_seasonManager?.CurrentSeason ?? "spring");
+            ApplySeason(_seasonManager != null
+                ? _seasonManager.CurrentSeason.ToString().ToLower()
+                : "spring");
         }
 
         // ─── Public API ───────────────────────────────────────────────────────────

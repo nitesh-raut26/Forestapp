@@ -11,8 +11,7 @@ namespace ForestFriendsQuest
 
         public static Font GetDefaultFont()
         {
-            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            return font != null ? font : Resources.GetBuiltinResource<Font>("Arial.ttf");
+            return TMPro.TMP_Settings.defaultFontAsset;
         }
 
         public static RectTransform CreateUiObject(string name, Transform parent = null)
@@ -49,7 +48,7 @@ namespace ForestFriendsQuest
         {
             var rect = CreateUiObject(name, parent);
             var image = rect.gameObject.AddComponent<Image>();
-            image.sprite = circular ? GetCircleSprite() : GetWhiteSprite();
+            image.sprite = circular ? GetCircleSprite() : GetPanelSprite();
             image.type = Image.Type.Sliced;
             image.color = color;
             return image;
@@ -62,8 +61,8 @@ namespace ForestFriendsQuest
             Font font,
             int fontSize,
             Color color,
-            TextAnchor anchor,
-            FontStyle fontStyle = FontStyle.Normal
+            UnityEngine.TextAnchor anchor,
+            UnityEngine.FontStyle fontStyle = UnityEngine.FontStyle.Normal
         )
         {
             var rect = CreateUiObject(name, parent);
@@ -72,10 +71,10 @@ namespace ForestFriendsQuest
             text.text = value;
             text.fontSize = fontSize;
             text.color = color;
-            text.alignment = anchor;
-            text.fontStyle = fontStyle;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Overflow;
+            text.alignment = MapAlignment(anchor);
+            text.fontStyle = MapFontStyle(fontStyle);
+            text.enableWordWrapping = true;
+            text.overflowMode = TMPro.TextOverflowModes.Overflow;
             return text;
         }
 
@@ -91,17 +90,19 @@ namespace ForestFriendsQuest
         )
         {
             var image = CreateImage(parent, name, backgroundColor);
+            image.sprite = GetButtonSprite();
+            image.type = Image.Type.Sliced;
             var button = image.gameObject.AddComponent<Button>();
             var colors = button.colors;
             colors.normalColor = backgroundColor;
-            colors.highlightedColor = backgroundColor * 1.05f;
-            colors.pressedColor = backgroundColor * 0.92f;
+            colors.highlightedColor = backgroundColor * 1.15f;
+            colors.pressedColor = backgroundColor * 0.85f;
             colors.selectedColor = backgroundColor;
             colors.disabledColor = new Color(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0.45f);
             button.colors = colors;
             button.onClick.AddListener(onClick);
 
-            var labelText = CreateText(image.transform, "Label", label, font, fontSize, textColor, TextAnchor.MiddleCenter, FontStyle.Bold);
+            var labelText = CreateText(image.transform, "Label", label, font, fontSize, textColor, UnityEngine.TextAnchor.MiddleCenter, UnityEngine.FontStyle.Bold);
             Stretch(labelText.rectTransform, 8f, 8f, 8f, 8f);
 
             return button;
@@ -112,12 +113,16 @@ namespace ForestFriendsQuest
             var root = CreateUiObject("ScrollView", parent);
             Stretch(root);
 
-            var viewportImage = CreateImage(root, "Viewport", new Color(0f, 0f, 0f, 0f));
-            Stretch(viewportImage.rectTransform);
-            var mask = viewportImage.gameObject.AddComponent<Mask>();
-            mask.showMaskGraphic = false;
+            // RectMask2D clips by rectangle without needing a stencil-buffer write —
+            // unlike Mask, it works correctly even when the graphic colour has alpha=0.
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform));
+            viewportGo.transform.SetParent(root, false);
+            var viewportRect = viewportGo.GetComponent<RectTransform>();
+            viewportRect.localScale = Vector3.one;
+            Stretch(viewportRect);
+            viewportGo.AddComponent<RectMask2D>();
 
-            content = CreateUiObject("Content", viewportImage.transform);
+            content = CreateUiObject("Content", viewportGo.transform);
             content.anchorMin = new Vector2(0f, 1f);
             content.anchorMax = new Vector2(1f, 1f);
             content.pivot = new Vector2(0.5f, 1f);
@@ -137,7 +142,7 @@ namespace ForestFriendsQuest
             fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             var scrollRect = root.gameObject.AddComponent<ScrollRect>();
-            scrollRect.viewport = viewportImage.rectTransform;
+            scrollRect.viewport = viewportRect;
             scrollRect.content = content;
             scrollRect.horizontal = false;
             scrollRect.movementType = ScrollRect.MovementType.Clamped;
@@ -266,7 +271,7 @@ namespace ForestFriendsQuest
                 for (var x = 0; x < size; x++)
                 {
                     var distance = Vector2.Distance(new Vector2(x, y), center);
-                    var alpha = distance <= radius ? 1f : 0f;
+                    var alpha = Mathf.Clamp01(radius - distance);
                     texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
                 }
             }
@@ -279,6 +284,189 @@ namespace ForestFriendsQuest
                 size
             );
             return _circleSprite;
+        }
+
+        private static TMPro.TextAlignmentOptions MapAlignment(UnityEngine.TextAnchor anchor)
+        {
+            switch (anchor)
+            {
+                case UnityEngine.TextAnchor.UpperLeft: return TMPro.TextAlignmentOptions.TopLeft;
+                case UnityEngine.TextAnchor.UpperCenter: return TMPro.TextAlignmentOptions.Top;
+                case UnityEngine.TextAnchor.UpperRight: return TMPro.TextAlignmentOptions.TopRight;
+                case UnityEngine.TextAnchor.MiddleLeft: return TMPro.TextAlignmentOptions.Left;
+                case UnityEngine.TextAnchor.MiddleCenter: return TMPro.TextAlignmentOptions.Center;
+                case UnityEngine.TextAnchor.MiddleRight: return TMPro.TextAlignmentOptions.Right;
+                case UnityEngine.TextAnchor.LowerLeft: return TMPro.TextAlignmentOptions.BottomLeft;
+                case UnityEngine.TextAnchor.LowerCenter: return TMPro.TextAlignmentOptions.Bottom;
+                case UnityEngine.TextAnchor.LowerRight: return TMPro.TextAlignmentOptions.BottomRight;
+                default: return TMPro.TextAlignmentOptions.Center;
+            }
+        }
+
+        private static TMPro.FontStyles MapFontStyle(UnityEngine.FontStyle style)
+        {
+            switch (style)
+            {
+                case UnityEngine.FontStyle.Normal: return TMPro.FontStyles.Normal;
+                case UnityEngine.FontStyle.Bold: return TMPro.FontStyles.Bold;
+                case UnityEngine.FontStyle.Italic: return TMPro.FontStyles.Italic;
+                case UnityEngine.FontStyle.BoldAndItalic: return TMPro.FontStyles.Bold | TMPro.FontStyles.Italic;
+                default: return TMPro.FontStyles.Normal;
+            }
+        }
+
+        private static Sprite _panelSprite;
+        private static Sprite _buttonSprite;
+
+        public static Sprite GetPanelSprite()
+        {
+            if (_panelSprite != null) return _panelSprite;
+
+            const int size = 128;
+            const int border = 16;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            
+            float cornerRadius = 16f;
+            float strokeWidth = 2f;
+            Color strokeColor = new Color(1f, 1f, 1f, 0.15f);
+            Color fillColor = Color.white;
+
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    float dx = 0f;
+                    if (x < cornerRadius) dx = cornerRadius - x;
+                    else if (x >= size - cornerRadius) dx = x - (size - cornerRadius - 1);
+
+                    float dy = 0f;
+                    if (y < cornerRadius) dy = cornerRadius - y;
+                    else if (y >= size - cornerRadius) dy = y - (size - cornerRadius - 1);
+
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    Color pixelColor = Color.clear;
+
+                    if (dx > 0 && dy > 0)
+                    {
+                        if (dist <= cornerRadius)
+                        {
+                            float alpha = Mathf.Clamp01(cornerRadius - dist);
+                            if (dist >= cornerRadius - strokeWidth)
+                            {
+                                pixelColor = Color.Lerp(fillColor, strokeColor, alpha);
+                                pixelColor.a *= alpha;
+                            }
+                            else
+                            {
+                                pixelColor = fillColor;
+                                pixelColor.a *= alpha;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        bool isBorder = x < strokeWidth || x >= size - strokeWidth || y < strokeWidth || y >= size - strokeWidth;
+                        pixelColor = isBorder ? strokeColor : fillColor;
+                    }
+                    texture.SetPixel(x, y, pixelColor);
+                }
+            }
+
+            texture.Apply();
+            _panelSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, size, size),
+                new Vector2(0.5f, 0.5f),
+                size,
+                0,
+                SpriteMeshType.FullRect,
+                new Vector4(border, border, border, border)
+            );
+            return _panelSprite;
+        }
+
+        public static Sprite GetButtonSprite()
+        {
+            if (_buttonSprite != null) return _buttonSprite;
+
+            const int size = 128;
+            const int border = 24;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            
+            float cornerRadius = 24f;
+            float strokeWidth = 3f;
+            Color fillColor = Color.white;
+
+            for (var y = 0; y < size; y++)
+            {
+                for (var x = 0; x < size; x++)
+                {
+                    float dx = 0f;
+                    if (x < cornerRadius) dx = cornerRadius - x;
+                    else if (x >= size - cornerRadius) dx = x - (size - cornerRadius - 1);
+
+                    float dy = 0f;
+                    if (y < cornerRadius) dy = cornerRadius - y;
+                    else if (y >= size - cornerRadius) dy = y - (size - cornerRadius - 1);
+
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy);
+                    Color pixelColor = Color.clear;
+
+                    if (dx > 0 && dy > 0)
+                    {
+                        if (dist <= cornerRadius)
+                        {
+                            float alpha = Mathf.Clamp01(cornerRadius - dist);
+                            float bevel = (y < cornerRadius) ? 0.85f : 1.1f;
+                            Color tintedFill = fillColor * bevel;
+                            Color tintedStroke = Color.white * bevel;
+                            
+                            if (dist >= cornerRadius - strokeWidth)
+                            {
+                                pixelColor = Color.Lerp(tintedFill, tintedStroke, alpha);
+                                pixelColor.a *= alpha;
+                            }
+                            else
+                            {
+                                pixelColor = tintedFill;
+                                pixelColor.a *= alpha;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (y < 6)
+                        {
+                            pixelColor = new Color(0f, 0f, 0f, 0.25f);
+                        }
+                        else if (y >= size - strokeWidth)
+                        {
+                            pixelColor = new Color(1f, 1f, 1f, 0.4f);
+                        }
+                        else if (x < strokeWidth || x >= size - strokeWidth)
+                        {
+                            pixelColor = new Color(1f, 1f, 1f, 0.15f);
+                        }
+                        else
+                        {
+                            pixelColor = fillColor;
+                        }
+                    }
+                    texture.SetPixel(x, y, pixelColor);
+                }
+            }
+
+            texture.Apply();
+            _buttonSprite = Sprite.Create(
+                texture,
+                new Rect(0f, 0f, size, size),
+                new Vector2(0.5f, 0.5f),
+                size,
+                0,
+                SpriteMeshType.FullRect,
+                new Vector4(border, border, border, border)
+            );
+            return _buttonSprite;
         }
     }
 }

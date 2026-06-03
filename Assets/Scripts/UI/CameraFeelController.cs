@@ -99,6 +99,12 @@ namespace ForestFriendsQuest
 
         // ─── Public API ───────────────────────────────────────────────────────────
 
+        /// <summary>Tiny camera pulse used for reward moments.</summary>
+        public void TriggerMicroPulse(float magnitude) => Shake(magnitude, 0.2f);
+
+        /// <summary>Screen shake alias used by NintendoFeelSystem.</summary>
+        public void TriggerScreenShake(float magnitude, float duration) => Shake(magnitude, duration);
+
         /// <summary>Trigger a gentle screen shake on puzzle win or rare discovery.</summary>
         public void Shake(float magnitude = 0.12f, float duration = 0.35f)
         {

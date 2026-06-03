@@ -265,7 +265,7 @@ namespace ForestFriendsQuest
             ForestUiFactory.AddLayout(lbl.gameObject, flexibleWidth: 1f);
 
             var dec = ForestUiFactory.CreateButton(row, "Dec", "-",
-                ForestUiFactory.GetDefaultFont(), InactiveBtn, TextCream, onDecrement, 22);
+                ForestUiFactory.GetDefaultFont(), InactiveBtn, TextCream, () => onDecrement?.Invoke(), 22);
             ForestUiFactory.AddLayout(dec.gameObject, preferredWidth: 48f, preferredHeight: 44f);
 
             var valGo = ForestUiFactory.CreateText(row, "Val", "60%",
@@ -274,7 +274,7 @@ namespace ForestFriendsQuest
             valueLabel = valGo;
 
             var inc = ForestUiFactory.CreateButton(row, "Inc", "+",
-                ForestUiFactory.GetDefaultFont(), InactiveBtn, TextCream, onIncrement, 22);
+                ForestUiFactory.GetDefaultFont(), InactiveBtn, TextCream, () => onIncrement?.Invoke(), 22);
             ForestUiFactory.AddLayout(inc.gameObject, preferredWidth: 48f, preferredHeight: 44f);
         }
     }

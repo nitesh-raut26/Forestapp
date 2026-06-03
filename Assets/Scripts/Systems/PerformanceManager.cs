@@ -2,8 +2,6 @@ using UnityEngine;
 
 namespace ForestFriendsQuest
 {
-    public enum DeviceTier { Low, Mid, High }
-
     /// <summary>
     /// Detects device capability tier at startup and provides quality settings
     /// that other systems use to scale their resource usage.
@@ -52,6 +50,9 @@ namespace ForestFriendsQuest
         {
             return CurrentTier == DeviceTier.Low ? baseDuration * 0.5f : baseDuration;
         }
+
+        /// <summary>Returns the current detected device tier.</summary>
+        public DeviceTier GetCurrentTier() => CurrentTier;
 
         // ─── Private ─────────────────────────────────────────────────────────────
 

@@ -28,7 +28,7 @@ namespace ForestFriendsQuest
             Application.runInBackground       = false;
 
             // Prevent multiple initializations if scene reloads
-            if (Object.FindFirstObjectByType<ForestQuestApp>() != null) return;
+            if (Object.FindAnyObjectByType<ForestQuestApp>() != null) return;
 
             EnsureCamera();
             EnsureEventSystem();
@@ -60,7 +60,7 @@ namespace ForestFriendsQuest
             cam.backgroundColor  = new Color(0.06f, 0.18f, 0.12f); // Deep forest night
             cam.orthographic     = true;
             cam.orthographicSize = 5f;
-            cam.nearClipPlane    = -10f;
+            cam.nearClipPlane    = 0.3f;
             cam.farClipPlane     = 100f;
             cam.depth            = -1f;
 
@@ -71,7 +71,7 @@ namespace ForestFriendsQuest
 
         private static void EnsureEventSystem()
         {
-            if (Object.FindFirstObjectByType<EventSystem>() != null) return;
+            if (Object.FindAnyObjectByType<EventSystem>() != null) return;
 
             var eventSystem = new GameObject("EventSystem");
             Object.DontDestroyOnLoad(eventSystem);
