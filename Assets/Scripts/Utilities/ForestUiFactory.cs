@@ -11,6 +11,10 @@ namespace ForestFriendsQuest
 
         public static Font GetDefaultFont()
         {
+            if (TMPro.TMP_Settings.LoadDefaultSettings() == null)
+            {
+                return null;
+            }
             return TMPro.TMP_Settings.defaultFontAsset;
         }
 

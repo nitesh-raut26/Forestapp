@@ -160,7 +160,7 @@ namespace ForestFriendsQuest
             var fpsGo = new GameObject("FPSText");
             fpsGo.transform.SetParent(go.transform, false);
             _fpsText = fpsGo.AddComponent<Text>();
-            _fpsText.font     = TMPro.TMP_Settings.defaultFontAsset;
+            _fpsText.font     = ForestUiFactory.GetDefaultFont();
             _fpsText.fontSize = 24;
             _fpsText.color    = Color.yellow;
             _fpsText.text     = "FPS: --";

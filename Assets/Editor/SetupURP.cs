@@ -12,6 +12,14 @@ namespace ForestFriendsQuest.Editor
         [MenuItem("Forest Friends Quest/Setup URP and Linear Color Space")]
         public static void Setup()
         {
+            // 0. Import TextMesh Pro Essential Resources silently if missing
+            if (!Directory.Exists("Assets/TextMesh Pro"))
+            {
+                Debug.Log("[SetupURP] TextMesh Pro Essential Resources not found. Importing silently...");
+                TMPro.TMP_PackageResourceImporter.ImportResources(true, false, false);
+                AssetDatabase.Refresh();
+            }
+
             // 1. Create Settings directory if it doesn't exist
             if (!Directory.Exists("Assets/Settings"))
             {
