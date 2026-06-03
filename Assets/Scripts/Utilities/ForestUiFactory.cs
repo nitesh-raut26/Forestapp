@@ -71,8 +71,8 @@ namespace ForestFriendsQuest
             text.text = value;
             text.fontSize = fontSize;
             text.color = color;
-            text.alignment = MapAlignment(anchor);
-            text.fontStyle = MapFontStyle(fontStyle);
+            text.alignment = anchor;
+            text.fontStyle = fontStyle;
             text.enableWordWrapping = true;
             text.overflowMode = TMPro.TextOverflowModes.Overflow;
             return text;

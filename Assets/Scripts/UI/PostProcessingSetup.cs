@@ -17,7 +17,8 @@ namespace ForestFriendsQuest
             volume.sharedProfile = profile;
 
             // 1. Add Bloom for glowing sparks, fireflies, and ambient light
-            if (profile.Add<Bloom>(out var bloom))
+            var bloom = profile.Add<Bloom>();
+            if (bloom != null)
             {
                 bloom.active = true;
                 bloom.intensity.Override(1.2f);
@@ -27,7 +28,8 @@ namespace ForestFriendsQuest
             }
 
             // 2. Add Color Adjustments for a premium, rich cinematic look
-            if (profile.Add<ColorAdjustments>(out var colorAdjustments))
+            var colorAdjustments = profile.Add<ColorAdjustments>();
+            if (colorAdjustments != null)
             {
                 colorAdjustments.active = true;
                 colorAdjustments.postExposure.Override(0.15f);
@@ -36,12 +38,13 @@ namespace ForestFriendsQuest
             }
 
             // 3. Add Vignette to draw focus to the center of the screen
-            if (profile.Add<Vignette>(out var vignette))
+            var vignette = profile.Add<Vignette>();
+            if (vignette != null)
             {
                 vignette.active = true;
                 vignette.intensity.Override(0.28f);
                 vignette.smoothness.Override(0.8f);
-                vignette.roundness.Override(1f);
+                vignette.rounded.Override(true);
                 vignette.color.Override(new Color(0.02f, 0.1f, 0.05f)); // forest green vignette
             }
 
